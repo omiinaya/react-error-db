@@ -1,0 +1,158 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  username     String   @unique
+  passwordHash String
+  displayName  String?
+  avatarUrl    String?
+  isVerified   Boolean  @default(false)
+  isAdmin      Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  solutions     Solution[]
+  votes         Vote[]
+  userSessions  UserSession[]
+  verifiedSolutions Solution[] @relation("SolutionVerification")
+
+  @@map("users")
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  icon        String?
+  parentId    String?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  parent       Category?   @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: NoAction)
+  children     Category[]  @relation("CategoryHierarchy")
+  applications Application[]
+
+  @@map("categories")
+}
+
+model Application {
+  id                String   @id @default(uuid())
+  name              String   @unique
+  slug              String   @unique
+  description       String?
+  logoUrl           String?
+  categoryId        String
+  websiteUrl        String?
+  documentationUrl  String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  category  Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  errorCodes ErrorCode[]
+
+  @@map("applications")
+}
+
+model ErrorCode {
+  id            String   @id @default(uuid())
+  code          String
+  applicationId String
+  title         String
+  description   String?
+  severity      Severity
+  metadata      Json?
+  viewCount     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  solutions   Solution[]
+
+  // Composite unique constraint
+  @@unique([code, applicationId])
+  @@map("error_codes")
+}
+
+model Solution {
+  id           String   @id @default(uuid())
+  errorId      String
+  authorId     String
+  solutionText String
+  upvotes      Int      @default(0)
+  downvotes    Int      @default(0)
+  score        Int      @default(0)
+  isVerified   Boolean  @default(false)
+  verifiedById String?
+  verifiedAt   DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  error       ErrorCode @relation(fields: [errorId], references: [id], onDelete: Cascade)
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  verifiedBy  User?     @relation("SolutionVerification", fields: [verifiedById], references: [id], onDelete: SetNull)
+  votes       Vote[]
+
+  @@map("solutions")
+}
+
+model Vote {
+  id         String   @id @default(uuid())
+  solutionId String
+  userId     String
+  voteType   VoteType
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  solution Solution @relation(fields: [solutionId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Composite unique constraint
+  @@unique([solutionId, userId])
+  @@map("votes")
+}
+
+model UserSession {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String
+  expiresAt DateTime
+  userAgent String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_sessions")
+}
+
+enum Severity {
+  low
+  medium
+  high
+  critical
+}
+
+enum VoteType {
+  upvote
+  downvote
+}

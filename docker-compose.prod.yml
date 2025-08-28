@@ -1,0 +1,115 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database
+  postgres:
+    image: postgres:15-alpine
+    container_name: errdb-postgres-prod
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-errdb}
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - errdb-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-errdb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: errdb-redis-prod
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - errdb-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: errdb-backend-prod
+    ports:
+      - "${BACKEND_PORT:-3010}:3010"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-errdb}
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
+      - PORT=3010
+    volumes:
+      - ./backend/prisma:/app/backend/prisma
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - errdb-network
+    restart: unless-stopped
+
+  # Frontend application (served by backend in production)
+  # Alternatively, you can use a separate nginx container for frontend
+  nginx:
+    image: nginx:alpine
+    container_name: errdb-nginx-prod
+    ports:
+      - "${FRONTEND_PORT:-3005}:80"
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+    networks:
+      - errdb-network
+    restart: unless-stopped
+
+  # Database backup service (optional)
+  backup:
+    image: postgres:15-alpine
+    container_name: errdb-backup-prod
+    volumes:
+      - backup_data:/backups
+      - ./backend/scripts/backup.ts:/app/backup.ts
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-errdb}
+    networks:
+      - errdb-network
+    restart: unless-stopped
+    command: >
+      sh -c "apk add --no-cache nodejs npm &&
+             npm install -g ts-node &&
+             ts-node /app/backup.ts scheduled"
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  backup_data:
+    driver: local
+
+networks:
+  errdb-network:
+    driver: bridge
+    name: errdb-network-prod

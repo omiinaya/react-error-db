@@ -45,7 +45,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: errdb-backend
     ports:
-      - "3001:3001"
+      - "3010:3010"
     environment:
       - NODE_ENV=development
       - DATABASE_URL=postgresql://user:password@postgres:5432/errdb
@@ -72,7 +72,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: errdb-frontend
     ports:
-      - "3000:3000"
+      - "3005:3005"
     environment:
       - VITE_API_BASE_URL=http://localhost:3001/api
       - VITE_APP_NAME=Error Database

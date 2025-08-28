@@ -15,9 +15,9 @@ const Home: React.FC = () => {
   const { data: trendingErrors, isLoading: isLoadingTrending } = useQuery({
     queryKey: ['trending-errors'],
     queryFn: async () => {
-      const response = await api.searchErrors({ 
+      const response = await api.searchErrors({
         limit: 6,
-        sort: 'views' 
+        sort: 'views' as any
       });
       return response.errors;
     },

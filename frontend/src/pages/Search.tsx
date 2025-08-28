@@ -14,7 +14,7 @@ import { ErrorCode, Application } from '@/types';
 const SearchPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
-  const [applicationFilter, setApplicationFilter] = useState(searchParams.get('application') || '');
+  const [applicationFilter, setApplicationFilter] = useState(searchParams.get('application') || 'all');
   const [severityFilter, setSeverityFilter] = useState(searchParams.get('severity') || '');
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'recent');
 
@@ -33,7 +33,7 @@ const SearchPage: React.FC = () => {
     queryFn: async () => {
       const params: any = {};
       if (searchQuery) params.search = searchQuery;
-      if (applicationFilter) params.applicationId = applicationFilter;
+      if (applicationFilter && applicationFilter !== 'all') params.applicationId = applicationFilter;
       if (severityFilter) params.severity = severityFilter;
       if (sortBy) params.sort = sortBy;
       
@@ -51,7 +51,7 @@ const SearchPage: React.FC = () => {
   const updateSearchParams = () => {
     const params = new URLSearchParams();
     if (searchQuery) params.set('q', searchQuery);
-    if (applicationFilter) params.set('application', applicationFilter);
+    if (applicationFilter && applicationFilter !== 'all') params.set('application', applicationFilter);
     if (severityFilter) params.set('severity', severityFilter);
     if (sortBy) params.set('sort', sortBy);
     setSearchParams(params);
@@ -124,7 +124,7 @@ const SearchPage: React.FC = () => {
                 <SelectValue placeholder="All Applications" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Applications</SelectItem>
+                <SelectItem value="all">All Applications</SelectItem>
                 {applications?.map((app: Application) => (
                   <SelectItem key={app.id} value={app.id}>
                     {app.name}

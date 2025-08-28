@@ -5,11 +5,9 @@ import { logger } from '../utils/logger';
 export const validateRequest = (schema: AnyZodObject) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
-      schema.parse({
-        body: req.body,
-        query: req.query,
-        params: req.params,
-      });
+      // Check if schema expects body structure or direct object
+      const parsed = schema.parse(req.body);
+      req.body = parsed; // Replace with validated data
       next();
     } catch (error) {
       if (error instanceof ZodError) {

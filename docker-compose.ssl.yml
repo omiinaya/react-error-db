@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # Nginx with SSL termination
+  nginx-ssl:
+    image: nginx:alpine
+    container_name: errdb-nginx-ssl
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html
+      - ./nginx-ssl.conf:/etc/nginx/conf.d/default.conf
+      - ./ssl/certs:/etc/ssl/certs
+      - ./ssl/private:/etc/ssl/private
+    depends_on:
+      - backend
+    networks:
+      - errdb-network
+    restart: unless-stopped
+
+  # Certbot for SSL certificate management
+  certbot:
+    image: certbot/certbot
+    container_name: errdb-certbot
+    volumes:
+      - ./ssl/certs:/etc/letsencrypt
+      - ./ssl/private:/var/lib/letsencrypt
+      - ./ssl/logs:/var/log/letsencrypt
+    command: certonly --webroot --webroot-path=/var/www/certbot --email admin@your-domain.com --agree-tos --no-eff-email -d your-domain.com -d www.your-domain.com
+    networks:
+      - errdb-network
+    restart: unless-stopped
+
+  # PostgreSQL database (same as production)
+  postgres:
+    extends:
+      file: docker-compose.prod.yml
+      service: postgres
+
+  # Redis (same as production)
+  redis:
+    extends:
+      file: docker-compose.prod.yml
+      service: redis
+
+  # Backend API (same as production)
+  backend:
+    extends:
+      file: docker-compose.prod.yml
+      service: backend
+
+volumes:
+  postgres_data:
+  redis_data:
+  backup_data:
+
+networks:
+  errdb-network:
+    driver: bridge

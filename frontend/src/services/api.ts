@@ -188,6 +188,61 @@ class ApiClient {
       data,
     });
   }
+
+  // Admin endpoints
+  async getAdminStats() {
+    return this.request<{ stats: any }>({
+      method: 'get',
+      url: '/admin/dashboard/stats',
+    });
+  }
+
+  async getAdminUsers(params?: { page?: number; limit?: number; search?: string; role?: string }) {
+    return this.request<{ users: any[]; pagination: any }>({
+      method: 'get',
+      url: '/admin/users',
+      params,
+    });
+  }
+
+  async getAdminSolutions(params?: { page?: number; limit?: number; status?: string }) {
+    return this.request<{ solutions: any[]; pagination: any }>({
+      method: 'get',
+      url: '/admin/solutions/moderation',
+      params,
+    });
+  }
+
+  async bulkModerateSolutions(data: { solutionIds: string[]; action: string }) {
+    return this.request<{ count: number; message: string }>({
+      method: 'post',
+      url: '/admin/solutions/bulk-moderation',
+      data,
+    });
+  }
+
+  async getAdminApplications() {
+    return this.request<{ applications: any[] }>({
+      method: 'get',
+      url: '/admin/applications/stats',
+    });
+  }
+
+  async getAdminLogs(params?: { page?: number; limit?: number; search?: string; level?: string }) {
+    return this.request<{ logs: any[]; pagination: any }>({
+      method: 'get',
+      url: '/admin/system/logs',
+      params,
+    });
+  }
+
+  async exportData(type: string, format: string = 'json') {
+    return this.request<any>({
+      method: 'get',
+      url: `/admin/export/${type}`,
+      params: { format },
+    });
+  }
 }
 
 export const api = new ApiClient();

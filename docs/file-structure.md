@@ -222,16 +222,16 @@ JWT_SECRET="your-secret-key"
 JWT_REFRESH_SECRET="your-refresh-secret"
 
 # Server
-PORT=3001
+PORT=3010
 NODE_ENV=development
 
 # CORS
-FRONTEND_URL="http://localhost:3000"
+FRONTEND_URL="http://localhost:3005"
 ```
 
 ### Frontend (.env)
 ```env
-VITE_API_BASE_URL="http://localhost:3001/api"
+VITE_API_BASE_URL="http://localhost:3010/api"
 VITE_APP_NAME="Error Database"
 ```
 

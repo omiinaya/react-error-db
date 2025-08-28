@@ -1,0 +1,165 @@
+version: '3.8'
+
+services:
+  # Load balancer (Nginx)
+  load-balancer:
+    image: nginx:alpine
+    container_name: errdb-load-balancer
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-load-balancer.conf:/etc/nginx/nginx.conf
+      - ./ssl/certs:/etc/ssl/certs
+      - ./ssl/private:/etc/ssl/private
+    networks:
+      - errdb-network
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  # Backend API (multiple instances)
+  backend:
+    image: errdb-backend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-errdb}
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - FRONTEND_URL=${FRONTEND_URL:-https://your-domain.com}
+      - PORT=3010
+    volumes:
+      - ./backend/prisma:/app/backend/prisma
+    networks:
+      - errdb-network
+    restart: unless-stopped
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+  # PostgreSQL database with replication
+  postgres:
+    image: postgres:15-alpine
+    container_name: errdb-postgres-primary
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-errdb}
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_REPLICATION_USER: ${POSTGRES_REPLICATION_USER:-repl_user}
+      POSTGRES_REPLICATION_PASSWORD: ${POSTGRES_REPLICATION_PASSWORD:-repl_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - errdb-network
+    restart: unless-stopped
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+  # PostgreSQL replica (read-only)
+  postgres-replica:
+    image: postgres:15-alpine
+    container_name: errdb-postgres-replica
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-errdb}
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_REPLICATION_USER: ${POSTGRES_REPLICATION_USER:-repl_user}
+      POSTGRES_REPLICATION_PASSWORD: ${POSTGRES_REPLICATION_PASSWORD:-repl_password}
+    command: >
+      bash -c "
+      echo \"host replication all 0.0.0.0/0 md5\" >> /var/lib/postgresql/data/pg_hba.conf &&
+      docker-entrypoint.sh postgres -c hot_standby=on -c max_standby_streaming_delay=30s
+      "
+    volumes:
+      - postgres_replica_data:/var/lib/postgresql/data
+    networks:
+      - errdb-network
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
+  # Redis cluster
+  redis:
+    image: redis:7-alpine
+    container_name: errdb-redis-primary
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - errdb-network
+    restart: unless-stopped
+    deploy:
+      replicas: 1
+
+  redis-replica:
+    image: redis:7-alpine
+    container_name: errdb-redis-replica
+    command: redis-server --appendonly yes --replica-of redis 6379
+    volumes:
+      - redis_replica_data:/data
+    networks:
+      - errdb-network
+    restart: unless-stopped
+    depends_on:
+      - redis
+    deploy:
+      replicas: 2
+
+  # Monitoring stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: errdb-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - errdb-network
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: errdb-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - errdb-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  postgres_replica_data:
+    driver: local
+  redis_data:
+    driver: local
+  redis_replica_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  errdb-network:
+    driver: overlay
+    attachable: true

@@ -1,0 +1,99 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'
+rule_files:
+  - "alert-rules.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Monitor Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    metrics_path: /metrics
+
+  # Monitor Node.js backend applications
+  - job_name: 'node-backend'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['backend:3001']
+    scrape_interval: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        regex: '(.*):.*'
+        replacement: '$1'
+
+  # Monitor Redis
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    metrics_path: /metrics
+    params:
+      format: ['prometheus']
+
+  # Monitor PostgreSQL
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    metrics_path: /metrics
+    params:
+      format: ['prometheus']
+
+  # Monitor Nginx
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:80']
+    metrics_path: /nginx_metrics
+
+  # Blackbox exporter for endpoint monitoring
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - http://backend:3001/api/health
+        - http://frontend:3000
+        - http://nginx:80
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # Monitor Docker containers
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['docker-engine:9323']
+    metrics_path: /metrics
+
+  # Monitor cAdvisor for container metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    metrics_path: /metrics
+
+# Remote write configuration (for long-term storage)
+remote_write:
+  - url: "http://thanos:10908/api/v1/receive"
+    queue_config:
+      max_samples_per_send: 1000
+      capacity: 10000
+      max_shards: 200
+
+# Remote read configuration
+remote_read:
+  - url: "http://thanos:10908/api/v1/read"
+    read_recent: true

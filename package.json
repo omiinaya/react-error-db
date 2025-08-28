@@ -17,18 +17,28 @@
     "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
     "start:backend": "cd backend && npm start",
     "start:frontend": "cd frontend && npm run preview",
-    "test": "npm run test:backend && npm run test:frontend",
+    "test": "npm run test:backend && npm run test:frontend && npm run test:e2e",
     "test:backend": "cd backend && npm test",
     "test:frontend": "cd frontend && npm test",
+    "test:coverage": "npm run test:backend:coverage && npm run test:frontend:coverage",
+    "test:backend:coverage": "cd backend && npm run test:coverage",
+    "test:frontend:coverage": "cd frontend && npm run test:coverage",
+    "test:e2e": "npx playwright test",
+    "test:e2e:ui": "npx playwright test --ui",
+    "test:e2e:debug": "npx playwright test --debug",
+    "test:e2e:ci": "npx playwright test --workers=1",
     "lint": "npm run lint:backend && npm run lint:frontend",
     "lint:backend": "cd backend && npm run lint",
     "lint:frontend": "cd frontend && npm run lint",
     "db:generate": "cd backend && npm run db:generate",
     "db:migrate": "cd backend && npm run db:migrate",
     "db:seed": "cd backend && npm run db:seed",
-    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "playwright:install": "npx playwright install",
+    "playwright:show-report": "npx playwright show-report"
   },
   "devDependencies": {
+    "@playwright/test": "^1.40.1",
     "concurrently": "^8.2.2"
   },
   "keywords": [

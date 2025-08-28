@@ -15,6 +15,13 @@ import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import Profile from '@/pages/Profile';
 
+// Admin Pages
+import AdminDashboard from '@/pages/admin/Dashboard';
+import UserManagement from '@/pages/admin/UserManagement';
+import ContentModeration from '@/pages/admin/ContentModeration';
+import ApplicationManagement from '@/pages/admin/ApplicationManagement';
+import SystemLogs from '@/pages/admin/SystemLogs';
+
 // Contexts
 import { AuthProvider } from '@/contexts/AuthContext';
 
@@ -59,6 +66,48 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Profile />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Admin Routes */}
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <ProtectedRoute requireAdmin>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/users"
+                element={
+                  <ProtectedRoute requireAdmin>
+                    <UserManagement />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/content"
+                element={
+                  <ProtectedRoute requireAdmin>
+                    <ContentModeration />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/applications"
+                element={
+                  <ProtectedRoute requireAdmin>
+                    <ApplicationManagement />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/logs"
+                element={
+                  <ProtectedRoute requireAdmin>
+                    <SystemLogs />
                   </ProtectedRoute>
                 }
               />

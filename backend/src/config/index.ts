@@ -17,7 +17,7 @@ const envSchema = z.object({
   JWT_REFRESH_SECRET: z.string().min(32),
   
   // Server
-  PORT: z.string().transform(Number).default('3001'),
+  PORT: z.string().transform(Number).default('3010'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   
   // CORS
@@ -34,6 +34,10 @@ const envSchema = z.object({
 
   // Logging
   LOG_LEVEL: z.enum(['error', 'warn', 'info', 'debug']).default('info'),
+
+  // Sentry
+  SENTRY_DSN: z.string().url().optional(),
+  SENTRY_ENVIRONMENT: z.string().default('development'),
 });
 
 // Validate environment variables
@@ -67,6 +71,10 @@ export const config = {
     max: env.data.RATE_LIMIT_MAX,
   },
   logLevel: env.data.LOG_LEVEL,
+  sentry: {
+    dsn: env.data.SENTRY_DSN,
+    environment: env.data.SENTRY_ENVIRONMENT,
+  },
 };
 
 export type Config = typeof config;

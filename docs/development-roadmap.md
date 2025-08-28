@@ -148,10 +148,10 @@
 
 5. **Start development servers**
    ```bash
-   # Backend (port 3001)
+   # Backend (port 3010)
    npm run dev
-   
-   # Frontend (port 3000)
+
+   # Frontend (port 3005)
    cd ../frontend
    npm run dev
    ```

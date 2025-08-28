@@ -3,16 +3,50 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
-import rateLimit from 'express-rate-limit';
+// rateLimit is used in middleware files, not directly here
 
 import { config } from './config';
 import { errorMiddleware } from './middleware/error.middleware';
+import {
+  securityMiddleware,
+  additionalSecurityHeaders,
+  securityLoggingMiddleware
+} from './middleware/security.middleware';
+import {
+  globalRateLimiter,
+  authRateLimiter,
+  apiRateLimiter,
+  adminRateLimiter,
+  healthCheckRateLimiter,
+  rateLimitExempt
+} from './middleware/rate-limiting.middleware';
 import { stream } from './utils/logger';
+import { metricsMiddleware } from './utils/metrics';
+import { sentryRequestHandler, sentryTracingMiddleware, sentryErrorHandler } from './utils/sentry';
+import { addRequestContext } from './utils/log-aggregation';
+import { uptimeMiddleware } from './utils/uptime-monitor';
 import routes from './routes';
 
 const app = express();
 
-// Security middleware
+// Sentry request handler (must be first)
+app.use(sentryRequestHandler);
+
+// Sentry tracing middleware
+app.use(sentryTracingMiddleware);
+
+// Security middleware (must be early in the chain)
+app.use(securityMiddleware);
+app.use(additionalSecurityHeaders);
+app.use(securityLoggingMiddleware);
+
+// Log aggregation context middleware
+app.use(addRequestContext);
+
+// Uptime monitoring middleware
+app.use(uptimeMiddleware);
+
+// Helmet security headers (complementary to our custom security middleware)
 app.use(helmet());
 
 // CORS configuration
@@ -21,13 +55,18 @@ app.use(cors({
   credentials: true,
 }));
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: config.nodeEnv === 'production' ? 100 : 1000, // limit each IP to requests per windowMs
-  message: 'Too many requests from this IP, please try again later.',
-});
-app.use(limiter);
+// Rate limiting exemptions
+app.use(rateLimitExempt);
+
+// Global rate limiting
+app.use(globalRateLimiter);
+
+// Specific rate limiters for different endpoints
+app.use('/api/auth', authRateLimiter);
+app.use('/api', apiRateLimiter);
+app.use('/api/admin', adminRateLimiter);
+app.use('/health', healthCheckRateLimiter);
+app.use('/api/health', healthCheckRateLimiter);
 
 // Compression middleware
 app.use(compression());
@@ -35,6 +74,9 @@ app.use(compression());
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Metrics middleware (must be before other middleware)
+app.use(metricsMiddleware);
 
 // Logging middleware
 app.use(morgan('combined', { stream }));
@@ -64,6 +106,7 @@ app.use('*', (_req, res) => {
 });
 
 // Error handling middleware (must be last)
+app.use(sentryErrorHandler);
 app.use(errorMiddleware);
 
 export default app;

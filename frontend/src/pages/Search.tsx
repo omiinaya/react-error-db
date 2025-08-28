@@ -15,7 +15,7 @@ const SearchPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [applicationFilter, setApplicationFilter] = useState(searchParams.get('application') || 'all');
-  const [severityFilter, setSeverityFilter] = useState(searchParams.get('severity') || '');
+  const [severityFilter, setSeverityFilter] = useState(searchParams.get('severity') || 'all');
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'recent');
 
   // Fetch applications for filter dropdown
@@ -34,7 +34,7 @@ const SearchPage: React.FC = () => {
       const params: any = {};
       if (searchQuery) params.search = searchQuery;
       if (applicationFilter && applicationFilter !== 'all') params.applicationId = applicationFilter;
-      if (severityFilter) params.severity = severityFilter;
+      if (severityFilter && severityFilter !== 'all') params.severity = severityFilter;
       if (sortBy) params.sort = sortBy;
       
       const response = await api.searchErrors(params);
@@ -52,7 +52,7 @@ const SearchPage: React.FC = () => {
     const params = new URLSearchParams();
     if (searchQuery) params.set('q', searchQuery);
     if (applicationFilter && applicationFilter !== 'all') params.set('application', applicationFilter);
-    if (severityFilter) params.set('severity', severityFilter);
+    if (severityFilter && severityFilter !== 'all') params.set('severity', severityFilter);
     if (sortBy) params.set('sort', sortBy);
     setSearchParams(params);
   };
@@ -72,7 +72,7 @@ const SearchPage: React.FC = () => {
   }, [applicationFilter, severityFilter, sortBy]);
 
   const severityOptions = [
-    { value: '', label: 'All Severities' },
+    { value: 'all', label: 'All Severities' },
     { value: 'low', label: 'Low' },
     { value: 'medium', label: 'Medium' },
     { value: 'high', label: 'High' },

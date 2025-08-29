@@ -208,7 +208,7 @@ setup_schedule() {
     echo -e "${BLUE}Setting up automated backup schedule...${NC}"
     
     # Create cron job for daily backups at 2 AM
-    local cron_job="0 2 * * * cd $(pwd) && ./scripts/database-backup.sh create >> ./backups/backup.log 2>&1"
+    local cron_job="0 2 * * * cd $(pwd) && ./database-backup.sh create >> ./backups/backup.log 2>&1"
     
     # Add to crontab
     (crontab -l 2>/dev/null | grep -v "database-backup.sh"; echo "$cron_job") | crontab -

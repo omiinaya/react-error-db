@@ -1,5 +1,4 @@
 import { logger } from './logger';
-import { captureMessage } from './sentry';
 import { config } from '../config';
 
 export interface UptimeMetrics {
@@ -100,7 +99,6 @@ export class UptimeMonitor {
       };
       
       this.addAlert(alert);
-      captureMessage(alert.message, alert.severity === 'critical' ? 'error' : 'warning');
     }
   }
 
@@ -122,7 +120,6 @@ export class UptimeMonitor {
       };
       
       this.addAlert(alert);
-      captureMessage(alert.message, alert.severity === 'critical' ? 'error' : 'warning');
     }
     
     // Reset counters for next period
@@ -144,7 +141,6 @@ export class UptimeMonitor {
       };
       
       this.addAlert(alert);
-      captureMessage(alert.message, 'error');
     }
     
     // Reset restart counter for next period

@@ -1,7 +1,6 @@
 import { createLogger, format, transports } from 'winston';
 import 'winston-daily-rotate-file';
 import { config } from '../config';
-import { captureException } from './sentry';
 
 const { combine, timestamp, printf, colorize, errors, json } = format;
 
@@ -126,7 +125,6 @@ class ElasticsearchTransport implements LogAggregationTransport {
       // });
     } catch (error) {
       console.error('Failed to send logs to Elasticsearch:', error);
-      captureException(error as Error, { context: 'elasticsearch_transport' });
     }
   }
 
@@ -165,7 +163,6 @@ class LokiTransport implements LogAggregationTransport {
       // });
     } catch (error) {
       console.error('Failed to send logs to Loki:', error);
-      captureException(error as Error, { context: 'loki_transport' });
     }
   }
 
@@ -199,7 +196,7 @@ export class LogAggregationManager {
     const promises = this.transports.map(transport => 
       transport.sendLog(log).catch(error => {
         console.error('Failed to send log to transport:', error);
-        captureException(error as Error, { context: 'log_aggregation', transport: transport.constructor.name });
+        console.error('Failed to send log to transport:', error);
       })
     );
 
@@ -210,7 +207,7 @@ export class LogAggregationManager {
     const promises = this.transports.map(transport => 
       transport.flush().catch(error => {
         console.error('Failed to flush transport:', error);
-        captureException(error as Error, { context: 'log_flush', transport: transport.constructor.name });
+        console.error('Failed to flush transport:', error);
       })
     );
 

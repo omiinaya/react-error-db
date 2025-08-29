@@ -4,6 +4,7 @@ export const errorCodeQuerySchema = z.object({
   applicationId: z.string().uuid('Invalid application ID').optional(),
   search: z.string().min(1, 'Search query cannot be empty').optional(),
   severity: z.enum(['low', 'medium', 'high', 'critical']).optional(),
+  sort: z.enum(['createdAt', 'views', 'title', 'recent']).optional(),
   page: z.string().transform(Number).pipe(z.number().min(1).default(1)).optional(),
   limit: z.string().transform(Number).pipe(z.number().min(1).max(100).default(20)).optional(),
 });

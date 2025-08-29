@@ -22,18 +22,12 @@ import {
 } from './middleware/rate-limiting.middleware';
 import { stream } from './utils/logger';
 import { metricsMiddleware } from './utils/metrics';
-import { sentryRequestHandler, sentryTracingMiddleware, sentryErrorHandler } from './utils/sentry';
 import { addRequestContext } from './utils/log-aggregation';
 import { uptimeMiddleware } from './utils/uptime-monitor';
 import routes from './routes';
 
 const app = express();
 
-// Sentry request handler (must be first)
-app.use(sentryRequestHandler);
-
-// Sentry tracing middleware
-app.use(sentryTracingMiddleware);
 
 // Security middleware (must be early in the chain)
 app.use(securityMiddleware);
@@ -49,9 +43,27 @@ app.use(uptimeMiddleware);
 // Helmet security headers (complementary to our custom security middleware)
 app.use(helmet());
 
-// CORS configuration
+// CORS configuration - allow local network access
 app.use(cors({
-  origin: config.frontendUrl,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    
+    // Allow localhost and common local network IP ranges
+    const allowedOrigins = [
+      /^http:\/\/localhost(:\d+)?$/,
+      /^http:\/\/127\.0\.0\.1(:\d+)?$/,
+      /^http:\/\/192\.168\.\d+\.\d+(:\d+)?$/,
+      /^http:\/\/172\.(1[6-9]|2[0-9]|3[0-1])\.\d+\.\d+(:\d+)?$/,
+      /^http:\/\/10\.\d+\.\d+\.\d+(:\d+)?$/
+    ];
+    
+    if (allowedOrigins.some(regex => regex.test(origin))) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 
@@ -106,7 +118,6 @@ app.use('*', (_req, res) => {
 });
 
 // Error handling middleware (must be last)
-app.use(sentryErrorHandler);
 app.use(errorMiddleware);
 
 export default app;

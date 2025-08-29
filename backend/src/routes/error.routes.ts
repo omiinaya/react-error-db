@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { errorCodeQuerySchema, createErrorCodeSchema, updateErrorCodeSchema } from '../schemas/error.schemas';
-import { validateRequest } from '../middleware/validation.middleware';
+import { validateRequest, validateQuery } from '../middleware/validation.middleware';
 import { authenticateToken, AuthenticatedRequest, optionalAuth, requireAdmin } from '../middleware/auth.middleware';
 import prisma from '../services/database.service';
 import { logger } from '../utils/logger';
@@ -8,12 +8,13 @@ import { logger } from '../utils/logger';
 const router = Router();
 
 // Search error codes with optional filtering and pagination
-router.get('/', validateRequest(errorCodeQuerySchema), async (req, res) => {
+router.get('/', validateQuery(errorCodeQuerySchema), async (req, res) => {
   try {
     const query = req.query as any;
     const applicationId = query.applicationId as string | undefined;
     const search = query.search as string | undefined;
     const severity = query.severity as string | undefined;
+    const sort = query.sort as string | undefined;
     const page = parseInt(query.page as string) || 1;
     const limit = parseInt(query.limit as string) || 20;
 
@@ -35,6 +36,15 @@ router.get('/', validateRequest(errorCodeQuerySchema), async (req, res) => {
       ];
     }
 
+    // Determine orderBy based on sort parameter
+    let orderBy: any = { createdAt: 'desc' };
+    
+    if (sort === 'views') {
+      orderBy = { viewCount: 'desc' };
+    } else if (sort === 'title') {
+      orderBy = { title: 'asc' };
+    }
+
     const [errorCodes, total] = await Promise.all([
       prisma.errorCode.findMany({
         where,
@@ -52,7 +62,7 @@ router.get('/', validateRequest(errorCodeQuerySchema), async (req, res) => {
             }
           }
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy,
         skip: (page - 1) * limit,
         take: limit,
       }),

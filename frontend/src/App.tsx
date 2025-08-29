@@ -14,6 +14,7 @@ import ErrorDetail from '@/pages/ErrorDetail';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import Profile from '@/pages/Profile';
+import ErrorCreate from '@/pages/ErrorCreate';
 
 // Admin Pages
 import AdminDashboard from '@/pages/admin/Dashboard';
@@ -71,6 +72,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/error/create"
+                element={
+                  <ProtectedRoute>
+                    <ErrorCreate />
                   </ProtectedRoute>
                 }
               />

@@ -127,10 +127,19 @@ const ErrorDetail: React.FC = () => {
       {/* Error Header */}
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-2">
+          {errorData.application.category ? (
+            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+              {errorData.application.category.name}
+            </Badge>
+          ) : (
+            <Badge variant="outline" className="bg-gray-50 text-gray-500 border-gray-200">
+              No Category
+            </Badge>
+          )}
           <Badge variant="secondary">{errorData.application.name}</Badge>
           <Badge variant={
-            errorData.severity === 'high' || errorData.severity === 'critical' 
-              ? 'destructive' 
+            errorData.severity === 'high' || errorData.severity === 'critical'
+              ? 'destructive'
               : errorData.severity === 'medium'
               ? 'default'
               : 'outline'

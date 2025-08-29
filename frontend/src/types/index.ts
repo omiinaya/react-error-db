@@ -59,6 +59,23 @@ export interface Category {
   icon?: string;
   parentId?: string | null;
   children?: Category[];
+  applicationCount?: number;
+}
+
+export interface CreateCategoryRequest {
+  name: string;
+  slug: string;
+  description?: string;
+  icon?: string;
+  parentId?: string | null;
+}
+
+export interface UpdateCategoryRequest {
+  name?: string;
+  slug?: string;
+  description?: string;
+  icon?: string;
+  parentId?: string | null;
 }
 
 // Application Types
@@ -69,8 +86,27 @@ export interface Application {
   description?: string;
   logoUrl?: string;
   categoryId: string;
+  category?: Category;
   websiteUrl?: string;
   errorCount: number;
+}
+
+export interface CreateApplicationRequest {
+  name: string;
+  slug: string;
+  description?: string;
+  logoUrl?: string;
+  categoryId: string;
+  websiteUrl?: string;
+}
+
+export interface UpdateApplicationRequest {
+  name?: string;
+  slug?: string;
+  description?: string;
+  logoUrl?: string;
+  categoryId?: string;
+  websiteUrl?: string;
 }
 
 // Error Code Types
@@ -81,6 +117,11 @@ export interface ErrorCode {
     id: string;
     name: string;
     slug: string;
+    category?: {
+      id: string;
+      name: string;
+      slug: string;
+    };
   };
   title: string;
   description: string;
@@ -97,6 +138,18 @@ export interface ErrorCode {
 
 export interface ErrorCodeDetail extends ErrorCode {
   solutions: Solution[];
+}
+
+export interface CreateErrorCodeRequest {
+  code: string;
+  applicationId: string;
+  title: string;
+  description?: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  metadata?: {
+    commonCauses?: string[];
+    [key: string]: any;
+  };
 }
 
 // Solution Types

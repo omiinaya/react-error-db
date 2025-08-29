@@ -211,14 +211,25 @@ const SearchPage: React.FC = () => {
                 <Card key={error.id} className="hover:shadow-md transition-shadow">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <Badge variant="secondary">{error.application.name}</Badge>
+                      <div className="flex items-center gap-2">
+                        {error.application.category ? (
+                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                            {error.application.category.name}
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="bg-gray-50 text-gray-500 border-gray-200 text-xs">
+                            No Category
+                          </Badge>
+                        )}
+                        <Badge variant="secondary">{error.application.name}</Badge>
+                      </div>
                       <div className="flex items-center text-sm text-muted-foreground">
                         <TrendingUp className="h-4 w-4 mr-1" />
                         {error.viewCount.toLocaleString()} views
                       </div>
                     </div>
                     <CardTitle className="text-xl">
-                      <Link 
+                      <Link
                         to={`/error/${error.id}`}
                         className="hover:text-primary transition-colors"
                       >
@@ -232,8 +243,8 @@ const SearchPage: React.FC = () => {
                     </p>
                     <div className="flex items-center justify-between">
                       <Badge variant={
-                        error.severity === 'high' || error.severity === 'critical' 
-                          ? 'destructive' 
+                        error.severity === 'high' || error.severity === 'critical'
+                          ? 'destructive'
                           : error.severity === 'medium'
                           ? 'default'
                           : 'outline'

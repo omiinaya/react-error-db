@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
-import { Search, User, LogOut, Menu, X } from 'lucide-react';
+import { Search, User, LogOut, Menu, X, Plus } from 'lucide-react';
 import { useState } from 'react';
 
 interface LayoutProps {
@@ -107,6 +107,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="flex items-center gap-4">
             {isAuthenticated ? (
               <>
+                <Link to="/error/create">
+                  <Button size="sm" className="hidden md:flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    Add Error
+                  </Button>
+                </Link>
                 <Link to="/profile">
                   <Button variant="ghost" size="sm" className="hidden md:flex items-center gap-2">
                     <User className="h-4 w-4" />
@@ -204,6 +210,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               
               {isAuthenticated ? (
                 <>
+                  <Link
+                    to="/error/create"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Add Error
+                  </Link>
                   <Link
                     to="/profile"
                     className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent"

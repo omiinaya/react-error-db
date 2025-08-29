@@ -1,13 +1,22 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 import toast from 'react-hot-toast';
-import { ApiResponse, ApiError } from '@/types';
+import {
+  ApiResponse,
+  ApiError,
+  CreateCategoryRequest,
+  UpdateCategoryRequest,
+  CreateApplicationRequest,
+  UpdateApplicationRequest,
+  CreateErrorCodeRequest
+} from '@/types';
+import { useAuthStore } from '@/store/authStore';
 
 class ApiClient {
   private client: AxiosInstance;
 
   constructor() {
     this.client = axios.create({
-      baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+      baseURL: (import.meta as any).env?.VITE_API_BASE_URL || '/api',
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json',
@@ -40,7 +49,7 @@ class ApiClient {
         }
         return response;
       },
-      (error: AxiosError<{ error?: ApiError }>) => {
+      async (error: AxiosError<{ error?: ApiError }>) => {
         const message = error.response?.data?.error?.message || error.message || 'An unexpected error occurred';
         
         // Show error toast for non-401 errors
@@ -48,10 +57,62 @@ class ApiClient {
           toast.error(message);
         }
 
-        // Handle token expiration
+        // Handle token expiration with automatic refresh
         if (error.response?.status === 401) {
+          const originalRequest = error.config;
+          
+          if (!originalRequest) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('refreshToken');
+            window.location.href = '/login';
+            return Promise.reject(error);
+          }
+          
+          // Check if this is a retry attempt to avoid infinite loops
+          if ((originalRequest as any)._retry) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('refreshToken');
+            window.location.href = '/login';
+            return Promise.reject(error);
+          }
+          
+          // Try to refresh the token
+          (originalRequest as any)._retry = true;
+          const refreshToken = localStorage.getItem('refreshToken');
+          
+          if (refreshToken) {
+            try {
+              const response = await axios.post(
+                `${(import.meta as any).env?.VITE_API_BASE_URL || '/api'}/auth/refresh`,
+                { refreshToken }
+              );
+              
+              if (response.data.success) {
+                const { token: newAccessToken, refreshToken: newRefreshToken } = response.data.data;
+                localStorage.setItem('token', newAccessToken);
+                localStorage.setItem('refreshToken', newRefreshToken);
+                
+                // Update auth store state with new tokens
+                const authStore = useAuthStore.getState();
+                authStore.setToken(newAccessToken);
+                authStore.setRefreshToken(newRefreshToken);
+                
+                // Retry the original request with new token
+                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+                return this.client.request(originalRequest);
+              }
+            } catch (refreshError) {
+              // Refresh failed, redirect to login
+              console.error('Token refresh failed:', refreshError);
+            }
+          }
+          
+          // If refresh fails or no refresh token, redirect to login
           localStorage.removeItem('token');
           localStorage.removeItem('user');
+          localStorage.removeItem('refreshToken');
           window.location.href = '/login';
         }
 
@@ -77,7 +138,7 @@ class ApiClient {
 
   // Auth endpoints
   async login(data: { email: string; password: string }) {
-    return this.request<{ user: any; token: string }>({
+    return this.request<{ user: any; token: string; refreshToken: string }>({
       method: 'post',
       url: '/auth/login',
       data,
@@ -85,7 +146,7 @@ class ApiClient {
   }
 
   async register(data: { email: string; username: string; password: string; displayName: string }) {
-    return this.request<{ user: any; token: string }>({
+    return this.request<{ user: any; token: string; refreshToken: string }>({
       method: 'post',
       url: '/auth/register',
       data,
@@ -115,6 +176,22 @@ class ApiClient {
     });
   }
 
+  async createCategory(data: CreateCategoryRequest) {
+    return this.request<{ category: any }>({
+      method: 'post',
+      url: '/categories',
+      data,
+    });
+  }
+
+  async updateCategory(id: string, data: UpdateCategoryRequest) {
+    return this.request<{ category: any }>({
+      method: 'put',
+      url: `/categories/${id}`,
+      data,
+    });
+  }
+
   // Applications endpoints
   async getApplications(params?: { categoryId?: string; search?: string; page?: number; limit?: number }) {
     return this.request<{ applications: any[]; meta?: any }>({
@@ -131,6 +208,22 @@ class ApiClient {
     });
   }
 
+  async createApplication(data: CreateApplicationRequest) {
+    return this.request<{ application: any }>({
+      method: 'post',
+      url: '/applications',
+      data,
+    });
+  }
+
+  async updateApplication(id: string, data: UpdateApplicationRequest) {
+    return this.request<{ application: any }>({
+      method: 'put',
+      url: `/applications/${id}`,
+      data,
+    });
+  }
+
   // Error codes endpoints
   async searchErrors(params?: { applicationId?: string; search?: string; severity?: string; page?: number; limit?: number; sort?: string }) {
     return this.request<{ errors: any[]; meta?: any }>({
@@ -144,6 +237,14 @@ class ApiClient {
     return this.request<{ error: any; solutions: any[] }>({
       method: 'get',
       url: `/errors/${id}`,
+    });
+  }
+
+  async createErrorCode(data: CreateErrorCodeRequest) {
+    return this.request<{ error: any }>({
+      method: 'post',
+      url: '/errors',
+      data,
     });
   }
 

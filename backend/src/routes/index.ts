@@ -2,6 +2,7 @@ import { Router } from 'express';
 import healthRoutes from './health.routes';
 import authRoutes from './auth.routes';
 import applicationRoutes from './application.routes';
+import categoryRoutes from './category.routes';
 import errorRoutes from './error.routes';
 import metricsRoutes from './metrics.routes';
 import solutionRoutes from './solution.routes';
@@ -33,6 +34,7 @@ router.use('/metrics', metricsRoutes);
 // API routes
 router.use('/auth', authRoutes);
 router.use('/applications', applicationRoutes);
+router.use('/categories', categoryRoutes);
 router.use('/errors', errorRoutes);
 router.use('/solutions', solutionRoutes);
 router.use('/users', userRoutes);

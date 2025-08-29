@@ -54,6 +54,13 @@ router.get('/', validateQuery(errorCodeQuerySchema), async (req, res) => {
               id: true,
               name: true,
               slug: true,
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                }
+              }
             }
           },
           _count: {
@@ -125,6 +132,13 @@ router.get('/:id', optionalAuth, async (req: AuthenticatedRequest, res) => {
             id: true,
             name: true,
             slug: true,
+            category: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              }
+            }
           }
         },
       }
@@ -235,6 +249,13 @@ router.post('/', authenticateToken, requireAdmin, validateRequest(createErrorCod
             id: true,
             name: true,
             slug: true,
+            category: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              }
+            }
           }
         }
       }
@@ -312,6 +333,13 @@ router.put('/:id', authenticateToken, requireAdmin, validateRequest(updateErrorC
             id: true,
             name: true,
             slug: true,
+            category: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              }
+            }
           }
         }
       }

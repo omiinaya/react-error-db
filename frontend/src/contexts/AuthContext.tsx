@@ -34,7 +34,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setLoading(true);
       const response = await api.login({ email, password });
-      storeLogin(response.user, response.token);
+      storeLogin(response.user, response.token, response.refreshToken);
     } catch (error) {
       throw error;
     } finally {
@@ -46,7 +46,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setLoading(true);
       const response = await api.register(data);
-      storeLogin(response.user, response.token);
+      storeLogin(response.user, response.token, response.refreshToken);
     } catch (error) {
       throw error;
     } finally {

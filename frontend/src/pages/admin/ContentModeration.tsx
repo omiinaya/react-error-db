@@ -28,6 +28,11 @@ interface SolutionForModeration {
     application: {
       name: string;
       slug: string;
+      category?: {
+        id: string;
+        name: string;
+        slug: string;
+      };
     };
   };
   verifiedBy: {
@@ -278,6 +283,15 @@ const ContentModeration: React.FC = () => {
                             <span>
                               {solution.error.application.name} - {solution.error.code}: {solution.error.title}
                             </span>
+                            {solution.error.application.category ? (
+                              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                                {solution.error.application.category.name}
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="bg-gray-50 text-gray-500 border-gray-200 text-xs">
+                                No Category
+                              </Badge>
+                            )}
                           </div>
                         </div>
 

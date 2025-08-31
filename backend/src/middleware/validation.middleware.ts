@@ -3,12 +3,13 @@ import { AnyZodObject, ZodError } from 'zod';
 import { logger } from '../utils/logger';
 
 export const validateRequest = (schema: AnyZodObject) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
     try {
       // Check if schema expects body structure or direct object
       const parsed = schema.parse(req.body);
       req.body = parsed; // Replace with validated data
       next();
+      return;
     } catch (error) {
       if (error instanceof ZodError) {
         const errors = error.errors.map((err) => ({
@@ -18,7 +19,7 @@ export const validateRequest = (schema: AnyZodObject) => {
 
         logger.warn('Validation error:', errors);
 
-        return res.status(400).json({
+        res.status(400).json({
           success: false,
           error: {
             code: 'VALIDATION_ERROR',
@@ -26,27 +27,30 @@ export const validateRequest = (schema: AnyZodObject) => {
             details: errors,
           },
         });
+        return;
       }
 
       logger.error('Unexpected validation error:', error);
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
         error: {
           code: 'SERVER_ERROR',
           message: 'Internal server error during validation',
         },
       });
+      return;
     }
   };
 };
 
 export const validateQuery = (schema: AnyZodObject) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
     try {
       // Validate query parameters
       const parsed = schema.parse(req.query);
       req.query = parsed; // Replace with validated data
       next();
+      return;
     } catch (error) {
       if (error instanceof ZodError) {
         const errors = error.errors.map((err) => ({
@@ -56,7 +60,7 @@ export const validateQuery = (schema: AnyZodObject) => {
 
         logger.warn('Query validation error:', errors);
 
-        return res.status(400).json({
+        res.status(400).json({
           success: false,
           error: {
             code: 'VALIDATION_ERROR',
@@ -64,16 +68,18 @@ export const validateQuery = (schema: AnyZodObject) => {
             details: errors,
           },
         });
+        return;
       }
 
       logger.error('Unexpected query validation error:', error);
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
         error: {
           code: 'SERVER_ERROR',
           message: 'Internal server error during query validation',
         },
       });
+      return;
     }
   };
 };

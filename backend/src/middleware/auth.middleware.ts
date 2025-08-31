@@ -18,19 +18,20 @@ export const authenticateToken = async (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
     if (!token) {
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         error: {
           code: 'UNAUTHORIZED',
           message: 'Access token required'
         }
       });
+      return;
     }
 
     // Verify JWT token
@@ -52,44 +53,48 @@ export const authenticateToken = async (
     });
 
     if (!user) {
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         error: {
           code: 'UNAUTHORIZED',
           message: 'User not found'
         }
       });
+      return;
     }
 
     // Attach user to request
     req.user = user;
     next();
+    return;
   } catch (error) {
     logger.error('Authentication error:', error);
     
     if (error instanceof jwt.JsonWebTokenError) {
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         error: {
           code: 'INVALID_TOKEN',
           message: 'Invalid or expired token'
         }
       });
+      return;
     }
 
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       error: {
         code: 'AUTH_ERROR',
         message: 'Authentication failed'
       }
     });
+    return;
   }
 };
 
 export const optionalAuth = async (
   req: AuthenticatedRequest,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
   try {
@@ -152,5 +157,5 @@ export const requireAdmin = (
     });
   }
 
-  next();
+  return next();
 };

@@ -8,6 +8,8 @@ import { api } from '@/services/api';
 import { Category, Application } from '@/types';
 import CreateCategoryDialog from './CreateCategoryDialog';
 import CreateApplicationDialog from './CreateApplicationDialog';
+import CategoryRequestDialog from './CategoryRequestDialog';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface CategoryApplicationSelectorProps {
   onApplicationSelect: (applicationId: string) => void;
@@ -19,16 +21,20 @@ const CategoryApplicationSelector: React.FC<CategoryApplicationSelectorProps> = 
   selectedApplicationId
 }) => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateCategoryOpen, setIsCreateCategoryOpen] = useState(false);
   const [isCreateApplicationOpen, setIsCreateApplicationOpen] = useState(false);
+  const [isRequestCategoryOpen, setIsRequestCategoryOpen] = useState(false);
 
   useEffect(() => {
+    console.log('CategoryApplicationSelector - Current user:', user);
+    console.log('User isAdmin:', user?.isAdmin);
     loadCategories();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (selectedCategoryId) {
@@ -79,6 +85,14 @@ const CategoryApplicationSelector: React.FC<CategoryApplicationSelectorProps> = 
     setIsCreateApplicationOpen(false);
   };
 
+  const handleCategoryRequestCreated = () => {
+    toast({
+      title: 'Request Submitted',
+      description: 'Your category request has been submitted for review by an administrator.',
+    });
+    setIsRequestCategoryOpen(false);
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -94,25 +108,47 @@ const CategoryApplicationSelector: React.FC<CategoryApplicationSelectorProps> = 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="category">Category</Label>
-          <Dialog open={isCreateCategoryOpen} onOpenChange={setIsCreateCategoryOpen}>
-            <DialogTrigger asChild>
-              <Button variant="link" size="sm" className="h-8 px-0">
-                + New Category
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New Category</DialogTitle>
-                <DialogDescription>
-                  Add a new category to organize applications and error codes.
-                </DialogDescription>
-              </DialogHeader>
-              <CreateCategoryDialog
-                onCategoryCreated={handleCategoryCreated}
-                onClose={() => setIsCreateCategoryOpen(false)}
-              />
-            </DialogContent>
-          </Dialog>
+          {user?.isAdmin ? (
+            <Dialog open={isCreateCategoryOpen} onOpenChange={setIsCreateCategoryOpen}>
+              <DialogTrigger asChild>
+                <Button variant="link" size="sm" className="h-8 px-0">
+                  + New Category
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Create New Category</DialogTitle>
+                  <DialogDescription>
+                    Add a new category to organize applications and error codes.
+                  </DialogDescription>
+                </DialogHeader>
+                <CreateCategoryDialog
+                  onCategoryCreated={handleCategoryCreated}
+                  onClose={() => setIsCreateCategoryOpen(false)}
+                />
+              </DialogContent>
+            </Dialog>
+          ) : (
+            <Dialog open={isRequestCategoryOpen} onOpenChange={setIsRequestCategoryOpen}>
+              <DialogTrigger asChild>
+                <Button variant="link" size="sm" className="h-8 px-0">
+                  + Request Category
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Request New Category</DialogTitle>
+                  <DialogDescription>
+                    Submit a request for a new category. An administrator will review your request.
+                  </DialogDescription>
+                </DialogHeader>
+                <CategoryRequestDialog
+                  onRequestCreated={handleCategoryRequestCreated}
+                  onClose={() => setIsRequestCategoryOpen(false)}
+                />
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
         <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId}>
           <SelectTrigger>

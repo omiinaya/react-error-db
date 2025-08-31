@@ -2,12 +2,11 @@ import { Router } from 'express';
 import { authenticateToken, AuthenticatedRequest, requireAdmin } from '../middleware/auth.middleware';
 import prisma from '../services/database.service';
 import { logger } from '../utils/logger';
-import { z } from 'zod';
 
 const router = Router();
 
 // Admin Dashboard Statistics
-router.get('/dashboard/stats', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res) => {
+router.get('/dashboard/stats', authenticateToken, requireAdmin, async (_req: AuthenticatedRequest, res) => {
   try {
     const [
       totalUsers,
@@ -17,7 +16,7 @@ router.get('/dashboard/stats', authenticateToken, requireAdmin, async (req: Auth
       unverifiedSolutions,
       activeUsersLast24h,
       newUsersLast24h,
-      systemHealth
+      _systemHealth
     ] = await Promise.all([
       prisma.user.count(),
       prisma.application.count(),
@@ -282,9 +281,18 @@ router.post('/solutions/bulk-moderation', authenticateToken, requireAdmin, async
           id: { in: solutionIds }
         }
       });
+    } else {
+      // Handle unexpected action
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid action'
+        }
+      });
     }
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         action,
@@ -294,7 +302,7 @@ router.post('/solutions/bulk-moderation', authenticateToken, requireAdmin, async
     });
   } catch (error) {
     logger.error('Admin bulk moderation error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -307,7 +315,7 @@ router.post('/solutions/bulk-moderation', authenticateToken, requireAdmin, async
 // Get system logs (placeholder - integrate with your logging system)
 router.get('/system/logs', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res) => {
   try {
-    const { page = 1, limit = 50, level, search } = req.query;
+    const { page = 1, limit = 50 } = req.query;
     
     // This is a placeholder - you should integrate with your actual logging system
     const logs: any[] = [];
@@ -338,7 +346,7 @@ router.get('/system/logs', authenticateToken, requireAdmin, async (req: Authenti
 });
 
 // Get application statistics
-router.get('/applications/stats', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res) => {
+router.get('/applications/stats', authenticateToken, requireAdmin, async (_req: AuthenticatedRequest, res) => {
   try {
     const applications = await prisma.application.findMany({
       include: {
@@ -449,24 +457,25 @@ router.get('/export/:type', authenticateToken, requireAdmin, async (req: Authent
     if (format === 'csv') {
       // Simple CSV conversion (you might want to use a library for complex data)
       const headers = Object.keys(data[0] || {}).join(',');
-      const rows = data.map((item: any) => 
-        Object.values(item).map(val => 
+      const rows = data.map((item: any) =>
+        Object.values(item).map(val =>
           typeof val === 'string' ? `"${val.replace(/"/g, '""')}"` : val
         ).join(',')
       ).join('\n');
       
       res.setHeader('Content-Type', 'text/csv');
       res.setHeader('Content-Disposition', `attachment; filename=${type}-export-${Date.now()}.csv`);
-      return res.send(`${headers}\n${rows}`);
+      res.send(`${headers}\n${rows}`);
+      return;
     }
 
-    res.json({
+    return res.json({
       success: true,
       data
     });
   } catch (error) {
     logger.error('Admin export error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',

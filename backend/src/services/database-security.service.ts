@@ -9,7 +9,6 @@ import { config } from '../config';
 export class DatabaseSecurityService {
   private prisma: PrismaClient;
   private readonly MAX_CONNECTIONS = config.database.poolMax;
-  private readonly IDLE_TIMEOUT = config.database.idleTimeout;
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;

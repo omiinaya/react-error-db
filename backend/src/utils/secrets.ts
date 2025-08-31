@@ -157,7 +157,7 @@ export class SecretManager {
   public getSecretsNeedingRotation(): string[] {
     const needsRotation: string[] = [];
     
-    for (const [key, secret] of this.secrets.entries()) {
+    for (const [key, _secret] of this.secrets.entries()) {
       if (this.needsRotation(key)) {
         needsRotation.push(key);
       }
@@ -180,11 +180,16 @@ export class SecretManager {
       return null;
     }
 
-    return {
+    const result: { rotatedAt: Date; expiresAt?: Date; needsRotation: boolean } = {
       rotatedAt: secret.rotatedAt,
-      expiresAt: secret.expiresAt || undefined,
       needsRotation: this.needsRotation(key),
     };
+    
+    if (secret.expiresAt !== undefined) {
+      result.expiresAt = secret.expiresAt;
+    }
+    
+    return result;
   }
 
   /**
@@ -269,7 +274,7 @@ export class SecretManager {
   /**
    * Export secrets for backup (encrypted)
    */
-  public exportSecrets(encryptionKey: string): string {
+  public exportSecrets(_encryptionKey: string): string {
     const secretsData = Object.fromEntries(this.secrets);
     const jsonData = JSON.stringify(secretsData);
     
@@ -281,7 +286,7 @@ export class SecretManager {
   /**
    * Import secrets from backup
    */
-  public importSecrets(encryptedData: string, decryptionKey: string): boolean {
+  public importSecrets(encryptedData: string, _decryptionKey: string): boolean {
     try {
       // Simple base64 decoding for demonstration
       // In production, use proper decryption

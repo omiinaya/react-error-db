@@ -5,22 +5,21 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { api } from '@/services/api';
-import { CreateCategoryRequest } from '@/types';
+import { CreateCategoryRequestInput } from '@/types';
 
-interface CreateCategoryDialogProps {
-  onCategoryCreated: (category: any) => void;
+interface CategoryRequestDialogProps {
+  onRequestCreated: (request: any) => void;
   onClose: () => void;
 }
 
-const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({ onCategoryCreated, onClose }) => {
+const CategoryRequestDialog: React.FC<CategoryRequestDialogProps> = ({ onRequestCreated, onClose }) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState<CreateCategoryRequest>({
+  const [formData, setFormData] = useState<CreateCategoryRequestInput>({
     name: '',
     slug: '',
     description: '',
-    icon: '',
-    sortOrder: 0
+    icon: ''
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -32,23 +31,10 @@ const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({ onCategoryC
   };
 
   const generateSlug = (name: string) => {
-    let slug = name
+    return name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
-    
-    // Handle cases where slug becomes too short after processing
-    if (slug.length < 2) {
-      // For short names, use the full lowercase name with numbers if needed
-      slug = name.toLowerCase().replace(/[^a-z0-9]/g, '');
-      
-      // If still too short, append a number to make it valid
-      if (slug.length < 2) {
-        slug = slug + '1';
-      }
-    }
-    
-    return slug;
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,9 +48,8 @@ const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({ onCategoryC
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    e.stopPropagation(); // Additional protection against event bubbling
+    e.stopPropagation();
     
-    // Manual validation instead of relying on browser validation
     if (!formData.name.trim()) {
       toast({
         title: 'Validation Error',
@@ -83,27 +68,18 @@ const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({ onCategoryC
       return;
     }
 
-    if (formData.slug.length < 2) {
-      toast({
-        title: 'Validation Error',
-        description: 'Slug must be at least 2 characters long',
-        variant: 'destructive'
-      });
-      return;
-    }
-
     setIsSubmitting(true);
     try {
-      const response = await api.createCategory(formData);
-      onCategoryCreated(response.category);
+      const response = await api.createCategoryRequest(formData);
+      onRequestCreated(response.categoryRequest);
       toast({
         title: 'Success',
-        description: 'Category created successfully'
+        description: 'Category request submitted successfully. It will be reviewed by an administrator.',
       });
     } catch (error: any) {
       toast({
         title: 'Error',
-        description: error.response?.data?.error?.message || 'Failed to create category',
+        description: error.response?.data?.error?.message || 'Failed to submit category request',
         variant: 'destructive'
       });
     } finally {
@@ -175,11 +151,11 @@ const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({ onCategoryC
           Cancel
         </Button>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Creating...' : 'Create Category'}
+          {isSubmitting ? 'Submitting...' : 'Submit Request'}
         </Button>
       </div>
     </form>
   );
 };
 
-export default CreateCategoryDialog;
+export default CategoryRequestDialog;

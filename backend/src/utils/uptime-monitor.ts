@@ -1,5 +1,4 @@
 import { logger } from './logger';
-import { config } from '../config';
 
 export interface UptimeMetrics {
   startTime: Date;
@@ -240,7 +239,7 @@ export class UptimeMonitor {
 export const uptimeMonitor = new UptimeMonitor();
 
 // Middleware to track request metrics
-export const uptimeMiddleware = (req: any, res: any, next: any) => {
+export const uptimeMiddleware = (_req: any, res: any, next: any) => {
   const startTime = Date.now();
   
   res.on('finish', () => {

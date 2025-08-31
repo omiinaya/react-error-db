@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { CheckCircle, XCircle, Trash2, Search, FileText, User, AlertTriangle } from 'lucide-react';
+import { CheckCircle, XCircle, Trash2, FileText, User, AlertTriangle } from 'lucide-react';
 
 interface SolutionForModeration {
   id: string;
@@ -121,13 +121,6 @@ const ContentModeration: React.FC = () => {
     );
   };
 
-  const selectAllSolutions = () => {
-    if (selectedSolutions.length === solutions.length) {
-      setSelectedSolutions([]);
-    } else {
-      setSelectedSolutions(solutions.map(s => s.id));
-    }
-  };
 
   if (!user?.isAdmin) {
     return (

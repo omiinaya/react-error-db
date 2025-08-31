@@ -104,7 +104,7 @@ router.get('/', validateQuery(categoryQuerySchema), async (req, res) => {
 
     const totalPages = Math.ceil(total / limit);
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         categories: categoriesWithCounts,
@@ -120,7 +120,7 @@ router.get('/', validateQuery(categoryQuerySchema), async (req, res) => {
     });
   } catch (error) {
     logger.error('Get categories error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -179,7 +179,7 @@ router.get('/:id', async (req, res) => {
       applicationCount
     };
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         category: categoryWithCount
@@ -187,7 +187,7 @@ router.get('/:id', async (req, res) => {
     });
   } catch (error) {
     logger.error('Get category by ID error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -254,7 +254,7 @@ router.post('/', authenticateToken, requireAdmin, validateRequest(createCategory
       }
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: {
         category: {
@@ -265,7 +265,7 @@ router.post('/', authenticateToken, requireAdmin, validateRequest(createCategory
     });
   } catch (error) {
     logger.error('Create category error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -383,7 +383,7 @@ router.put('/:id', authenticateToken, requireAdmin, validateRequest(updateCatego
       applicationCount
     };
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         category: categoryWithCount
@@ -391,7 +391,7 @@ router.put('/:id', authenticateToken, requireAdmin, validateRequest(updateCatego
     });
   } catch (error) {
     logger.error('Update category error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -444,7 +444,7 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req: Authenticated
       where: { id: id as string }
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         message: 'Category deleted successfully'
@@ -452,7 +452,7 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req: Authenticated
     });
   } catch (error) {
     logger.error('Delete category error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -521,7 +521,7 @@ router.get('/:id/applications', async (req, res) => {
       errorCount: errorCountMap.get(app.id) || 0
     }));
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         category: {
@@ -534,7 +534,7 @@ router.get('/:id/applications', async (req, res) => {
     });
   } catch (error) {
     logger.error('Get category applications error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',

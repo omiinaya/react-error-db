@@ -75,7 +75,7 @@ router.get('/', validateRequest(applicationQuerySchema), async (req, res) => {
 
     const totalPages = Math.ceil(total / limit);
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         applications: applicationsWithCount,
@@ -91,7 +91,7 @@ router.get('/', validateRequest(applicationQuerySchema), async (req, res) => {
     });
   } catch (error) {
     logger.error('Get applications error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -139,7 +139,7 @@ router.get('/:slug', async (req, res) => {
       errorCount
     };
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         application: applicationWithCount
@@ -147,7 +147,7 @@ router.get('/:slug', async (req, res) => {
     });
   } catch (error) {
     logger.error('Get application by slug error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -197,7 +197,7 @@ router.post('/', authenticateToken, requireAdmin, validateRequest(createApplicat
       }
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: {
         application: {
@@ -208,7 +208,7 @@ router.post('/', authenticateToken, requireAdmin, validateRequest(createApplicat
     });
   } catch (error) {
     logger.error('Create application error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -286,7 +286,7 @@ router.put('/:id', authenticateToken, requireAdmin, validateRequest(updateApplic
       errorCount
     };
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         application: applicationWithCount
@@ -294,7 +294,7 @@ router.put('/:id', authenticateToken, requireAdmin, validateRequest(updateApplic
     });
   } catch (error) {
     logger.error('Update application error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',

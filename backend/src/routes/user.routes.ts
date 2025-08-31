@@ -78,7 +78,7 @@ router.get('/:userId', async (req, res) => {
       })
     ]);
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         user: {
@@ -96,7 +96,7 @@ router.get('/:userId', async (req, res) => {
     });
   } catch (error) {
     logger.error('Get user profile error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -127,7 +127,7 @@ router.put('/me', authenticateToken, validateRequest(updateProfileSchema), async
       }
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         user
@@ -135,7 +135,7 @@ router.put('/me', authenticateToken, validateRequest(updateProfileSchema), async
     });
   } catch (error) {
     logger.error('Update user profile error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -146,7 +146,7 @@ router.put('/me', authenticateToken, validateRequest(updateProfileSchema), async
 });
 
 // Get all users (Admin only)
-router.get('/', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res) => {
+router.get('/', authenticateToken, requireAdmin, async (_req: AuthenticatedRequest, res) => {
   try {
     const users = await prisma.user.findMany({
       select: {
@@ -173,7 +173,7 @@ router.get('/', authenticateToken, requireAdmin, async (req: AuthenticatedReques
       _count: undefined
     }));
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         users: usersWithStats
@@ -181,7 +181,7 @@ router.get('/', authenticateToken, requireAdmin, async (req: AuthenticatedReques
     });
   } catch (error) {
     logger.error('Get all users error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -212,7 +212,7 @@ router.put('/:userId/role', authenticateToken, requireAdmin, async (req: Authent
       }
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         user
@@ -220,7 +220,7 @@ router.put('/:userId/role', authenticateToken, requireAdmin, async (req: Authent
     });
   } catch (error) {
     logger.error('Update user role error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -265,13 +265,13 @@ router.delete('/:userId', authenticateToken, requireAdmin, async (req: Authentic
       where: { id: userId as string }
     });
 
-    res.json({
+    return res.json({
       success: true,
       message: 'User deleted successfully'
     });
   } catch (error) {
     logger.error('Delete user error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',

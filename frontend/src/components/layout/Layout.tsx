@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
-import { Search, User, LogOut, Menu, X, Plus } from 'lucide-react';
+import { Search, User, LogOut, Menu, X, Plus, Settings } from 'lucide-react';
 import { useState } from 'react';
 
 interface LayoutProps {
@@ -33,13 +33,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Browse', href: '/search', current: location.pathname === '/search' },
   ];
 
-  const adminNavigation = [
-    { name: 'Dashboard', href: '/admin/dashboard', current: location.pathname === '/admin/dashboard' },
-    { name: 'Users', href: '/admin/users', current: location.pathname === '/admin/users' },
-    { name: 'Content', href: '/admin/content', current: location.pathname === '/admin/content' },
-    { name: 'Applications', href: '/admin/applications', current: location.pathname === '/admin/applications' },
-    { name: 'Logs', href: '/admin/logs', current: location.pathname === '/admin/logs' },
-  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -69,22 +62,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </Link>
               ))}
               
-              {/* Admin Navigation */}
+              {/* Admin Settings Button */}
               {isAuthenticated && user?.isAdmin && (
-                <div className="flex items-center space-x-6 border-l border-border pl-6 ml-6">
-                  <span className="text-xs font-semibold text-muted-foreground">Admin</span>
-                  {adminNavigation.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      className={`text-sm font-medium transition-colors hover:text-primary ${
-                        item.current ? 'text-primary' : 'text-muted-foreground'
-                      }`}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
+                <Link
+                  to="/admin"
+                  className="text-sm font-medium transition-colors hover:text-primary text-muted-foreground"
+                >
+                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    Admin Settings
+                  </Button>
+                </Link>
               )}
             </nav>
           </div>
@@ -191,20 +179,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     Admin
                   </div>
-                  {adminNavigation.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                        item.current
-                          ? 'bg-accent text-accent-foreground'
-                          : 'text-muted-foreground hover:text-primary hover:bg-accent'
-                      }`}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
+                  <Link
+                    to="/admin"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Admin Settings
+                  </Link>
                 </>
               )}
               

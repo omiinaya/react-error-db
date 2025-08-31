@@ -84,7 +84,7 @@ export const addBreadcrumb = (breadcrumb: Sentry.Breadcrumb) => {
 };
 
 // Performance monitoring - start transaction
-export const startTransaction = (name: string, context?: Partial<Sentry.TransactionContext>) => {
+export const startTransaction = (name: string, context?: Partial<any>) => {
   return Sentry.startTransaction({
     name,
     ...context,
@@ -107,7 +107,7 @@ export const closeSentry = async () => {
 };
 
 // Error handler middleware for Express
-export const sentryErrorHandler = Sentry.Handlers.errorHandler();
+export const sentryErrorHandler: any = Sentry.Handlers.errorHandler();
 
 // Request handler middleware for Express
 export const sentryRequestHandler = Sentry.Handlers.requestHandler();
@@ -177,7 +177,8 @@ export const monitorFunction = <T extends (...args: any[]) => any>(
   }) as T;
 };
 
-export default {
+// Export individual functions instead of default export to avoid type issues
+export const sentryUtils = {
   initSentry,
   captureException,
   captureMessage,

@@ -136,7 +136,7 @@ export const additionalSecurityHeaders = (req: Request, res: Response, next: Nex
 /**
  * Rate limiting configuration per endpoint
  */
-export const endpointSpecificRateLimiting = (req: Request, res: Response, next: NextFunction) => {
+export const endpointSpecificRateLimiting = (req: Request, _res: Response, next: NextFunction) => {
   // Stricter rate limits for authentication endpoints
   if (req.path.includes('/auth')) {
     req.rateLimit = {
@@ -167,7 +167,7 @@ export const endpointSpecificRateLimiting = (req: Request, res: Response, next: 
 /**
  * Security logging middleware
  */
-export const securityLoggingMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const securityLoggingMiddleware = (req: Request, _res: Response, next: NextFunction) => {
   const securityRelevantHeaders = [
     'x-forwarded-for',
     'user-agent',
@@ -234,7 +234,7 @@ export const ctReportHandler = (req: Request, res: Response) => {
 /**
  * Security headers test endpoint
  */
-export const securityHeadersTest = (req: Request, res: Response) => {
+export const securityHeadersTest = (_req: Request, res: Response) => {
   res.json({
     success: true,
     data: {

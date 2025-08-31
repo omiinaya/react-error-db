@@ -68,6 +68,7 @@ export interface CreateCategoryRequest {
   description?: string;
   icon?: string;
   parentId?: string | null;
+  sortOrder?: number;
 }
 
 export interface UpdateCategoryRequest {
@@ -76,6 +77,52 @@ export interface UpdateCategoryRequest {
   description?: string;
   icon?: string;
   parentId?: string | null;
+}
+
+// Category Request Types
+export interface CategoryRequest {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  icon?: string;
+  parentId?: string | null;
+  status: 'pending' | 'approved' | 'rejected';
+  reason?: string;
+  requestedById: string;
+  reviewedById?: string;
+  reviewedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  requestedBy?: {
+    id: string;
+    username: string;
+    displayName: string;
+  };
+  reviewedBy?: {
+    id: string;
+    username: string;
+    displayName: string;
+  };
+  parent?: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+}
+
+export interface CreateCategoryRequestInput {
+  name: string;
+  slug: string;
+  description?: string;
+  icon?: string;
+  parentId?: string | null;
+  sortOrder?: number;
+}
+
+export interface UpdateCategoryRequestStatusInput {
+  status: 'approved' | 'rejected';
+  reason?: string;
 }
 
 // Application Types

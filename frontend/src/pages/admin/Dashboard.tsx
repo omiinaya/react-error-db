@@ -4,13 +4,11 @@ import { api } from '@/services/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  Users, 
-  FileText, 
-  AlertTriangle, 
-  CheckCircle, 
-  Activity, 
-  TrendingUp,
+import {
+  Users,
+  FileText,
+  AlertTriangle,
+  Activity,
   Shield,
   Database
 } from 'lucide-react';

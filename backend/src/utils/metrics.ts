@@ -168,7 +168,7 @@ export const trackCacheMiss = (key: string) => {
 };
 
 // Metrics endpoint handler
-export const metricsHandler = async (req: Request, res: Response) => {
+export const metricsHandler = async (_req: Request, res: Response) => {
   try {
     res.set('Content-Type', register.contentType);
     const metrics = await register.metrics();

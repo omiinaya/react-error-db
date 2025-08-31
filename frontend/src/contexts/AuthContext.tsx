@@ -63,6 +63,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(true);
       const response = await api.getCurrentUser();
       setUser(response.user);
+      
+      // Log user admin status for debugging
+      console.log('User refreshed - Admin status:', response.user.isAdmin ? 'ADMIN' : 'NOT ADMIN');
     } catch (error) {
       storeLogout();
     } finally {

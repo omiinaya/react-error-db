@@ -69,7 +69,7 @@ router.post('/register', validateRequest(registerSchema), async (req, res) => {
       }
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: {
         user,
@@ -79,7 +79,7 @@ router.post('/register', validateRequest(registerSchema), async (req, res) => {
     });
   } catch (error) {
     logger.error('Registration error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'REGISTRATION_FAILED',
@@ -148,7 +148,7 @@ router.post('/login', validateRequest(loginSchema), async (req, res) => {
     // Remove password hash from response
     const { passwordHash, ...userWithoutPassword } = user;
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         user: userWithoutPassword,
@@ -158,7 +158,7 @@ router.post('/login', validateRequest(loginSchema), async (req, res) => {
     });
   } catch (error) {
     logger.error('Login error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'LOGIN_FAILED',
@@ -208,7 +208,7 @@ router.post('/refresh', validateRequest(refreshTokenSchema), async (req, res) =>
       }
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         token: newAccessToken,
@@ -217,7 +217,7 @@ router.post('/refresh', validateRequest(refreshTokenSchema), async (req, res) =>
     });
   } catch (error) {
     logger.error('Refresh token error:', error);
-    res.status(401).json({
+    return res.status(401).json({
       success: false,
       error: {
         code: 'INVALID_REFRESH_TOKEN',
@@ -245,13 +245,13 @@ router.get('/me', authenticateToken, async (req: AuthenticatedRequest, res) => {
       }
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: { user }
     });
   } catch (error) {
     logger.error('Get current user error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -277,13 +277,13 @@ router.post('/logout', authenticateToken, async (req: AuthenticatedRequest, res)
       });
     }
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Logged out successfully'
     });
   } catch (error) {
     logger.error('Logout error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'LOGOUT_FAILED',

@@ -2,7 +2,7 @@ import { createLogger, format, transports } from 'winston';
 import 'winston-daily-rotate-file';
 import { config } from '../config';
 
-const { combine, timestamp, printf, colorize, errors, json } = format;
+const { combine, timestamp, printf, colorize, errors } = format;
 
 // JSON log format for structured logging
 const jsonFormat = printf(({ level, message, timestamp, ...metadata }) => {
@@ -147,7 +147,7 @@ class ElasticsearchTransport implements LogAggregationTransport {
 class LokiTransport implements LogAggregationTransport {
   constructor(private readonly endpoint: string) {}
 
-  async sendLog(log: any): Promise<void> {
+  async sendLog(_log: any): Promise<void> {
     try {
       // In a real implementation, this would send logs to Loki
       console.log(`[Loki] Would send log to ${this.endpoint}`);
@@ -289,7 +289,7 @@ export const aggregatedLogger = {
 };
 
 // Middleware to add request context to logs
-export const addRequestContext = (req: any, res: any, next: any) => {
+export const addRequestContext = (req: any, _res: any, next: any) => {
   const requestId = req.headers['x-request-id'] || Math.random().toString(36).substring(7);
   
   structuredLogger.defaultMeta = {

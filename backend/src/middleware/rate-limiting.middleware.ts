@@ -33,9 +33,10 @@ export const initRedisRateLimiting = async (): Promise<void> => {
  * Get the appropriate rate limit store
  */
 const getRateLimitStore = () => {
-  // For now, use memory store only
+  // For now, use memory store only (return undefined to use default memory store)
   // Redis store requires additional dependency and configuration
-  return undefined;
+  // Return undefined to use the default in-memory store
+  return undefined as any; // Cast to any to avoid exactOptionalPropertyTypes issues
 };
 
 /**
@@ -293,7 +294,7 @@ export const dynamicRateLimiter = (options: {
 /**
  * Middleware to exempt certain endpoints from rate limiting
  */
-export const rateLimitExempt = (req: any, res: any, next: any) => {
+export const rateLimitExempt = (req: any, _res: any, next: any) => {
   // Exempt health checks from rate limiting
   if (req.path === '/health' || req.path.startsWith('/api/health')) {
     return next();

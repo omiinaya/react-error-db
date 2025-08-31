@@ -24,13 +24,13 @@ router.get('/', (_req, res) => {
       ...secretManager.getSecretMetadata(key),
     }));
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: metadata,
     });
   } catch (error) {
     logger.error('Failed to get secret keys:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to retrieve secret keys',
     });
@@ -61,13 +61,13 @@ router.get('/:key',
       }
 
       // Return metadata only, not the actual secret value
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         data: metadata,
       });
     } catch (error) {
       logger.error('Failed to get secret metadata:', error);
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         error: 'Failed to retrieve secret metadata',
       });
@@ -103,7 +103,7 @@ router.post('/:key/rotate',
         });
       }
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: 'Secret rotated successfully',
         data: {
@@ -113,7 +113,7 @@ router.post('/:key/rotate',
       });
     } catch (error) {
       logger.error('Failed to rotate secret:', error);
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         error: 'Failed to rotate secret',
       });
@@ -130,14 +130,14 @@ router.post('/rotate-all', async (_req, res) => {
   try {
     const results = await Secrets.rotateAllNeeded();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: 'Secret rotation completed',
       data: results,
     });
   } catch (error) {
     logger.error('Failed to rotate all secrets:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to rotate secrets',
     });
@@ -177,7 +177,7 @@ router.post('/:key',
       const expiresInMs = expiresInDays ? expiresInDays * 24 * 60 * 60 * 1000 : undefined;
       secretManager.setSecret(key, value, expiresInMs);
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: 'Secret set successfully',
         data: {
@@ -188,7 +188,7 @@ router.post('/:key',
       });
     } catch (error) {
       logger.error('Failed to set secret:', error);
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         error: 'Failed to set secret',
       });
@@ -219,13 +219,13 @@ router.delete('/:key',
         });
       }
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: 'Secret deleted successfully',
       });
     } catch (error) {
       logger.error('Failed to delete secret:', error);
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         error: 'Failed to delete secret',
       });
@@ -246,7 +246,7 @@ router.get('/health/rotation', (_req, res) => {
       ...secretManager.getSecretMetadata(key),
     }));
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: {
         needsRotation: rotationStatus,
@@ -256,7 +256,7 @@ router.get('/health/rotation', (_req, res) => {
     });
   } catch (error) {
     logger.error('Failed to get rotation status:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to get rotation status',
     });
@@ -280,13 +280,13 @@ router.post('/validate',
       const { secret, minLength } = req.body;
       const validation = secretManager.validateSecretStrength(secret, minLength);
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         data: validation,
       });
     } catch (error) {
       logger.error('Failed to validate secret:', error);
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         error: 'Failed to validate secret',
       });
@@ -311,7 +311,7 @@ router.post('/generate',
       const secret = secretManager.generateRandomSecret(length);
       const validation = secretManager.validateSecretStrength(secret, length);
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         data: {
           secret,
@@ -321,7 +321,7 @@ router.post('/generate',
       });
     } catch (error) {
       logger.error('Failed to generate secret:', error);
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         error: 'Failed to generate secret',
       });
@@ -345,7 +345,7 @@ router.post('/export',
       const { encryptionKey } = req.body;
       const encryptedData = secretManager.exportSecrets(encryptionKey);
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         data: {
           encryptedData,
@@ -355,7 +355,7 @@ router.post('/export',
       });
     } catch (error) {
       logger.error('Failed to export secrets:', error);
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         error: 'Failed to export secrets',
       });
@@ -387,7 +387,7 @@ router.post('/import',
         });
       }
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: 'Secrets imported successfully',
         data: {
@@ -397,7 +397,7 @@ router.post('/import',
       });
     } catch (error) {
       logger.error('Failed to import secrets:', error);
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         error: 'Failed to import secrets',
       });

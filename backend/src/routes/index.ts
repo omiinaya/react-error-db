@@ -10,6 +10,7 @@ import userRoutes from './user.routes';
 import adminRoutes from './admin.routes';
 import databaseSecurityRoutes from './database-security.routes';
 import secretsRoutes from './secrets.routes';
+import categoryRequestRoutes from './category-request.routes';
 import {
   cspReportHandler,
   xssReportHandler,
@@ -41,6 +42,7 @@ router.use('/users', userRoutes);
 router.use('/admin', adminRoutes);
 router.use('/database-security', databaseSecurityRoutes);
 router.use('/secrets', secretsRoutes);
+router.use('/category-requests', categoryRequestRoutes);
 
 // TODO: Add search routes when implemented
 // router.use('/search', searchRoutes);

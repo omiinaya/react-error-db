@@ -28,6 +28,8 @@ model User {
   userSessions  UserSession[]
   verifiedSolutions Solution[] @relation("SolutionVerification")
   auditLogs     AuditLog[]
+  categoryRequests CategoryRequest[] @relation("CategoryRequestRequester")
+  reviewedCategoryRequests CategoryRequest[] @relation("CategoryRequestReviewer")
 
   @@map("users")
 }
@@ -47,6 +49,7 @@ model Category {
   parent       Category?   @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: NoAction)
   children     Category[]  @relation("CategoryHierarchy")
   applications Application[]
+  categoryRequests CategoryRequest[] @relation("CategoryRequestParent")
 
   @@map("categories")
 }
@@ -174,4 +177,33 @@ model AuditLog {
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@map("audit_logs")
+}
+
+model CategoryRequest {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String
+  description String?
+  icon        String?
+  parentId    String?
+  status      CategoryRequestStatus @default(pending)
+  reason      String? // Reason for rejection
+  requestedById String
+  reviewedById String?
+  reviewedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  requestedBy User   @relation("CategoryRequestRequester", fields: [requestedById], references: [id], onDelete: Cascade)
+  reviewedBy  User?  @relation("CategoryRequestReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  parent      Category? @relation("CategoryRequestParent", fields: [parentId], references: [id], onDelete: NoAction)
+
+  @@map("category_requests")
+}
+
+enum CategoryRequestStatus {
+  pending
+  approved
+  rejected
 }

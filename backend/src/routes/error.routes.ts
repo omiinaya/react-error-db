@@ -85,12 +85,12 @@ router.get('/', validateQuery(errorCodeQuerySchema), async (req, res) => {
 
     const totalPages = Math.ceil(total / limit);
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         errors: errorCodesWithCount,
       },
-      meta: {
+      extreme: {
         pagination: {
           page,
           limit,
@@ -101,7 +101,7 @@ router.get('/', validateQuery(errorCodeQuerySchema), async (req, res) => {
     });
   } catch (error) {
     logger.error('Search error codes error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -197,7 +197,7 @@ router.get('/:id', optionalAuth, async (req: AuthenticatedRequest, res) => {
       };
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         error: errorCode,
@@ -206,7 +206,7 @@ router.get('/:id', optionalAuth, async (req: AuthenticatedRequest, res) => {
     });
   } catch (error) {
     logger.error('Get error code detail error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -261,7 +261,7 @@ router.post('/', authenticateToken, requireAdmin, validateRequest(createErrorCod
       }
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: {
         error: errorCode
@@ -269,7 +269,7 @@ router.post('/', authenticateToken, requireAdmin, validateRequest(createErrorCod
     });
   } catch (error) {
     logger.error('Create error code error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -345,7 +345,7 @@ router.put('/:id', authenticateToken, requireAdmin, validateRequest(updateErrorC
       }
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         error: errorCode
@@ -353,7 +353,7 @@ router.put('/:id', authenticateToken, requireAdmin, validateRequest(updateErrorC
     });
   } catch (error) {
     logger.error('Update error code error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',

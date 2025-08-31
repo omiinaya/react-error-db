@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Search, User, Shield, Mail, Calendar } from 'lucide-react';
+import { Search, User, Mail, Calendar } from 'lucide-react';
 
 interface UserWithStats {
   id: string;
@@ -59,7 +59,7 @@ const UserManagement: React.FC = () => {
       };
 
       if (search) params.search = search;
-      if (role) params.role = role;
+      if (role && role !== 'all') params.role = role;
 
       const response = await api.request<{ users: UserWithStats[]; pagination: PaginationMeta }>({
         method: 'get',
@@ -160,7 +160,7 @@ const UserManagement: React.FC = () => {
                 <SelectValue placeholder="All roles" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All roles</SelectItem>
+                <SelectItem value="all">All roles</SelectItem>
                 <SelectItem value="admin">Admin</SelectItem>
                 <SelectItem value="user">User</SelectItem>
               </SelectContent>

@@ -15,9 +15,19 @@ global.ResizeObserver = class ResizeObserver {
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
+  constructor(
+    public callback: IntersectionObserverCallback,
+    public options?: IntersectionObserverInit
+  ) {}
   observe() {}
   unobserve() {}
   disconnect() {}
+  takeRecords(): IntersectionObserverEntry[] {
+    return [];
+  }
+  readonly root: Element | null = null;
+  readonly rootMargin: string = '';
+  readonly thresholds: readonly number[] = [];
 };
 
 // Mock matchMedia

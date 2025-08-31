@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Search, Filter, Download, AlertCircle, Info, Bug, Shield } from 'lucide-react';
+import { Search, Download, AlertCircle, Info, Bug, Shield } from 'lucide-react';
 
 interface SystemLog {
   id: string;
@@ -55,7 +55,7 @@ const SystemLogs: React.FC = () => {
       };
 
       if (search) params.search = search;
-      if (level) params.level = level;
+      if (level && level !== 'all') params.level = level;
 
       const response = await api.request<{ logs: SystemLog[]; pagination: PaginationMeta }>({
         method: 'get',
@@ -176,7 +176,7 @@ const SystemLogs: React.FC = () => {
                 <SelectValue placeholder="All levels" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All levels</SelectItem>
+                <SelectItem value="all">All levels</SelectItem>
                 <SelectItem value="error">Error</SelectItem>
                 <SelectItem value="warn">Warning</SelectItem>
                 <SelectItem value="info">Info</SelectItem>

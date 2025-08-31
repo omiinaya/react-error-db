@@ -7,7 +7,10 @@ import {
   UpdateCategoryRequest,
   CreateApplicationRequest,
   UpdateApplicationRequest,
-  CreateErrorCodeRequest
+  CreateErrorCodeRequest,
+  CreateCategoryRequestInput,
+  UpdateCategoryRequestStatusInput,
+  CategoryRequest
 } from '@/types';
 import { useAuthStore } from '@/store/authStore';
 
@@ -342,6 +345,45 @@ class ApiClient {
       method: 'get',
       url: `/admin/export/${type}`,
       params: { format },
+    });
+  }
+
+  // Category Request endpoints
+  async createCategoryRequest(data: CreateCategoryRequestInput) {
+    return this.request<{ categoryRequest: CategoryRequest }>({
+      method: 'post',
+      url: '/category-requests',
+      data,
+    });
+  }
+
+  async getCategoryRequests(params?: { status?: string; userId?: string; search?: string; page?: number; limit?: number }) {
+    return this.request<{ categoryRequests: CategoryRequest[]; meta?: any }>({
+      method: 'get',
+      url: '/category-requests',
+      params,
+    });
+  }
+
+  async getUserCategoryRequests() {
+    return this.request<{ categoryRequests: CategoryRequest[] }>({
+      method: 'get',
+      url: '/category-requests/user',
+    });
+  }
+
+  async getCategoryRequestById(id: string) {
+    return this.request<{ categoryRequest: CategoryRequest }>({
+      method: 'get',
+      url: `/category-requests/${id}`,
+    });
+  }
+
+  async updateCategoryRequestStatus(id: string, data: UpdateCategoryRequestStatusInput) {
+    return this.request<{ categoryRequest: CategoryRequest; createdCategory?: any }>({
+      method: 'put',
+      url: `/category-requests/${id}/status`,
+      data,
     });
   }
 }

@@ -46,7 +46,7 @@ router.post('/errors/:errorId/solutions', authenticateToken, validateRequest(cre
       }
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: {
         solution: {
@@ -61,7 +61,7 @@ router.post('/errors/:errorId/solutions', authenticateToken, validateRequest(cre
     });
   } catch (error) {
     logger.error('Add solution error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -207,7 +207,7 @@ router.post('/solutions/:solutionId/vote', authenticateToken, validateRequest(vo
       });
     }
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         solution: {
@@ -218,7 +218,7 @@ router.post('/solutions/:solutionId/vote', authenticateToken, validateRequest(vo
     });
   } catch (error) {
     logger.error('Vote on solution error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -277,7 +277,7 @@ router.put('/solutions/:solutionId', authenticateToken, validateRequest(updateSo
       }
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         solution: updatedSolution
@@ -285,7 +285,7 @@ router.put('/solutions/:solutionId', authenticateToken, validateRequest(updateSo
     });
   } catch (error) {
     logger.error('Update solution error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -330,13 +330,13 @@ router.delete('/solutions/:solutionId', authenticateToken, async (req: Authentic
       where: { id: solutionId as string }
     });
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Solution deleted successfully'
     });
   } catch (error) {
     logger.error('Delete solution error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
@@ -369,7 +369,7 @@ router.post('/solutions/:solutionId/verify', authenticateToken, requireAdmin, as
       }
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         solution
@@ -377,7 +377,7 @@ router.post('/solutions/:solutionId/verify', authenticateToken, requireAdmin, as
     });
   } catch (error) {
     logger.error('Verify solution error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',

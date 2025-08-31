@@ -95,21 +95,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
           {/* User Actions */}
           <div className="flex items-center gap-2">
-            {/* Theme Toggle Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="hidden md:flex"
-              aria-label="Toggle theme"
-            >
-              {theme === 'light' ? (
-                <Moon className="h-4 w-4" />
-              ) : (
-                <Sun className="h-4 w-4" />
-              )}
-            </Button>
-
             {isAuthenticated ? (
               <>
                 <Link to="/error/create">
@@ -118,6 +103,21 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     Add Error
                   </Button>
                 </Link>
+                {/* Theme Toggle Button */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleTheme}
+                  className="hidden md:flex"
+                  aria-label="Toggle theme"
+                >
+                  {theme === 'light' ? (
+                    <Moon className="h-4 w-4" />
+                  ) : (
+                    <Sun className="h-4 w-4" />
+                  )}
+                </Button>
+
                 <Link to="/profile">
                   <Button variant="ghost" size="icon" className="hidden md:flex">
                     <User className="h-4 w-4" />

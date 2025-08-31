@@ -3,6 +3,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';
 
+// i18n
+import '@/lib/i18n';
+
 // Components
 import Layout from '@/components/layout/Layout';
 import ProtectedRoute from '@/components/ProtectedRoute';

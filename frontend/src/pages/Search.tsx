@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 import { Search, Filter, X, TrendingUp } from 'lucide-react';
 import { api } from '@/services/api';
 import { ErrorCode, Application } from '@/types';
@@ -17,6 +18,7 @@ const SearchPage: React.FC = () => {
   const [applicationFilter, setApplicationFilter] = useState(searchParams.get('application') || 'all');
   const [severityFilter, setSeverityFilter] = useState(searchParams.get('severity') || 'all');
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'recent');
+  const { t } = useTranslation();
 
   // Fetch applications for filter dropdown
   const { data: applications } = useQuery({
@@ -72,17 +74,17 @@ const SearchPage: React.FC = () => {
   }, [applicationFilter, severityFilter, sortBy]);
 
   const severityOptions = [
-    { value: 'all', label: 'All Severities' },
-    { value: 'low', label: 'Low' },
-    { value: 'medium', label: 'Medium' },
-    { value: 'high', label: 'High' },
-    { value: 'critical', label: 'Critical' },
+    { value: 'all', label: t('common:search.allSeverities') },
+    { value: 'low', label: t('common:error.severity.low') },
+    { value: 'medium', label: t('common:error.severity.medium') },
+    { value: 'high', label: t('common:error.severity.high') },
+    { value: 'critical', label: t('common:error.severity.critical') },
   ];
 
   const sortOptions = [
-    { value: 'recent', label: 'Most Recent' },
-    { value: 'views', label: 'Most Viewed' },
-    { value: 'solutions', label: 'Most Solutions' },
+    { value: 'recent', label: t('errors:sort.recent') },
+    { value: 'views', label: t('errors:sort.views') },
+    { value: 'solutions', label: t('errors:sort.solutions') },
   ];
 
   return (
@@ -90,7 +92,7 @@ const SearchPage: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         {/* Search Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">Search Error Codes</h1>
+          <h1 className="text-3xl font-bold mb-4">{t('errors:search.title')}</h1>
           
           {/* Search Form */}
           <form onSubmit={handleSearch} className="mb-6">
@@ -98,16 +100,16 @@ const SearchPage: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search by error code, title, or description..."
+                placeholder={t('errors:search.placeholder')}
                 className="pl-10 pr-4 py-6 text-lg"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="absolute right-2 top-1/2 transform -translate-y-1/2"
               >
-                Search
+                {t('common:search.button')}
               </Button>
             </div>
           </form>
@@ -116,15 +118,15 @@ const SearchPage: React.FC = () => {
           <div className="flex flex-wrap gap-4 items-center">
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium">Filters:</span>
+              <span className="text-sm font-medium">{t('common:search.filters')}:</span>
             </div>
 
             <Select value={applicationFilter} onValueChange={setApplicationFilter}>
               <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="All Applications" />
+                <SelectValue placeholder={t('common:search.allApplications')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Applications</SelectItem>
+                <SelectItem value="all">{t('common:search.allApplications')}</SelectItem>
                 {applications?.map((app: Application) => (
                   <SelectItem key={app.id} value={app.id}>
                     {app.name}
@@ -135,7 +137,7 @@ const SearchPage: React.FC = () => {
 
             <Select value={severityFilter} onValueChange={setSeverityFilter}>
               <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="All Severities" />
+                <SelectValue placeholder={t('common:search.allSeverities')} />
               </SelectTrigger>
               <SelectContent>
                 {severityOptions.map((option) => (
@@ -148,7 +150,7 @@ const SearchPage: React.FC = () => {
 
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Sort by" />
+                <SelectValue placeholder={t('common:search.sortBy')} />
               </SelectTrigger>
               <SelectContent>
                 {sortOptions.map((option) => (
@@ -162,7 +164,7 @@ const SearchPage: React.FC = () => {
             {hasActiveFilters && (
               <Button variant="outline" size="sm" onClick={clearFilters}>
                 <X className="h-4 w-4 mr-1" />
-                Clear Filters
+                {t('common:search.clearFilters')}
               </Button>
             )}
           </div>
@@ -189,22 +191,22 @@ const SearchPage: React.FC = () => {
           ) : error ? (
             <Card>
               <CardContent className="pt-6">
-                <p className="text-destructive">Error loading search results. Please try again.</p>
+                <p className="text-destructive">{t('common:errorLoading')}</p>
               </CardContent>
             </Card>
           ) : searchResults?.errors?.length === 0 ? (
             <Card>
               <CardContent className="pt-6 text-center">
-                <p className="text-muted-foreground">No error codes found matching your criteria.</p>
+                <p className="text-muted-foreground">{t('errors:search.noResults')}</p>
                 <Button variant="outline" className="mt-4" onClick={clearFilters}>
-                  Clear filters and try again
+                  {t('errors:search.clearAndTry')}
                 </Button>
               </CardContent>
             </Card>
           ) : (
             <>
               <div className="text-sm text-muted-foreground">
-                Found {searchResults?.meta?.pagination?.total || searchResults?.errors?.length || 0} results
+                {t('errors:search.results', { count: searchResults?.meta?.pagination?.total || searchResults?.errors?.length || 0 })}
               </div>
               
               {searchResults?.errors?.map((error: ErrorCode) => (
@@ -218,14 +220,14 @@ const SearchPage: React.FC = () => {
                           </Badge>
                         ) : (
                           <Badge variant="outline" className="bg-gray-50 text-gray-500 border-gray-200 text-xs">
-                            No Category
+                            {t('common:error.noCategory')}
                           </Badge>
                         )}
                         <Badge variant="secondary">{error.application.name}</Badge>
                       </div>
                       <div className="flex items-center text-sm text-muted-foreground">
                         <TrendingUp className="h-4 w-4 mr-1" />
-                        {error.viewCount.toLocaleString()} views
+                        {error.viewCount.toLocaleString()} {t('common:error.views')}
                       </div>
                     </div>
                     <CardTitle className="text-xl">
@@ -252,7 +254,7 @@ const SearchPage: React.FC = () => {
                         {error.severity}
                       </Badge>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>{error.solutionCount} solutions</span>
+                        <span>{error.solutionCount} {t('common:error.solutions')}</span>
                         <span>•</span>
                         <span>{new Date(error.createdAt).toLocaleDateString()}</span>
                       </div>

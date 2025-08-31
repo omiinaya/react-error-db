@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 
 const Login: React.FC = () => {
@@ -16,6 +17,7 @@ const Login: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const from = location.state?.from?.pathname || '/';
 
@@ -47,19 +49,19 @@ const Login: React.FC = () => {
                 <span className="text-primary-foreground font-bold text-2xl">E</span>
               </div>
             </div>
-            <CardTitle className="text-2xl text-center">Sign In</CardTitle>
+            <CardTitle className="text-2xl text-center">{t('auth:login.title')}</CardTitle>
             <CardDescription className="text-center">
-              Enter your credentials to access your account
+              {t('auth:login.description')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('auth:login.email')}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t('auth:login.emailPlaceholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -68,12 +70,12 @@ const Login: React.FC = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t('auth:login.password')}</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="Enter your password"
+                    placeholder={t('auth:login.passwordPlaceholder')}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -102,25 +104,25 @@ const Login: React.FC = () => {
                 {isLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Signing in...
+                    {t('auth:login.signingIn')}
                   </>
                 ) : (
                   <>
                     <LogIn className="h-4 w-4 mr-2" />
-                    Sign In
+                    {t('auth:login.signIn')}
                   </>
                 )}
               </Button>
             </form>
 
             <div className="mt-4 text-center text-sm">
-              Don't have an account?{' '}
-              <Link 
-                to="/register" 
+              {t('auth:login.noAccount')}{' '}
+              <Link
+                to="/register"
                 className="text-primary hover:underline"
                 state={{ from: location.state?.from }}
               >
-                Sign up
+                {t('auth:login.signUpLink')}
               </Link>
             </div>
           </CardContent>
@@ -129,7 +131,7 @@ const Login: React.FC = () => {
         {/* Demo Credentials */}
         <Card className="mt-6">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm">Demo Credentials</CardTitle>
+            <CardTitle className="text-sm">{t('auth:login.demoCredentials')}</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
             <div className="text-xs text-muted-foreground space-y-1">

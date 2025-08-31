@@ -1,0 +1,56 @@
+{
+  "search": {
+    "title": "Buscar Códigos de Error",
+    "placeholder": "Buscar por código de error, título o descripción...",
+    "results": "Se encontraron {{count}} resultados",
+    "noResults": "No se encontraron códigos de error que coincidan con tus criterios.",
+    "clearAndTry": "Limpiar filtros e intentar nuevamente"
+  },
+  "detail": {
+    "commonCauses": "Causas Comunes",
+    "solutions": "Soluciones",
+    "solutionCount": "{{count}} solución{{s}}",
+    "noSolutions": "Aún no hay soluciones. ¡Sé el primero en ayudar!",
+    "addSolution": "Agrega Tu Solución",
+    "solutionPlaceholder": "Comparte tu solución para este error. Sé específico e incluye ejemplos de código si es posible.",
+    "submitSolution": "Enviar Solución",
+    "submitting": "Enviando...",
+    "signInToContribute": "Inicia sesión para contribuir con tu solución a este error",
+    "views": "vistas",
+    "verified": "Verificado",
+    "score": "Puntuación",
+    "vote": "Votar",
+    "upvote": "Voto Positivo",
+    "downvote": "Voto Negativo"
+  },
+  "create": {
+    "title": "Crear Nuevo Código de Error",
+    "description": "Agrega un nuevo código de error para ayudar a los desarrolladores a encontrar soluciones más rápido.",
+    "application": "Aplicación",
+    "applicationRequired": "Aplicación requerida",
+    "errorCode": "Código de Error",
+    "errorTitle": "Título del Error",
+    "errorDescription": "Descripción",
+    "severity": "Gravedad",
+    "selectSeverity": "Seleccionar gravedad",
+    "createButton": "Crear Código de Error",
+    "creating": "Creando...",
+    "cancel": "Cancelar",
+    "success": "Código de error creado exitosamente",
+    "failed": "Error al crear código de error"
+  },
+  "sort": {
+    "recent": "Más Recientes",
+    "views": "Más Vistos",
+    "solutions": "Más Soluciones"
+  },
+  "messages": {
+    "voteRecorded": "¡Voto registrado!",
+    "voteFailed": "Error al votar",
+    "signInToVote": "Por favor, inicia sesión para votar",
+    "signInToAddSolution": "Por favor, inicia sesión para agregar una solución",
+    "solutionRequired": "Por favor, ingresa una solución",
+    "solutionAdded": "¡Solución agregada exitosamente!",
+    "solutionFailed": "Error al agregar solución"
+  }
+}

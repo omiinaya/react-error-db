@@ -2,9 +2,11 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Search, User, LogOut, Menu, X, Plus, Settings, Sun, Moon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Search, User, LogOut, Menu, X, Plus, Settings, Sun, Moon, Languages, Check } from 'lucide-react';
 import { useState } from 'react';
 
 interface LayoutProps {
@@ -14,9 +16,19 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { user, isAuthenticated, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const languages = [
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
+  ];
+
+  const changeLanguage = (langCode: string) => {
+    i18n.changeLanguage(langCode);
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,8 +43,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const navigation = [
-    { name: 'Home', href: '/', current: location.pathname === '/' },
-    { name: 'Browse', href: '/search', current: location.pathname === '/search' },
+    { name: t('navigation:home'), href: '/', current: location.pathname === '/' },
+    { name: t('navigation:browse'), href: '/search', current: location.pathname === '/search' },
   ];
 
 
@@ -47,7 +59,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-lg">E</span>
               </div>
-              <span className="font-bold text-xl">ErrorDB</span>
+              <span className="font-bold text-xl">{t('common:app.name')}</span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -72,7 +84,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 >
                   <Button variant="ghost" size="sm" className="flex items-center gap-2">
                     <Settings className="h-4 w-4" />
-                    Admin Settings
+                    {t('navigation:adminSettings')}
                   </Button>
                 </Link>
               )}
@@ -85,7 +97,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search error codes..."
+                placeholder={t('common:search.placeholder')}
                 className="pl-10 pr-4"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -100,9 +112,40 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <Link to="/error/create">
                   <Button size="sm" className="hidden md:flex items-center gap-2">
                     <Plus className="h-4 w-4" />
-                    Add Error
+                    {t('navigation:addError')}
                   </Button>
                 </Link>
+                {/* Language Selector Dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hidden md:flex"
+                      aria-label="Select language"
+                    >
+                      <Languages className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {languages.map((lang) => (
+                      <DropdownMenuItem
+                        key={lang.code}
+                        onClick={() => changeLanguage(lang.code)}
+                        className="flex items-center justify-between"
+                      >
+                        <span className="flex items-center gap-2">
+                          <span className="text-lg">{lang.flag}</span>
+                          {lang.name}
+                        </span>
+                        {i18n.language === lang.code && (
+                          <Check className="h-4 w-4 text-primary" />
+                        )}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+    
                 {/* Theme Toggle Button */}
                 <Button
                   variant="ghost"
@@ -131,16 +174,47 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <>
                 <Link to="/login">
                   <Button variant="ghost" size="sm" className="hidden md:flex">
-                    Sign In
+                    {t('navigation:signIn')}
                   </Button>
                 </Link>
                 <Link to="/register">
                   <Button size="sm" className="hidden md:flex">
-                    Sign Up
+                    {t('navigation:signUp')}
                   </Button>
                 </Link>
               </>
             )}
+
+              {/* Mobile Language Selector Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="md:hidden"
+                    aria-label="Select language"
+                  >
+                    <Languages className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {languages.map((lang) => (
+                    <DropdownMenuItem
+                      key={lang.code}
+                      onClick={() => changeLanguage(lang.code)}
+                      className="flex items-center justify-between"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="text-lg">{lang.flag}</span>
+                        {lang.name}
+                      </span>
+                      {i18n.language === lang.code && (
+                        <Check className="h-4 w-4 text-primary" />
+                      )}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               {/* Mobile Theme Toggle Button */}
               <Button
@@ -176,7 +250,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search error codes..."
+                placeholder={t('common:search.placeholder')}
                 className="pl-10 pr-4"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -208,14 +282,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               {isAuthenticated && user?.isAdmin && (
                 <>
                   <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Admin
+                    {t('common:navigation.admin')}
                   </div>
                   <Link
                     to="/admin"
                     className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Admin Settings
+                    {t('navigation:adminSettings')}
                   </Link>
                 </>
               )}
@@ -225,7 +299,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 onClick={toggleTheme}
                 className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent"
               >
-                {theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+                {theme === 'light' ? t('common:theme.switchToDark') : t('common:theme.switchToLight')}
               </button>
 
               {isAuthenticated ? (
@@ -235,20 +309,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Add Error
+                    {t('navigation:addError')}
                   </Link>
                   <Link
                     to="/profile"
                     className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Profile
+                    {t('navigation:profile')}
                   </Link>
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent"
                   >
-                    Sign Out
+                    {t('navigation:signOut')}
                   </button>
                 </>
               ) : (
@@ -258,14 +332,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Sign In
+                    {t('navigation:signIn')}
                   </Link>
                   <Link
                     to="/register"
                     className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Sign Up
+                    {t('navigation:signUp')}
                   </Link>
                 </>
               )}
@@ -284,21 +358,21 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="container py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="font-semibold mb-4">ErrorDB</h3>
+              <h3 className="font-semibold mb-4">{t('common:app.name')}</h3>
               <p className="text-sm text-muted-foreground">
-                A comprehensive database of error codes and solutions for developers.
+                {t('common:app.description')}
               </p>
             </div>
             <div>
-              <h3 className="font-semibold mb-4">Resources</h3>
+              <h3 className="font-semibold mb-4">{t('common:footer.resources')}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary">Documentation</a></li>
-                <li><a href="#" className="hover:text-primary">API Reference</a></li>
-                <li><a href="#" className="hover:text-primary">Contribute</a></li>
+                <li><a href="#" className="hover:text-primary">{t('common:footer.documentation')}</a></li>
+                <li><a href="#" className="hover:text-primary">{t('common:footer.apiReference')}</a></li>
+                <li><a href="#" className="hover:text-primary">{t('common:footer.contribute')}</a></li>
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold mb-4">Community</h3>
+              <h3 className="font-semibold mb-4">{t('common:footer.community')}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><a href="#" className="hover:text-primary">GitHub</a></li>
                 <li><a href="#" className="hover:text-primary">Discord</a></li>
@@ -307,7 +381,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </div>
           </div>
           <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 ErrorDB. All rights reserved.</p>
+            <p>{t('common:footer.copyright')}</p>
           </div>
         </div>
       </footer>

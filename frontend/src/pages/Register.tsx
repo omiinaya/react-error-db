@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, UserPlus } from 'lucide-react';
 
 const Register: React.FC = () => {
@@ -22,38 +23,39 @@ const Register: React.FC = () => {
 
   const { register } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = t('auth:validation.emailRequired');
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+      newErrors.email = t('auth:validation.emailInvalid');
     }
 
     if (!formData.username) {
-      newErrors.username = 'Username is required';
+      newErrors.username = t('auth:validation.usernameRequired');
     } else if (formData.username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
+      newErrors.username = t('auth:validation.usernameMinLength');
     } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
-      newErrors.username = 'Username can only contain letters, numbers, and underscores';
+      newErrors.username = t('auth:validation.usernameInvalidChars');
     }
 
     if (!formData.displayName) {
-      newErrors.displayName = 'Display name is required';
+      newErrors.displayName = t('auth:validation.displayNameRequired');
     } else if (formData.displayName.length < 2) {
-      newErrors.displayName = 'Display name must be at least 2 characters';
+      newErrors.displayName = t('auth:validation.displayNameMinLength');
     }
 
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = t('auth:validation.passwordRequired');
     } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+      newErrors.password = t('auth:validation.passwordMinLength');
     }
 
     if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = t('auth:validation.passwordsDontMatch');
     }
 
     setErrors(newErrors);
@@ -81,7 +83,7 @@ const Register: React.FC = () => {
       if (error.response?.data?.error?.message) {
         setErrors({ submit: error.response.data.error.message });
       } else {
-        setErrors({ submit: 'Registration failed. Please try again.' });
+        setErrors({ submit: t('auth:validation.registrationFailed') });
       }
     } finally {
       setIsLoading(false);
@@ -106,9 +108,9 @@ const Register: React.FC = () => {
                 <span className="text-primary-foreground font-bold text-2xl">E</span>
               </div>
             </div>
-            <CardTitle className="text-2xl text-center">Create Account</CardTitle>
+            <CardTitle className="text-2xl text-center">{t('auth:register.title')}</CardTitle>
             <CardDescription className="text-center">
-              Join our community of developers
+              {t('auth:register.description')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -120,11 +122,11 @@ const Register: React.FC = () => {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('auth:register.email')}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t('auth:register.emailPlaceholder')}
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   required
@@ -137,11 +139,11 @@ const Register: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username">{t('auth:register.username')}</Label>
                 <Input
                   id="username"
                   type="text"
-                  placeholder="Choose a username"
+                  placeholder={t('auth:register.usernamePlaceholder')}
                   value={formData.username}
                   onChange={(e) => handleInputChange('username', e.target.value)}
                   required
@@ -154,11 +156,11 @@ const Register: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="displayName">Display Name</Label>
+                <Label htmlFor="displayName">{t('auth:register.displayName')}</Label>
                 <Input
                   id="displayName"
                   type="text"
-                  placeholder="Your display name"
+                  placeholder={t('auth:register.displayNamePlaceholder')}
                   value={formData.displayName}
                   onChange={(e) => handleInputChange('displayName', e.target.value)}
                   required
@@ -171,12 +173,12 @@ const Register: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t('auth:register.password')}</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="Create a password"
+                    placeholder={t('auth:register.passwordPlaceholder')}
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
                     required
@@ -201,12 +203,12 @@ const Register: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="confirmPassword">{t('auth:register.confirmPassword')}</Label>
                 <div className="relative">
                   <Input
                     id="confirmPassword"
                     type={showConfirmPassword ? 'text' : 'password'}
-                    placeholder="Confirm your password"
+                    placeholder={t('auth:register.confirmPasswordPlaceholder')}
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                     required
@@ -238,21 +240,21 @@ const Register: React.FC = () => {
                 {isLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Creating account...
+                    {t('auth:register.creatingAccount')}
                   </>
                 ) : (
                   <>
                     <UserPlus className="h-4 w-4 mr-2" />
-                    Create Account
+                    {t('auth:register.createAccount')}
                   </>
                 )}
               </Button>
             </form>
 
             <div className="mt-4 text-center text-sm">
-              Already have an account?{' '}
+              {t('auth:register.hasAccount')}{' '}
               <Link to="/login" className="text-primary hover:underline">
-                Sign in
+                {t('auth:register.signInLink')}
               </Link>
             </div>
           </CardContent>

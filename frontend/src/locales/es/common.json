@@ -1,0 +1,73 @@
+{
+  "app": {
+    "name": "ErrorDB",
+    "description": "Una base de datos completa de códigos de error y soluciones para desarrolladores."
+  },
+  "navigation": {
+    "home": "Inicio",
+    "browse": "Explorar",
+    "search": "Buscar",
+    "adminSettings": "Configuración de Administrador",
+    "addError": "Agregar Error",
+    "profile": "Perfil",
+    "signIn": "Iniciar Sesión",
+    "signUp": "Registrarse",
+    "signOut": "Cerrar Sesión"
+  },
+  "search": {
+    "placeholder": "Buscar códigos de error...",
+    "placeholderHome": "Buscar códigos de error (ej., 'E11000', '404', 'TypeError')...",
+    "button": "Buscar",
+    "filters": "Filtros",
+    "allApplications": "Todas las Aplicaciones",
+    "allSeverities": "Todas las Gravedades",
+    "sortBy": "Ordenar por",
+    "clearFilters": "Limpiar Filtros"
+  },
+  "features": {
+    "comprehensiveDatabase": "Base de Datos Completa",
+    "comprehensiveDatabaseDesc": "Miles de códigos de error de frameworks y bibliotecas populares",
+    "communitySolutions": "Soluciones de la Comunidad",
+    "communitySolutionsDesc": "Soluciones reales de desarrolladores experimentados de todo el mundo",
+    "verifiedContent": "Contenido Verificado",
+    "verifiedContentDesc": "Soluciones verificadas por expertos para garantizar precisión y confiabilidad"
+  },
+  "error": {
+    "trending": "Errores Populares",
+    "viewAll": "Ver Todos",
+    "noCategory": "Sin Categoría",
+    "views": "vistas",
+    "solutions": "soluciones",
+    "severity": {
+      "low": "Bajo",
+      "medium": "Medio",
+      "high": "Alto",
+      "critical": "Crítico"
+    }
+  },
+  "cta": {
+    "readyToSolve": "¿Listo para Resolver tus Errores?",
+    "joinCommunity": "Únete a miles de desarrolladores que usan ErrorDB para encontrar soluciones rápidamente a sus problemas de programación.",
+    "getStarted": "Comenzar Gratis",
+    "browseErrors": "Explorar Errores"
+  },
+  "footer": {
+    "resources": "Recursos",
+    "community": "Comunidad",
+    "documentation": "Documentación",
+    "apiReference": "Referencia API",
+    "contribute": "Contribuir",
+    "copyright": "© 2024 ErrorDB. Todos los derechos reservados."
+  },
+  "navigation": {
+    "admin": "Administrador"
+  },
+  "theme": {
+    "switchToDark": "Cambiar a Modo Oscuro",
+    "switchToLight": "Cambiar a Modo Claro"
+  },
+  "loading": "Cargando...",
+  "noResults": "No se encontraron resultados",
+  "errorLoading": "Error al cargar contenido. Por favor, intente nuevamente.",
+  "tryAgain": "Intentar Nuevamente"
+}

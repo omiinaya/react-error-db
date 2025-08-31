@@ -1,0 +1,73 @@
+{
+  "app": {
+    "name": "ErrorDB",
+    "description": "A comprehensive database of error codes and solutions for developers."
+  },
+  "navigation": {
+    "home": "Home",
+    "browse": "Browse",
+    "search": "Search",
+    "adminSettings": "Admin Settings",
+    "addError": "Add Error",
+    "profile": "Profile",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out"
+  },
+  "search": {
+    "placeholder": "Search error codes...",
+    "placeholderHome": "Search for error codes (e.g., 'E11000', '404', 'TypeError')...",
+    "button": "Search",
+    "filters": "Filters",
+    "allApplications": "All Applications",
+    "allSeverities": "All Severities",
+    "sortBy": "Sort by",
+    "clearFilters": "Clear Filters"
+  },
+  "features": {
+    "comprehensiveDatabase": "Comprehensive Database",
+    "comprehensiveDatabaseDesc": "Thousands of error codes from popular frameworks and libraries",
+    "communitySolutions": "Community Solutions",
+    "communitySolutionsDesc": "Real solutions from experienced developers around the world",
+    "verifiedContent": "Verified Content",
+    "verifiedContentDesc": "Expert-verified solutions to ensure accuracy and reliability"
+  },
+  "error": {
+    "trending": "Trending Errors",
+    "viewAll": "View All",
+    "noCategory": "No Category",
+    "views": "views",
+    "solutions": "solutions",
+    "severity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    }
+  },
+  "cta": {
+    "readyToSolve": "Ready to Solve Your Errors?",
+    "joinCommunity": "Join thousands of developers who use ErrorDB to quickly find solutions to their coding problems.",
+    "getStarted": "Get Started Free",
+    "browseErrors": "Browse Errors"
+  },
+  "footer": {
+    "resources": "Resources",
+    "community": "Community",
+    "documentation": "Documentation",
+    "apiReference": "API Reference",
+    "contribute": "Contribute",
+    "copyright": "© 2024 ErrorDB. All rights reserved."
+  },
+  "navigation": {
+    "admin": "Admin"
+  },
+  "theme": {
+    "switchToDark": "Switch to Dark Mode",
+    "switchToLight": "Switch to Light Mode"
+  },
+  "loading": "Loading...",
+  "noResults": "No results found",
+  "errorLoading": "Error loading content. Please try again.",
+  "tryAgain": "Try Again"
+}

@@ -6,10 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Search, TrendingUp, Users, Code, Shield } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { api } from '@/services/api';
 
 const Home: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const { t } = useTranslation();
 
   // Fetch trending errors
   const { data: trendingErrors, isLoading: isLoadingTrending } = useQuery({
@@ -33,18 +35,18 @@ const Home: React.FC = () => {
   const features = [
     {
       icon: <Code className="h-8 w-8" />,
-      title: "Comprehensive Database",
-      description: "Thousands of error codes from popular frameworks and libraries"
+      title: t('common:features.comprehensiveDatabase'),
+      description: t('common:features.comprehensiveDatabaseDesc')
     },
     {
       icon: <Users className="h-8 w-8" />,
-      title: "Community Solutions",
-      description: "Real solutions from experienced developers around the world"
+      title: t('common:features.communitySolutions'),
+      description: t('common:features.communitySolutionsDesc')
     },
     {
       icon: <Shield className="h-8 w-8" />,
-      title: "Verified Content",
-      description: "Expert-verified solutions to ensure accuracy and reliability"
+      title: t('common:features.verifiedContent'),
+      description: t('common:features.verifiedContentDesc')
     }
   ];
 
@@ -54,11 +56,11 @@ const Home: React.FC = () => {
       <section className="py-20 bg-gradient-to-br from-primary/5 to-secondary/5">
         <div className="container max-w-4xl text-center">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-            Find Solutions to Every
-            <span className="text-primary"> Error Code</span>
+            {t('home:hero.title')}
+            <span className="text-primary"> {t('home:hero.titleHighlight')}</span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            The largest database of error codes and solutions. Get instant help from our community of developers.
+            {t('home:hero.description')}
           </p>
           
           {/* Search Bar */}
@@ -67,27 +69,27 @@ const Home: React.FC = () => {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search for error codes (e.g., 'E11000', '404', 'TypeError')..."
+                placeholder={t('common:search.placeholderHome')}
                 className="pl-12 pr-4 py-6 text-lg border-2"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <Button 
-                type="submit" 
-                size="lg" 
+              <Button
+                type="submit"
+                size="lg"
                 className="absolute right-2 top-1/2 transform -translate-y-1/2"
               >
-                Search
+                {t('common:search.button')}
               </Button>
             </div>
           </form>
 
           <div className="flex flex-wrap justify-center gap-4">
             <Button variant="outline" asChild>
-              <Link to="/search">Browse All Errors</Link>
+              <Link to="/search">{t('common:cta.browseErrors')}</Link>
             </Button>
             <Button asChild>
-              <Link to="/register">Join Community</Link>
+              <Link to="/register">{t('home:hero.joinCommunity')}</Link>
             </Button>
           </div>
         </div>
@@ -97,9 +99,9 @@ const Home: React.FC = () => {
       <section className="py-20">
         <div className="container">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">Why Choose ErrorDB?</h2>
+            <h2 className="text-3xl font-bold mb-4">{t('home:features.title')}</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              We provide the most comprehensive and reliable error code database with community-driven solutions.
+              {t('home:features.description')}
             </p>
           </div>
 
@@ -127,9 +129,9 @@ const Home: React.FC = () => {
       <section className="py-20 bg-muted/50">
         <div className="container">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold">Trending Errors</h2>
+            <h2 className="text-3xl font-bold">{t('common:error.trending')}</h2>
             <Button variant="outline" asChild>
-              <Link to="/search">View All</Link>
+              <Link to="/search">{t('common:error.viewAll')}</Link>
             </Button>
           </div>
 
@@ -161,14 +163,14 @@ const Home: React.FC = () => {
                           </Badge>
                         ) : (
                           <Badge variant="outline" className="bg-gray-50 text-gray-500 border-gray-200 text-xs">
-                            No Category
+                            {t('common:error.noCategory')}
                           </Badge>
                         )}
                         <Badge variant="secondary">{error.application.name}</Badge>
                       </div>
                       <div className="flex items-center text-sm text-muted-foreground">
                         <TrendingUp className="h-4 w-4 mr-1" />
-                        {error.viewCount.toLocaleString()} views
+                        {error.viewCount.toLocaleString()} {t('common:error.views')}
                       </div>
                     </div>
                     <CardTitle className="text-xl">
@@ -189,7 +191,7 @@ const Home: React.FC = () => {
                         {error.severity}
                       </Badge>
                       <span className="text-sm text-muted-foreground">
-                        {error.solutionCount} solutions
+                        {error.solutionCount} {t('common:error.solutions')}
                       </span>
                     </div>
                   </CardContent>
@@ -203,16 +205,16 @@ const Home: React.FC = () => {
       {/* CTA Section */}
       <section className="py-20">
         <div className="container max-w-4xl text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Solve Your Errors?</h2>
+          <h2 className="text-3xl font-bold mb-4">{t('common:cta.readyToSolve')}</h2>
           <p className="text-muted-foreground mb-8">
-            Join thousands of developers who use ErrorDB to quickly find solutions to their coding problems.
+            {t('common:cta.joinCommunity')}
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button size="lg" asChild>
-              <Link to="/register">Get Started Free</Link>
+              <Link to="/register">{t('common:cta.getStarted')}</Link>
             </Button>
             <Button variant="outline" size="lg" asChild>
-              <Link to="/search">Browse Errors</Link>
+              <Link to="/search">{t('common:cta.browseErrors')}</Link>
             </Button>
           </div>
         </div>

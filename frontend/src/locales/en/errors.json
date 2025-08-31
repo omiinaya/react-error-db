@@ -1,0 +1,56 @@
+{
+  "search": {
+    "title": "Search Error Codes",
+    "placeholder": "Search by error code, title, or description...",
+    "results": "Found {{count}} results",
+    "noResults": "No error codes found matching your criteria.",
+    "clearAndTry": "Clear filters and try again"
+  },
+  "detail": {
+    "commonCauses": "Common Causes",
+    "solutions": "Solutions",
+    "solutionCount": "{{count}} solution{{s}}",
+    "noSolutions": "No solutions yet. Be the first to help!",
+    "addSolution": "Add Your Solution",
+    "solutionPlaceholder": "Share your solution to this error. Be specific and include code examples if possible.",
+    "submitSolution": "Submit Solution",
+    "submitting": "Submitting...",
+    "signInToContribute": "Sign in to contribute your solution to this error",
+    "views": "views",
+    "verified": "Verified",
+    "score": "Score",
+    "vote": "Vote",
+    "upvote": "Upvote",
+    "downvote": "Downvote"
+  },
+  "create": {
+    "title": "Create New Error Code",
+    "description": "Add a new error code to help developers find solutions faster.",
+    "application": "Application",
+    "applicationRequired": "Application required",
+    "errorCode": "Error Code",
+    "errorTitle": "Error Title",
+    "errorDescription": "Description",
+    "severity": "Severity",
+    "selectSeverity": "Select severity",
+    "createButton": "Create Error Code",
+    "creating": "Creating...",
+    "cancel": "Cancel",
+    "success": "Error code created successfully",
+    "failed": "Failed to create error code"
+  },
+  "sort": {
+    "recent": "Most Recent",
+    "views": "Most Viewed",
+    "solutions": "Most Solutions"
+  },
+  "messages": {
+    "voteRecorded": "Vote recorded!",
+    "voteFailed": "Failed to vote",
+    "signInToVote": "Please sign in to vote",
+    "signInToAddSolution": "Please sign in to add a solution",
+    "solutionRequired": "Please enter a solution",
+    "solutionAdded": "Solution added successfully!",
+    "solutionFailed": "Failed to add solution"
+  }
+}

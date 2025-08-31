@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useTranslation } from 'react-i18next';
 import { ThumbsUp, ThumbsDown, MessageSquare, Eye, Calendar, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
@@ -19,6 +20,7 @@ const ErrorDetail: React.FC = () => {
   const queryClient = useQueryClient();
   const [solutionText, setSolutionText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { t } = useTranslation();
 
   // Fetch error details
   const { data: errorDetail, isLoading, error } = useQuery({
@@ -36,10 +38,10 @@ const ErrorDetail: React.FC = () => {
       api.voteOnSolution(solutionId, { voteType }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['error-detail', id] });
-      toast.success('Vote recorded!');
+      toast.success(t('errors:messages.voteRecorded'));
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.error?.message || 'Failed to vote');
+      toast.error(error.response?.data?.error?.message || t('errors:messages.voteFailed'));
     },
   });
 
@@ -51,17 +53,17 @@ const ErrorDetail: React.FC = () => {
       setSolutionText('');
       setIsSubmitting(false);
       queryClient.invalidateQueries({ queryKey: ['error-detail', id] });
-      toast.success('Solution added successfully!');
+      toast.success(t('errors:messages.solutionAdded'));
     },
     onError: (error: any) => {
       setIsSubmitting(false);
-      toast.error(error.response?.data?.error?.message || 'Failed to add solution');
+      toast.error(error.response?.data?.error?.message || t('errors:messages.solutionFailed'));
     },
   });
 
   const handleVote = (solutionId: string, voteType: 'upvote' | 'downvote') => {
     if (!isAuthenticated) {
-      toast.error('Please sign in to vote');
+      toast.error(t('errors:messages.signInToVote'));
       return;
     }
     voteMutation.mutate({ solutionId, voteType });
@@ -70,11 +72,11 @@ const ErrorDetail: React.FC = () => {
   const handleSubmitSolution = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAuthenticated) {
-      toast.error('Please sign in to add a solution');
+      toast.error(t('errors:messages.signInToAddSolution'));
       return;
     }
     if (!solutionText.trim()) {
-      toast.error('Please enter a solution');
+      toast.error(t('errors:messages.solutionRequired'));
       return;
     }
     
@@ -109,9 +111,9 @@ const ErrorDetail: React.FC = () => {
       <div className="container py-8 max-w-4xl mx-auto">
         <Card>
           <CardContent className="pt-6 text-center">
-            <p className="text-destructive">Error loading error details. Please try again.</p>
+            <p className="text-destructive">{t('common:errorLoading')}</p>
             <Button variant="outline" className="mt-4" asChild>
-              <Link to="/search">Back to Search</Link>
+              <Link to="/search">{t('common:tryAgain')}</Link>
             </Button>
           </CardContent>
         </Card>
@@ -133,7 +135,7 @@ const ErrorDetail: React.FC = () => {
             </Badge>
           ) : (
             <Badge variant="outline" className="bg-gray-50 text-gray-500 border-gray-200">
-              No Category
+              {t('common:error.noCategory')}
             </Badge>
           )}
           <Badge variant="secondary">{errorData.application.name}</Badge>
@@ -159,11 +161,11 @@ const ErrorDetail: React.FC = () => {
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Eye className="h-4 w-4" />
-            {errorData.viewCount.toLocaleString()} views
+            {errorData.viewCount.toLocaleString()} {t('common:error.views')}
           </div>
           <div className="flex items-center gap-1">
             <MessageSquare className="h-4 w-4" />
-            {solutions.length} solutions
+            {t('errors:detail.solutionCount', { count: solutions.length })}
           </div>
           <div className="flex items-center gap-1">
             <Calendar className="h-4 w-4" />
@@ -176,7 +178,7 @@ const ErrorDetail: React.FC = () => {
       {errorData.metadata?.commonCauses && errorData.metadata.commonCauses.length > 0 && (
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Common Causes</CardTitle>
+            <CardTitle>{t('errors:detail.commonCauses')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc list-inside space-y-1">
@@ -193,16 +195,16 @@ const ErrorDetail: React.FC = () => {
       {/* Solutions Section */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Solutions</h2>
+          <h2 className="text-2xl font-bold">{t('errors:detail.solutions')}</h2>
           <span className="text-muted-foreground">
-            {solutions.length} solution{solutions.length !== 1 ? 's' : ''}
+            {t('errors:detail.solutionCount', { count: solutions.length })}
           </span>
         </div>
 
         {solutions.length === 0 ? (
           <Card>
             <CardContent className="pt-6 text-center">
-              <p className="text-muted-foreground mb-4">No solutions yet. Be the first to help!</p>
+              <p className="text-muted-foreground mb-4">{t('errors:detail.noSolutions')}</p>
             </CardContent>
           </Card>
         ) : (
@@ -228,7 +230,7 @@ const ErrorDetail: React.FC = () => {
                     {solution.isVerified && (
                       <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
                         <CheckCircle className="h-3 w-3 mr-1" />
-                        Verified
+                        {t('errors:detail.verified')}
                       </Badge>
                     )}
                   </div>
@@ -261,7 +263,7 @@ const ErrorDetail: React.FC = () => {
                         </Button>
                       </div>
                       <span className="text-sm text-muted-foreground">
-                        Score: {solution.score}
+                        {t('errors:detail.score')}: {solution.score}
                       </span>
                     </div>
                     <span className="text-sm text-muted-foreground">
@@ -279,19 +281,19 @@ const ErrorDetail: React.FC = () => {
       {isAuthenticated && (
         <Card>
           <CardHeader>
-            <CardTitle>Add Your Solution</CardTitle>
+            <CardTitle>{t('errors:detail.addSolution')}</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmitSolution}>
               <Textarea
-                placeholder="Share your solution to this error. Be specific and include code examples if possible."
+                placeholder={t('errors:detail.solutionPlaceholder')}
                 className="min-h-32 mb-4"
                 value={solutionText}
                 onChange={(e) => setSolutionText(e.target.value)}
                 disabled={isSubmitting}
               />
               <Button type="submit" disabled={isSubmitting || !solutionText.trim()}>
-                {isSubmitting ? 'Submitting...' : 'Submit Solution'}
+                {isSubmitting ? t('errors:detail.submitting') : t('errors:detail.submitSolution')}
               </Button>
             </form>
           </CardContent>
@@ -302,10 +304,10 @@ const ErrorDetail: React.FC = () => {
         <Card>
           <CardContent className="pt-6 text-center">
             <p className="text-muted-foreground mb-4">
-              Sign in to contribute your solution to this error
+              {t('errors:detail.signInToContribute')}
             </p>
             <Button asChild>
-              <Link to="/login">Sign In</Link>
+              <Link to="/login">{t('navigation:signIn')}</Link>
             </Button>
           </CardContent>
         </Card>

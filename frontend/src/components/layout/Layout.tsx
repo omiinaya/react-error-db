@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
-import { Search, User, LogOut, Menu, X, Plus, Settings } from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
+import { Search, User, LogOut, Menu, X, Plus, Settings, Sun, Moon } from 'lucide-react';
 import { useState } from 'react';
 
 interface LayoutProps {
@@ -12,6 +13,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { user, isAuthenticated, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -92,7 +94,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </form>
 
           {/* User Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            {/* Theme Toggle Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="hidden md:flex"
+              aria-label="Toggle theme"
+            >
+              {theme === 'light' ? (
+                <Moon className="h-4 w-4" />
+              ) : (
+                <Sun className="h-4 w-4" />
+              )}
+            </Button>
+
             {isAuthenticated ? (
               <>
                 <Link to="/error/create">
@@ -102,12 +119,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   </Button>
                 </Link>
                 <Link to="/profile">
-                  <Button variant="ghost" size="sm" className="hidden md:flex items-center gap-2">
+                  <Button variant="ghost" size="icon" className="hidden md:flex">
                     <User className="h-4 w-4" />
-                    {user?.displayName}
                   </Button>
                 </Link>
-                <Button variant="ghost" size="sm" onClick={handleLogout} className="hidden md:flex">
+                <Button variant="ghost" size="icon" onClick={handleLogout} className="hidden md:flex">
                   <LogOut className="h-4 w-4" />
                 </Button>
               </>
@@ -126,15 +142,30 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </>
             )}
 
-            {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
+              {/* Mobile Theme Toggle Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className="md:hidden"
+                aria-label="Toggle theme"
+              >
+                {theme === 'light' ? (
+                  <Moon className="h-5 w-5" />
+                ) : (
+                  <Sun className="h-5 w-5" />
+                )}
+              </Button>
+
+              {/* Mobile menu button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
           </div>
         </div>
 
@@ -189,6 +220,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </>
               )}
               
+              {/* Mobile Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent"
+              >
+                {theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+              </button>
+
               {isAuthenticated ? (
                 <>
                   <Link

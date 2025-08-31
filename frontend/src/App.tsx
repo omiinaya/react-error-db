@@ -21,6 +21,7 @@ import AdminPanel from '@/pages/admin/AdminPanel';
 
 // Contexts
 import { AuthProvider } from '@/contexts/AuthContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -36,14 +37,15 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Router
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true
-          }}
-        >
-          <Layout>
-            <Routes>
+        <ThemeProvider>
+          <Router
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true
+            }}
+          >
+            <Layout>
+              <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/search" element={<Search />} />
               <Route path="/error/:id" element={<ErrorDetail />} />
@@ -89,9 +91,10 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-            </Routes>
-          </Layout>
-        </Router>
+              </Routes>
+            </Layout>
+          </Router>
+        </ThemeProvider>
       </AuthProvider>
       
       {/* React Query Devtools */}

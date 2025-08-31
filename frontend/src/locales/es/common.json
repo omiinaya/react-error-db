@@ -12,7 +12,8 @@
     "profile": "Perfil",
     "signIn": "Iniciar Sesión",
     "signUp": "Registrarse",
-    "signOut": "Cerrar Sesión"
+    "signOut": "Cerrar Sesión",
+    "admin": "Administrador"
   },
   "search": {
     "placeholder": "Buscar códigos de error...",
@@ -58,9 +59,6 @@
     "apiReference": "Referencia API",
     "contribute": "Contribuir",
     "copyright": "© 2024 ErrorDB. Todos los derechos reservados."
-  },
-  "navigation": {
-    "admin": "Administrador"
   },
   "theme": {
     "switchToDark": "Cambiar a Modo Oscuro",

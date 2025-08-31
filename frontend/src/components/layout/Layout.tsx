@@ -43,8 +43,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const navigation = [
-    { name: t('navigation:home'), href: '/', current: location.pathname === '/' },
-    { name: t('navigation:browse'), href: '/search', current: location.pathname === '/search' },
+    { name: t('common:navigation.home'), href: '/', current: location.pathname === '/' },
+    { name: t('common:navigation.browse'), href: '/search', current: location.pathname === '/search' },
   ];
 
 
@@ -84,7 +84,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 >
                   <Button variant="ghost" size="sm" className="flex items-center gap-2">
                     <Settings className="h-4 w-4" />
-                    {t('navigation:adminSettings')}
+                    {t('common:navigation.adminSettings')}
                   </Button>
                 </Link>
               )}
@@ -112,7 +112,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <Link to="/error/create">
                   <Button size="sm" className="hidden md:flex items-center gap-2">
                     <Plus className="h-4 w-4" />
-                    {t('navigation:addError')}
+                    {t('common:navigation.addError')}
                   </Button>
                 </Link>
                 {/* Language Selector Dropdown */}
@@ -174,12 +174,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <>
                 <Link to="/login">
                   <Button variant="ghost" size="sm" className="hidden md:flex">
-                    {t('navigation:signIn')}
+                    {t('common:navigation.signIn')}
                   </Button>
                 </Link>
                 <Link to="/register">
                   <Button size="sm" className="hidden md:flex">
-                    {t('navigation:signUp')}
+                    {t('common:navigation.signUp')}
                   </Button>
                 </Link>
               </>
@@ -289,7 +289,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    {t('navigation:adminSettings')}
+                    {t('common:navigation.adminSettings')}
                   </Link>
                 </>
               )}
@@ -309,20 +309,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    {t('navigation:addError')}
+                    {t('common:navigation.addError')}
                   </Link>
                   <Link
                     to="/profile"
                     className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    {t('navigation:profile')}
+                    {t('common:navigation.profile')}
                   </Link>
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent"
                   >
-                    {t('navigation:signOut')}
+                    {t('common:navigation.signOut')}
                   </button>
                 </>
               ) : (
@@ -332,14 +332,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    {t('navigation:signIn')}
+                    {t('common:navigation.signIn')}
                   </Link>
                   <Link
                     to="/register"
                     className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    {t('navigation:signUp')}
+                    {t('common:navigation.signUp')}
                   </Link>
                 </>
               )}

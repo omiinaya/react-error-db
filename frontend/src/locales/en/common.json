@@ -12,7 +12,8 @@
     "profile": "Profile",
     "signIn": "Sign In",
     "signUp": "Sign Up",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "admin": "Admin"
   },
   "search": {
     "placeholder": "Search error codes...",
@@ -58,9 +59,6 @@
     "apiReference": "API Reference",
     "contribute": "Contribute",
     "copyright": "© 2024 ErrorDB. All rights reserved."
-  },
-  "navigation": {
-    "admin": "Admin"
   },
   "theme": {
     "switchToDark": "Switch to Dark Mode",

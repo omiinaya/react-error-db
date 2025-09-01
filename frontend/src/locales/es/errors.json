@@ -25,7 +25,16 @@
     "downvote": "Voto Negativo",
     "characterLimitExceeded": "Límite de caracteres excedido",
     "approachingLimit": "Acercándose al límite de caracteres",
-    "characters": "caracteres"
+    "characters": "caracteres",
+    "deleteSolutionTitle": "Eliminar solución",
+    "deleteSolutionDescription": "¿Estás seguro de que quieres eliminar esta solución? Esta acción no se puede deshacer.",
+    "editSolution": "Editar solución",
+    "editSolutionTitle": "Editar solución",
+    "editSolutionDescription": "Actualiza el texto de tu solución a continuación.",
+    "updateSolution": "Actualizar solución",
+    "updating": "Actualizando...",
+    "solutionUpdated": "¡Solución actualizada con éxito!",
+    "lastEdited": "Última edición"
   },
   "create": {
     "title": "Crear Nuevo Código de Error",
@@ -53,6 +62,8 @@
     "voteFailed": "Error al votar",
     "signInToVote": "Por favor, inicia sesión para votar",
     "signInToAddSolution": "Por favor, inicia sesión para agregar una solución",
+    "signInToDelete": "Por favor, inicia sesión para eliminar soluciones",
+    "signInToEdit": "Por favor, inicia sesión para editar soluciones",
     "solutionRequired": "Por favor, ingresa una solución",
     "solutionAdded": "¡Solución agregada exitosamente!",
     "solutionFailed": "Error al agregar solución"

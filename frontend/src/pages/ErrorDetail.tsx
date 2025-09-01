@@ -9,11 +9,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useTranslation } from 'react-i18next';
-import { ThumbsUp, ThumbsDown, MessageSquare, Eye, Calendar, CheckCircle, Trash2 } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageSquare, Eye, Calendar, CheckCircle, Trash2, Edit } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
-import { Solution, CreateSolutionRequest } from '@/types';
+import { Solution, CreateSolutionRequest, UpdateSolutionRequest } from '@/types';
 import toast from 'react-hot-toast';
+import EditSolutionDialog from '@/components/EditSolutionDialog';
 
 const ErrorDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -23,6 +24,8 @@ const ErrorDetail: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [solutionToDelete, setSolutionToDelete] = useState<Solution | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [solutionToEdit, setSolutionToEdit] = useState<Solution | null>(null);
   const { t } = useTranslation();
 
   // Character limit constants
@@ -99,6 +102,23 @@ const ErrorDetail: React.FC = () => {
     },
   });
 
+  // Edit solution mutation
+  const editSolutionMutation = useMutation({
+    mutationFn: ({ solutionId, solutionText }: { solutionId: string; solutionText: string }) =>
+      api.updateSolution(solutionId, { solutionText }),
+    onSuccess: () => {
+      setEditDialogOpen(false);
+      setSolutionToEdit(null);
+      queryClient.invalidateQueries({ queryKey: ['error-detail', id] });
+      toast.success(t('errors:messages.solutionUpdated'));
+    },
+    onError: () => {
+      setEditDialogOpen(false);
+      setSolutionToEdit(null);
+      // Error is handled by global API interceptor, no need for duplicate toast
+    },
+  });
+
   const handleVote = (solutionId: string, voteType: 'upvote' | 'downvote') => {
     if (!isAuthenticated) {
       toast.error(t('errors:messages.signInToVote'));
@@ -135,6 +155,19 @@ const ErrorDetail: React.FC = () => {
     if (solutionToDelete) {
       deleteSolutionMutation.mutate(solutionToDelete.id);
     }
+  };
+
+  const handleEditSolution = (solution: Solution) => {
+    if (!isAuthenticated) {
+      toast.error(t('errors:messages.signInToEdit'));
+      return;
+    }
+    setSolutionToEdit(solution);
+    setEditDialogOpen(true);
+  };
+
+  const handleSaveSolution = (solutionId: string, solutionText: string) => {
+    editSolutionMutation.mutate({ solutionId, solutionText });
   };
 
   const isSolutionAuthor = (solution: Solution) => {
@@ -292,15 +325,26 @@ const ErrorDetail: React.FC = () => {
                         </Badge>
                       )}
                       {isAuthenticated && isSolutionAuthor(solution) && !solution.isVerified && (
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDeleteSolution(solution)}
-                          disabled={deleteSolutionMutation.isPending}
-                          className="h-8 px-2"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditSolution(solution)}
+                            disabled={editSolutionMutation.isPending}
+                            className="h-8 px-2"
+                          >
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDeleteSolution(solution)}
+                            disabled={deleteSolutionMutation.isPending}
+                            className="h-8 px-2"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -336,9 +380,16 @@ const ErrorDetail: React.FC = () => {
                         {t('errors:detail.score')}: {solution.score}
                       </span>
                     </div>
-                    <span className="text-sm text-muted-foreground">
-                      {new Date(solution.createdAt).toLocaleDateString()}
-                    </span>
+                    <div className="text-right">
+                      <span className="text-sm text-muted-foreground block">
+                        {new Date(solution.createdAt).toLocaleDateString()}
+                      </span>
+                      {solution.updatedAt && solution.updatedAt !== solution.createdAt && (
+                        <span className="text-xs text-muted-foreground block">
+                          {t('errors:detail.lastEdited')}: {new Date(solution.updatedAt).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -443,6 +494,15 @@ const ErrorDetail: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Edit Solution Dialog */}
+      <EditSolutionDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        solution={solutionToEdit}
+        onSave={handleSaveSolution}
+        isSaving={editSolutionMutation.isPending}
+      />
     </div>
   );
 };

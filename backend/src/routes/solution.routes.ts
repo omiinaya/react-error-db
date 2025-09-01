@@ -190,7 +190,10 @@ router.put('/:solutionId', authenticateToken, validateRequest(updateSolutionSche
     }
 
     // Check if user is owner or admin
-    if (solution.authorId !== req.user!.id && !req.user!.isAdmin) {
+    const isOwner = solution.authorId === req.user!.id;
+    const isAdmin = req.user!.isAdmin;
+
+    if (!isOwner && !isAdmin) {
       return res.status(403).json({
         success: false,
         error: {
@@ -200,11 +203,44 @@ router.put('/:solutionId', authenticateToken, validateRequest(updateSolutionSche
       });
     }
 
+    // Check if solution is verified and user is not admin
+    if (solution.isVerified && !isAdmin) {
+      return res.status(403).json({
+        success: false,
+        error: {
+          code: 'SOLUTION_VERIFIED',
+          message: 'Cannot edit verified solutions. Only administrators can edit verified solutions.'
+        }
+      });
+    }
+
+    // Prepare update data
+    const updateData: any = {
+      solutionText,
+      editCount: (solution.editCount || 0) + 1,
+      lastEditedAt: new Date(),
+      lastEditedById: req.user!.id
+    };
+
+    // Reset verification status if solution was previously verified and is being edited by admin
+    if (solution.isVerified && isAdmin) {
+      updateData.isVerified = false;
+      updateData.verifiedById = null;
+      updateData.verifiedAt = null;
+    }
+
     const updatedSolution = await prisma.solution.update({
       where: { id: solutionId as string },
-      data: { solutionText },
+      data: updateData,
       include: {
         author: {
+          select: {
+            id: true,
+            username: true,
+            displayName: true,
+          }
+        },
+        lastEditedBy: {
           select: {
             id: true,
             username: true,

@@ -11,25 +11,26 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  username     String   @unique
-  passwordHash String
-  displayName  String?
-  avatarUrl    String?
-  isVerified   Boolean  @default(false)
-  isAdmin      Boolean  @default(false)
+  id              String   @id @default(uuid())
+  email           String   @unique
+  username        String   @unique
+  passwordHash    String
+  displayName     String?
+  avatarUrl       String?
+  isVerified      Boolean  @default(false)
+  isAdmin         Boolean  @default(false)
   themePreference String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   // Relations
-  solutions     Solution[]
-  votes         Vote[]
-  userSessions  UserSession[]
-  verifiedSolutions Solution[] @relation("SolutionVerification")
-  auditLogs     AuditLog[]
-  categoryRequests CategoryRequest[] @relation("CategoryRequestRequester")
+  solutions                Solution[]
+  votes                    Vote[]
+  userSessions             UserSession[]
+  verifiedSolutions        Solution[]        @relation("SolutionVerification")
+  editedSolutions          Solution[]        @relation("SolutionEditing")
+  auditLogs                AuditLog[]
+  categoryRequests         CategoryRequest[] @relation("CategoryRequestRequester")
   reviewedCategoryRequests CategoryRequest[] @relation("CategoryRequestReviewer")
 
   @@map("users")
@@ -47,28 +48,28 @@ model Category {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  parent       Category?   @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: NoAction)
-  children     Category[]  @relation("CategoryHierarchy")
-  applications Application[]
+  parent           Category?         @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: NoAction)
+  children         Category[]        @relation("CategoryHierarchy")
+  applications     Application[]
   categoryRequests CategoryRequest[] @relation("CategoryRequestParent")
 
   @@map("categories")
 }
 
 model Application {
-  id                String   @id @default(uuid())
-  name              String   @unique
-  slug              String   @unique
-  description       String?
-  logoUrl           String?
-  categoryId        String
-  websiteUrl        String?
-  documentationUrl  String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id               String   @id @default(uuid())
+  name             String   @unique
+  slug             String   @unique
+  description      String?
+  logoUrl          String?
+  categoryId       String
+  websiteUrl       String?
+  documentationUrl String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   // Relations
-  category  Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category   Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   errorCodes ErrorCode[]
 
   @@map("applications")
@@ -96,24 +97,28 @@ model ErrorCode {
 }
 
 model Solution {
-  id           String   @id @default(uuid())
-  errorId      String
-  authorId     String
-  solutionText String
-  upvotes      Int      @default(0)
-  downvotes    Int      @default(0)
-  score        Int      @default(0)
-  isVerified   Boolean  @default(false)
-  verifiedById String?
-  verifiedAt   DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             String    @id @default(uuid())
+  errorId        String
+  authorId       String
+  solutionText   String
+  upvotes        Int       @default(0)
+  downvotes      Int       @default(0)
+  score          Int       @default(0)
+  isVerified     Boolean   @default(false)
+  verifiedById   String?
+  verifiedAt     DateTime?
+  editCount      Int       @default(0)
+  lastEditedAt   DateTime?
+  lastEditedById String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   // Relations
-  error       ErrorCode @relation(fields: [errorId], references: [id], onDelete: Cascade)
-  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  verifiedBy  User?     @relation("SolutionVerification", fields: [verifiedById], references: [id], onDelete: SetNull)
-  votes       Vote[]
+  error        ErrorCode @relation(fields: [errorId], references: [id], onDelete: Cascade)
+  author       User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  verifiedBy   User?     @relation("SolutionVerification", fields: [verifiedById], references: [id], onDelete: SetNull)
+  lastEditedBy User?     @relation("SolutionEditing", fields: [lastEditedById], references: [id], onDelete: SetNull)
+  votes        Vote[]
 
   @@map("solutions")
 }
@@ -163,16 +168,16 @@ enum VoteType {
 }
 
 model AuditLog {
-  id        String   @id @default(uuid())
-  action    String
-  resource  String
+  id         String   @id @default(uuid())
+  action     String
+  resource   String
   resourceId String?
-  userId    String
-  userIp    String?
-  userAgent String?
-  details   Json?
-  status    String   // success, failure
-  createdAt DateTime @default(now())
+  userId     String
+  userIp     String?
+  userAgent  String?
+  details    Json?
+  status     String // success, failure
+  createdAt  DateTime @default(now())
 
   // Relations
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -181,23 +186,23 @@ model AuditLog {
 }
 
 model CategoryRequest {
-  id          String   @id @default(uuid())
-  name        String
-  slug        String
-  description String?
-  icon        String?
-  parentId    String?
-  status      CategoryRequestStatus @default(pending)
-  reason      String? // Reason for rejection
+  id            String                @id @default(uuid())
+  name          String
+  slug          String
+  description   String?
+  icon          String?
+  parentId      String?
+  status        CategoryRequestStatus @default(pending)
+  reason        String? // Reason for rejection
   requestedById String
-  reviewedById String?
-  reviewedAt   DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  reviewedById  String?
+  reviewedAt    DateTime?
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
 
   // Relations
-  requestedBy User   @relation("CategoryRequestRequester", fields: [requestedById], references: [id], onDelete: Cascade)
-  reviewedBy  User?  @relation("CategoryRequestReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  requestedBy User      @relation("CategoryRequestRequester", fields: [requestedById], references: [id], onDelete: Cascade)
+  reviewedBy  User?     @relation("CategoryRequestReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
   parent      Category? @relation("CategoryRequestParent", fields: [parentId], references: [id], onDelete: NoAction)
 
   @@map("category_requests")

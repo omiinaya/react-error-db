@@ -27,7 +27,14 @@
     "approachingLimit": "Approaching character limit",
     "characters": "characters",
     "deleteSolutionTitle": "Delete Solution",
-    "deleteSolutionDescription": "Are you sure you want to delete this solution? This action cannot be undone."
+    "deleteSolutionDescription": "Are you sure you want to delete this solution? This action cannot be undone.",
+    "editSolution": "Edit Solution",
+    "editSolutionTitle": "Edit Solution",
+    "editSolutionDescription": "Update your solution text below.",
+    "updateSolution": "Update Solution",
+    "updating": "Updating...",
+    "solutionUpdated": "Solution updated successfully!",
+    "lastEdited": "Last edited"
   },
   "create": {
     "title": "Create New Error Code",
@@ -56,6 +63,7 @@
     "signInToVote": "Please sign in to vote",
     "signInToAddSolution": "Please sign in to add a solution",
     "signInToDelete": "Please sign in to delete solutions",
+    "signInToEdit": "Please sign in to edit solutions",
     "solutionRequired": "Please enter a solution",
     "solutionAdded": "Solution added successfully!",
     "solutionFailed": "Failed to add solution",

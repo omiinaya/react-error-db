@@ -366,6 +366,14 @@ class ApiClient {
     });
   }
 
+  async updateSolution(solutionId: string, data: { solutionText: string }) {
+    return this.request<{ solution: any }>({
+      method: 'put',
+      url: `/solutions/${solutionId}`,
+      data,
+    });
+  }
+
   async deleteSolution(solutionId: string) {
     return this.request<{ message: string }>({
       method: 'delete',

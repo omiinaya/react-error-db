@@ -222,6 +222,10 @@ export interface CreateSolutionRequest {
   solutionText: string;
 }
 
+export interface UpdateSolutionRequest {
+  solutionText: string;
+}
+
 export interface VoteRequest {
   voteType: 'upvote' | 'downvote';
 }

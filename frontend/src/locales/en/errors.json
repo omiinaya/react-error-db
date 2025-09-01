@@ -9,7 +9,8 @@
   "detail": {
     "commonCauses": "Common Causes",
     "solutions": "Solutions",
-    "solutionCount": "{{count}} solution{{s}}",
+    "solutionCount": "{{count}} solution",
+    "solutionCount_plural": "{{count}} solutions",
     "noSolutions": "No solutions yet. Be the first to help!",
     "addSolution": "Add Your Solution",
     "solutionPlaceholder": "Share your solution to this error. Be specific and include code examples if possible.",

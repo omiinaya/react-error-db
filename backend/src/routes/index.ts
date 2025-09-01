@@ -43,6 +43,10 @@ router.use('/admin', adminRoutes);
 router.use('/database-security', databaseSecurityRoutes);
 router.use('/secrets', secretsRoutes);
 router.use('/category-requests', categoryRequestRoutes);
+// Log all registered routes for debugging
+console.log('Registered API routes:');
+console.log('- POST /api/errors/:errorId/solutions');
+console.log('- GET /api/errors/:id (includes solutions)');
 
 // TODO: Add search routes when implemented
 // router.use('/search', searchRoutes);

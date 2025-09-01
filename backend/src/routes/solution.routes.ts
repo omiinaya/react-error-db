@@ -7,69 +7,6 @@ import { logger } from '../utils/logger';
 
 const router = Router();
 
-// Add solution to error code
-router.post('/errors/:errorId/solutions', authenticateToken, validateRequest(createSolutionSchema), async (req: AuthenticatedRequest, res) => {
-  try {
-    const { errorId } = req.params;
-    const { solutionText } = req.body;
-
-    // Check if error code exists
-    const errorCode = await prisma.errorCode.findUnique({
-      where: { id: errorId as string }
-    });
-
-    if (!errorCode) {
-      return res.status(404).json({
-        success: false,
-        error: {
-          code: 'NOT_FOUND',
-          message: 'Error code not found'
-        }
-      });
-    }
-
-    // Create solution
-    const solution = await prisma.solution.create({
-      data: {
-        errorId: errorId as string,
-        authorId: req.user!.id,
-        solutionText,
-      },
-      include: {
-        author: {
-          select: {
-            id: true,
-            username: true,
-            displayName: true,
-          }
-        }
-      }
-    });
-
-    return res.status(201).json({
-      success: true,
-      data: {
-        solution: {
-          ...solution,
-          upvotes: 0,
-          downvotes: 0,
-          score: 0,
-          isVerified: false,
-          userVote: null
-        }
-      }
-    });
-  } catch (error) {
-    logger.error('Add solution error:', error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'SERVER_ERROR',
-        message: 'Failed to add solution'
-      }
-    });
-  }
-});
 
 // Vote on solution
 router.post('/solutions/:solutionId/vote', authenticateToken, validateRequest(voteSchema), async (req: AuthenticatedRequest, res) => {

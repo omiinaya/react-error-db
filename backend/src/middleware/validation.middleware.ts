@@ -15,16 +15,29 @@ export const validateRequest = (schema: AnyZodObject) => {
         const errors = error.errors.map((err) => ({
           field: err.path.join('.'),
           message: err.message,
+          code: err.code,
+          received: err.received,
+          expected: err.expected,
         }));
 
-        logger.warn('Validation error:', errors);
+        // Enhanced logging with full request context
+        logger.warn('Validation error:', {
+          errors,
+          url: req.url,
+          method: req.method,
+          body: req.body,
+          headers: req.headers,
+        });
 
         res.status(400).json({
           success: false,
           error: {
             code: 'VALIDATION_ERROR',
             message: 'Invalid request data',
-            details: errors,
+            details: errors.map(err => ({
+              field: err.field,
+              message: err.message,
+            })),
           },
         });
         return;
@@ -56,16 +69,29 @@ export const validateQuery = (schema: AnyZodObject) => {
         const errors = error.errors.map((err) => ({
           field: err.path.join('.'),
           message: err.message,
+          code: err.code,
+          received: err.received,
+          expected: err.expected,
         }));
 
-        logger.warn('Query validation error:', errors);
+        // Enhanced logging with full request context
+        logger.warn('Query validation error:', {
+          errors,
+          url: req.url,
+          method: req.method,
+          query: req.query,
+          headers: req.headers,
+        });
 
         res.status(400).json({
           success: false,
           error: {
             code: 'VALIDATION_ERROR',
             message: 'Invalid query parameters',
-            details: errors,
+            details: errors.map(err => ({
+              field: err.field,
+              message: err.message,
+            })),
           },
         });
         return;

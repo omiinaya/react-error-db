@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { errorCodeQuerySchema, createErrorCodeSchema, updateErrorCodeSchema } from '../schemas/error.schemas';
+import { createSolutionSchema } from '../schemas/solution.schemas';
 import { validateRequest, validateQuery } from '../middleware/validation.middleware';
 import { authenticateToken, AuthenticatedRequest, optionalAuth, requireAdmin } from '../middleware/auth.middleware';
 import prisma from '../services/database.service';
@@ -358,6 +359,70 @@ router.put('/:id', authenticateToken, requireAdmin, validateRequest(updateErrorC
       error: {
         code: 'SERVER_ERROR',
         message: 'Failed to update error code'
+      }
+    });
+  }
+});
+
+// Add solution to error code
+router.post('/:errorId/solutions', authenticateToken, validateRequest(createSolutionSchema), async (req: AuthenticatedRequest, res) => {
+  try {
+    const { errorId } = req.params;
+    const { solutionText } = req.body;
+
+    // Check if error code exists
+    const errorCode = await prisma.errorCode.findUnique({
+      where: { id: errorId as string }
+    });
+
+    if (!errorCode) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: 'NOT_FOUND',
+          message: 'Error code not found'
+        }
+      });
+    }
+
+    // Create solution
+    const solution = await prisma.solution.create({
+      data: {
+        errorId: errorId as string,
+        authorId: req.user!.id,
+        solutionText,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            username: true,
+            displayName: true,
+          }
+        }
+      }
+    });
+
+    return res.status(201).json({
+      success: true,
+      data: {
+        solution: {
+          ...solution,
+          upvotes: 0,
+          downvotes: 0,
+          score: 0,
+          isVerified: false,
+          userVote: null
+        }
+      }
+    });
+  } catch (error) {
+    logger.error('Add solution error:', error);
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: 'SERVER_ERROR',
+        message: 'Failed to add solution'
       }
     });
   }

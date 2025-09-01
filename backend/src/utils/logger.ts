@@ -3,9 +3,17 @@ import 'winston-daily-rotate-file';
 
 const { combine, timestamp, printf, colorize, errors } = format;
 
-// Custom log format
+// Custom log format for string messages
 const logFormat = printf(({ level, message, timestamp, stack }) => {
   return `${timestamp} [${level}]: ${stack || message}`;
+});
+
+// Custom format for JSON objects
+const jsonFormat = printf(({ level, message, timestamp, stack, ...meta }) => {
+  if (typeof message === 'object') {
+    return `${timestamp} [${level}]: ${JSON.stringify({ message, ...meta }, null, 2)}`;
+  }
+  return `${timestamp} [${level}]: ${stack || message} ${Object.keys(meta).length ? JSON.stringify(meta, null, 2) : ''}`;
 });
 
 // Create logger instance
@@ -22,7 +30,7 @@ export const logger = createLogger({
       format: combine(
         colorize(),
         timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-        logFormat
+        jsonFormat
       ),
     }),
     // File transport for all logs

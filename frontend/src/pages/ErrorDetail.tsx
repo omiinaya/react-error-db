@@ -22,6 +22,24 @@ const ErrorDetail: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { t } = useTranslation();
 
+  // Character limit constants
+  const MAX_CHARACTERS = 10000;
+  const WARNING_THRESHOLD = 8000; // 80% of limit
+  const currentLength = solutionText.length;
+  const charactersRemaining = MAX_CHARACTERS - currentLength;
+  const percentageUsed = (currentLength / MAX_CHARACTERS) * 100;
+
+  // Determine text color based on character count
+  const getCharacterCountColor = () => {
+    if (currentLength > MAX_CHARACTERS) {
+      return 'text-red-500'; // Over limit - red
+    } else if (currentLength > WARNING_THRESHOLD) {
+      return 'text-yellow-500'; // Warning zone - yellow/orange
+    } else {
+      return 'text-muted-foreground'; // Normal - muted color
+    }
+  };
+
   // Fetch error details
   const { data: errorDetail, isLoading, error } = useQuery({
     queryKey: ['error-detail', id],
@@ -40,7 +58,7 @@ const ErrorDetail: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['error-detail', id] });
       toast.success(t('errors:messages.voteRecorded'));
     },
-    onError: (error: any) => {
+    onError: () => {
       // Error is handled by global API interceptor, no need for duplicate toast
     },
   });
@@ -55,7 +73,7 @@ const ErrorDetail: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['error-detail', id] });
       toast.success(t('errors:messages.solutionAdded'));
     },
-    onError: (error: any) => {
+    onError: () => {
       setIsSubmitting(false);
       // Error is handled by global API interceptor, no need for duplicate toast
     },
@@ -285,14 +303,47 @@ const ErrorDetail: React.FC = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmitSolution}>
-              <Textarea
-                placeholder={t('errors:detail.solutionPlaceholder')}
-                className="min-h-32 mb-4"
-                value={solutionText}
-                onChange={(e) => setSolutionText(e.target.value)}
-                disabled={isSubmitting}
-              />
-              <Button type="submit" disabled={isSubmitting || !solutionText.trim()}>
+              <div className="relative mb-4">
+                <Textarea
+                  placeholder={t('errors:detail.solutionPlaceholder')}
+                  className="min-h-32 pr-16"
+                  value={solutionText}
+                  onChange={(e) => setSolutionText(e.target.value)}
+                  disabled={isSubmitting}
+                  maxLength={MAX_CHARACTERS}
+                />
+                <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                  <div className={`text-xs font-medium ${getCharacterCountColor()} transition-colors duration-200`}>
+                    {currentLength > MAX_CHARACTERS ? (
+                      <span className="flex items-center gap-1">
+                        <span className="text-red-500">-{Math.abs(charactersRemaining)}</span>
+                      </span>
+                    ) : (
+                      charactersRemaining
+                    )}
+                  </div>
+                  {percentageUsed > 80 && (
+                    <div className="w-2 h-2 rounded-full bg-current animate-pulse"></div>
+                  )}
+                </div>
+              </div>
+              {/* Error message in bottom right - only show when there are issues and more than 0 characters */}
+              {(currentLength > 0 && (currentLength > MAX_CHARACTERS || currentLength < 10)) && (
+                <div className="text-right mb-4">
+                  <div className="text-xs text-red-500 font-medium">
+                    {currentLength > MAX_CHARACTERS ? (
+                      <span>{t('errors:detail.characterLimitExceeded')}</span>
+                    ) : currentLength < 10 ? (
+                      <span>{t('errors:validation.solutionTextTooSmall')}</span>
+                    ) : null}
+                  </div>
+                </div>
+              )}
+              <Button
+                type="submit"
+                disabled={isSubmitting || !solutionText.trim() || currentLength > MAX_CHARACTERS}
+                className={currentLength > MAX_CHARACTERS ? 'opacity-50 cursor-not-allowed' : ''}
+              >
                 {isSubmitting ? t('errors:detail.submitting') : t('errors:detail.submitSolution')}
               </Button>
             </form>

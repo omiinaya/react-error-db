@@ -22,7 +22,10 @@
     "score": "Puntuación",
     "vote": "Votar",
     "upvote": "Voto Positivo",
-    "downvote": "Voto Negativo"
+    "downvote": "Voto Negativo",
+    "characterLimitExceeded": "Límite de caracteres excedido",
+    "approachingLimit": "Acercándose al límite de caracteres",
+    "characters": "caracteres"
   },
   "create": {
     "title": "Crear Nuevo Código de Error",

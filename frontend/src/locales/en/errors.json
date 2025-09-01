@@ -22,7 +22,10 @@
     "score": "Score",
     "vote": "Vote",
     "upvote": "Upvote",
-    "downvote": "Downvote"
+    "downvote": "Downvote",
+    "characterLimitExceeded": "Character limit exceeded",
+    "approachingLimit": "Approaching character limit",
+    "characters": "characters"
   },
   "create": {
     "title": "Create New Error Code",

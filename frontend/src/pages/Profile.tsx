@@ -42,7 +42,7 @@ const Profile: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['current-user'] });
       toast.success('Profile updated successfully!');
     },
-    onError: (error: any) => {
+    onError: () => {
       // Error is handled by global API interceptor, no need for duplicate toast
     },
   });

@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { ThumbsUp, ThumbsDown, MessageSquare, Eye, Calendar, CheckCircle, Trash2, Edit } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
-import { Solution, CreateSolutionRequest, UpdateSolutionRequest } from '@/types';
+import { Solution, CreateSolutionRequest } from '@/types';
 import toast from 'react-hot-toast';
 import EditSolutionDialog from '@/components/EditSolutionDialog';
 

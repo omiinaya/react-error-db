@@ -155,7 +155,7 @@ class ApiClient {
 
   // Map backend validation errors to i18n messages
   private mapValidationErrorToMessage(error: { field?: string; message: string; code?: string }): string {
-    const { field, message, code } = error;
+    const { field, message } = error;
     
     // Map common validation error patterns to translation keys
     if (message.includes('must be at least') && message.includes('characters')) {

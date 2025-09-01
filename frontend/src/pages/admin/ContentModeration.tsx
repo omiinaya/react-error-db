@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CheckCircle, XCircle, Trash2, FileText, User, AlertTriangle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface SolutionForModeration {
   id: string;
@@ -15,6 +16,7 @@ interface SolutionForModeration {
   verifiedById: string | null;
   verifiedAt: string | null;
   createdAt: string;
+  lastEditedAt?: string;
   author: {
     id: string;
     username: string;
@@ -62,6 +64,7 @@ const ContentModeration: React.FC = () => {
     total: 0,
     pages: 0
   });
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!user?.isAdmin) return;
@@ -262,7 +265,7 @@ const ContentModeration: React.FC = () => {
                           <span className="font-medium">{solution.author.displayName}</span>
                           <span className="text-muted-foreground">•</span>
                           <span className="text-sm text-muted-foreground">
-                            Last edited: {new Date(solution.lastEditedAt || solution.createdAt).toLocaleDateString()}
+                            {t('errors:detail.lastEdited')}: {new Date(solution.lastEditedAt || solution.createdAt).toLocaleDateString()}
                           </span>
                           <span className="text-muted-foreground">•</span>
                           <Badge variant={solution.isVerified ? "default" : "secondary"}>

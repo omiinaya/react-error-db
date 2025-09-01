@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
 import { UpdateProfileRequest, Solution } from '@/types';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
@@ -21,6 +22,7 @@ const Profile: React.FC = () => {
     displayName: '',
     avatarUrl: ''
   });
+  const { t } = useTranslation();
 
   // Fetch user profile
   const { data: profile, isLoading, error } = useQuery({
@@ -252,7 +254,7 @@ const Profile: React.FC = () => {
                 <div key={solution.id} className="border rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-muted-foreground">
-                      Last edited: {new Date(solution.lastEditedAt || solution.createdAt).toLocaleDateString()}
+                      {t('errors:detail.lastEdited')}: {new Date(solution.lastEditedAt || solution.createdAt).toLocaleDateString()}
                     </span>
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1 text-sm text-green-600">

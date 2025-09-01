@@ -41,7 +41,7 @@ const ErrorDetail: React.FC = () => {
       toast.success(t('errors:messages.voteRecorded'));
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.error?.message || t('errors:messages.voteFailed'));
+      // Error is handled by global API interceptor, no need for duplicate toast
     },
   });
 
@@ -57,7 +57,7 @@ const ErrorDetail: React.FC = () => {
     },
     onError: (error: any) => {
       setIsSubmitting(false);
-      toast.error(error.response?.data?.error?.message || t('errors:messages.solutionFailed'));
+      // Error is handled by global API interceptor, no need for duplicate toast
     },
   });
 

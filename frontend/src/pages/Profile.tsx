@@ -43,7 +43,7 @@ const Profile: React.FC = () => {
       toast.success('Profile updated successfully!');
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.error?.message || 'Failed to update profile');
+      // Error is handled by global API interceptor, no need for duplicate toast
     },
   });
 

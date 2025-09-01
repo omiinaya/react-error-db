@@ -53,5 +53,27 @@
     "solutionRequired": "Please enter a solution",
     "solutionAdded": "Solution added successfully!",
     "solutionFailed": "Failed to add solution"
+  },
+  "validation": {
+    "solutionTextTooSmall": "Solution text must be at least 10 characters",
+    "solutionTextTooBig": "Solution text must be at most 10000 characters",
+    "descriptionTooSmall": "Description must be at least 10 characters",
+    "descriptionTooBig": "Description must be at most 5000 characters",
+    "searchQueryEmpty": "Search query cannot be empty",
+    "invalidEmail": "Invalid email address",
+    "passwordRequired": "Password is required",
+    "refreshTokenRequired": "Refresh token is required",
+    "displayNameRequired": "Display name is required",
+    "invalidUuid": "Invalid ID format",
+    "invalidCategoryId": "Invalid category ID",
+    "invalidApplicationId": "Invalid application ID",
+    "invalidUserId": "Invalid user ID",
+    "fieldRequired": "{{field}} is required",
+    "fieldTooShort": "{{field}} must be at least {{min}} characters",
+    "fieldTooLong": "{{field}} must be at most {{max}} characters",
+    "genericValidationError": "Validation failed",
+    "genericTooShort": "Must be at least {{min}} characters",
+    "genericTooLong": "Must be at most {{max}} characters",
+    "genericRequired": "This field is required"
   }
 }

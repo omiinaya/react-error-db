@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 import toast from 'react-hot-toast';
+import i18n from '@/lib/i18n';
 import {
   ApiResponse,
   ApiError,
@@ -53,11 +54,39 @@ class ApiClient {
         return response;
       },
       async (error: AxiosError<{ error?: ApiError }>) => {
-        const message = error.response?.data?.error?.message || error.message || 'An unexpected error occurred';
+        const responseData = error.response?.data;
+        let message = 'An unexpected error occurred';
         
-        // Show error toast for non-401 errors
+        // Handle validation errors with detailed field messages
+        if (error.response?.status === 400 && responseData?.error?.code === 'VALIDATION_ERROR') {
+          const validationErrors = responseData.error.details;
+          if (validationErrors && validationErrors.length > 0) {
+            // Map backend validation errors to i18n translation keys
+            const firstError = validationErrors[0];
+            console.log('DEBUG: Original validation error:', firstError);
+            message = this.mapValidationErrorToMessage(firstError);
+            console.log('DEBUG: Mapped validation message:', message);
+          } else {
+            message = i18n.t('errors:validation.genericValidationError', { defaultValue: 'Validation failed' });
+          }
+        }
+        // Handle other error types
+        else if (responseData?.error?.message) {
+          message = responseData.error.message;
+        } else if (error.message) {
+          message = error.message;
+        }
+        
+        // Show error toast for non-401 errors with improved formatting
         if (error.response?.status !== 401) {
-          toast.error(message);
+          // For validation errors, show a more user-friendly message
+          if (error.response?.status === 400 && responseData?.error?.code === 'VALIDATION_ERROR') {
+            toast.error(message, {
+              duration: 5000, // Longer duration for validation errors
+            });
+          } else {
+            toast.error(message);
+          }
         }
 
         // Handle token expiration with automatic refresh
@@ -122,6 +151,75 @@ class ApiClient {
         return Promise.reject(error);
       }
     );
+  }
+
+  // Map backend validation errors to i18n messages
+  private mapValidationErrorToMessage(error: { field?: string; message: string; code?: string }): string {
+    const { field, message, code } = error;
+    
+    // Map common validation error patterns to translation keys
+    if (message.includes('must be at least') && message.includes('characters')) {
+      const minMatch = message.match(/at least (\d+)/);
+      const min = minMatch ? parseInt(minMatch[1]) : 10;
+      
+      if (field) {
+        // For solutionText field, use the specific translation key
+        if (field === 'solutionText') {
+          return i18n.t('errors:validation.solutionTextTooSmall', {
+            defaultValue: message
+          });
+        }
+        
+        return i18n.t('errors:validation.fieldTooShort', {
+          field,
+          min,
+          defaultValue: `${field}: ${message}`
+        });
+      }
+      return i18n.t('errors:validation.genericTooShort', {
+        min,
+        defaultValue: message
+      });
+    }
+    
+    if (message.includes('must be at most') && message.includes('characters')) {
+      const maxMatch = message.match(/at most (\d+)/);
+      const max = maxMatch ? parseInt(maxMatch[1]) : 10000;
+      
+      if (field) {
+        // For solutionText field, use the specific translation key
+        if (field === 'solutionText') {
+          return i18n.t('errors:validation.solutionTextTooBig', {
+            defaultValue: message
+          });
+        }
+        
+        return i18n.t('errors:validation.fieldTooLong', {
+          field,
+          max,
+          defaultValue: `${field}: ${message}`
+        });
+      }
+      return i18n.t('errors:validation.genericTooLong', {
+        max,
+        defaultValue: message
+      });
+    }
+    
+    if (message.includes('is required') || message.includes('cannot be empty')) {
+      if (field) {
+        return i18n.t('errors:validation.fieldRequired', {
+          field,
+          defaultValue: `${field} is required`
+        });
+      }
+      return i18n.t('errors:validation.genericRequired', {
+        defaultValue: message
+      });
+    }
+    
+    // Default: use the field context if available
+    return field ? `${field}: ${message}` : message;
   }
 
   // Generic request method

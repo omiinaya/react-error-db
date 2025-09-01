@@ -293,6 +293,22 @@ class ApiClient {
     });
   }
 
+  // Theme endpoints
+  async getThemePreference() {
+    return this.request<{ themePreference: string }>({
+      method: 'get',
+      url: '/users/me/theme',
+    });
+  }
+
+  async updateThemePreference(data: { themePreference: string }) {
+    return this.request<{ themePreference: string }>({
+      method: 'put',
+      url: '/users/me/theme',
+      data,
+    });
+  }
+
   // Admin endpoints
   async getAdminStats() {
     return this.request<{ stats: any }>({

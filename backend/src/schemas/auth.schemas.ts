@@ -34,7 +34,14 @@ export const updateProfileSchema = z.object({
   avatarUrl: z.string().url('Invalid URL format').optional().or(z.literal('')),
 });
 
+export const updateThemePreferenceSchema = z.object({
+  themePreference: z.enum(['light', 'dark'], {
+    errorMap: () => ({ message: 'Theme preference must be either "light" or "dark"' })
+  }),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RefreshTokenInput = z.infer<typeof refreshTokenSchema>;
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+export type UpdateThemePreferenceInput = z.infer<typeof updateThemePreferenceSchema>;

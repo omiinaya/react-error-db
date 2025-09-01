@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { updateProfileSchema } from '../schemas/auth.schemas';
+import { updateProfileSchema, updateThemePreferenceSchema } from '../schemas/auth.schemas';
 import { validateRequest } from '../middleware/validation.middleware';
 import { authenticateToken, AuthenticatedRequest, requireAdmin } from '../middleware/auth.middleware';
 import prisma from '../services/database.service';
@@ -276,6 +276,75 @@ router.delete('/:userId', authenticateToken, requireAdmin, async (req: Authentic
       error: {
         code: 'SERVER_ERROR',
         message: 'Failed to delete user'
+      }
+    });
+  }
+});
+
+// Get current user's theme preference
+router.get('/me/theme', authenticateToken, async (req: AuthenticatedRequest, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user!.id },
+      select: {
+        themePreference: true,
+      }
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: 'NOT_FOUND',
+          message: 'User not found'
+        }
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: {
+        themePreference: user.themePreference
+      }
+    });
+  } catch (error) {
+    logger.error('Get theme preference error:', error);
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: 'SERVER_ERROR',
+        message: 'Failed to fetch theme preference'
+      }
+    });
+  }
+});
+
+// Update current user's theme preference
+router.put('/me/theme', authenticateToken, validateRequest(updateThemePreferenceSchema), async (req: AuthenticatedRequest, res) => {
+  try {
+    const { themePreference } = req.body;
+
+    const user = await prisma.user.update({
+      where: { id: req.user!.id },
+      data: { themePreference },
+      select: {
+        themePreference: true,
+      }
+    });
+
+    return res.json({
+      success: true,
+      data: {
+        themePreference: user.themePreference
+      }
+    });
+  } catch (error) {
+    logger.error('Update theme preference error:', error);
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: 'SERVER_ERROR',
+        message: 'Failed to update theme preference'
       }
     });
   }

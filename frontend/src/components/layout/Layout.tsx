@@ -93,13 +93,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
           {/* Search Bar - Centered */}
           <div className="hidden md:flex flex-1 justify-center mx-8">
-            <form onSubmit={handleSearch} className="flex items-center gap-2 max-w-md">
+            <form onSubmit={handleSearch} className="flex items-center gap-2 max-w-lg">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder={t('common:search.placeholder')}
-                  className="pl-10 w-full"
+                  className="pl-10 pr-4 w-full"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -108,7 +108,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               {/* Add Error Button positioned to the right of search bar */}
               {isAuthenticated && (
                 <Link to="/error/create">
-                  <Button size="sm" className="flex items-center gap-2 whitespace-nowrap h-8">
+                  <Button size="sm" className="flex items-center gap-2 whitespace-nowrap h-8 shrink-0">
                     <Plus className="h-4 w-4" />
                     {t('common:navigation.addError')}
                   </Button>

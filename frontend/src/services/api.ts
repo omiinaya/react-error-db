@@ -94,19 +94,15 @@ class ApiClient {
           const originalRequest = error.config;
           
           if (!originalRequest) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            localStorage.removeItem('refreshToken');
-            window.location.href = '/login';
+            // Use auth store logout instead of hard redirect
+            useAuthStore.getState().logout();
             return Promise.reject(error);
           }
           
           // Check if this is a retry attempt to avoid infinite loops
           if ((originalRequest as any)._retry) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            localStorage.removeItem('refreshToken');
-            window.location.href = '/login';
+            // Use auth store logout instead of hard redirect
+            useAuthStore.getState().logout();
             return Promise.reject(error);
           }
           
@@ -141,11 +137,8 @@ class ApiClient {
             }
           }
           
-          // If refresh fails or no refresh token, redirect to login
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          localStorage.removeItem('refreshToken');
-          window.location.href = '/login';
+          // If refresh fails or no refresh token, use auth store logout
+          useAuthStore.getState().logout();
         }
 
         return Promise.reject(error);

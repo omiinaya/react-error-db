@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, ReactNode } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { api } from '@/services/api';
 import { User } from '@/types';
+import { isTokenExpired } from '@/utils/token';
 
 interface AuthContextType {
   user: User | null;
@@ -26,7 +27,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Check if user is already authenticated on app load
     const token = localStorage.getItem('token');
     if (token && !user) {
-      refreshUser();
+      // Check if token is expired before attempting refresh
+      if (!isTokenExpired(token)) {
+        refreshUser();
+      } else {
+        // Token is expired, clear authentication state
+        storeLogout();
+      }
     }
   }, []);
 

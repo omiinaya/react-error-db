@@ -110,7 +110,7 @@ const ErrorDetail: React.FC = () => {
       setEditDialogOpen(false);
       setSolutionToEdit(null);
       queryClient.invalidateQueries({ queryKey: ['error-detail', id] });
-      toast.success(t('errors:messages.solutionUpdated'));
+      toast.success(t('errors:detail.solutionUpdated'));
     },
     onError: () => {
       setEditDialogOpen(false);

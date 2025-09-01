@@ -262,7 +262,7 @@ const ContentModeration: React.FC = () => {
                           <span className="font-medium">{solution.author.displayName}</span>
                           <span className="text-muted-foreground">•</span>
                           <span className="text-sm text-muted-foreground">
-                            {new Date(solution.createdAt).toLocaleDateString()}
+                            Last edited: {new Date(solution.lastEditedAt || solution.createdAt).toLocaleDateString()}
                           </span>
                           <span className="text-muted-foreground">•</span>
                           <Badge variant={solution.isVerified ? "default" : "secondary"}>

@@ -382,13 +382,8 @@ const ErrorDetail: React.FC = () => {
                     </div>
                     <div className="text-right">
                       <span className="text-sm text-muted-foreground block">
-                        {new Date(solution.createdAt).toLocaleDateString()}
+                        {t('errors:detail.lastEdited')}: {new Date(solution.lastEditedAt || solution.createdAt).toLocaleDateString()}
                       </span>
-                      {solution.updatedAt && solution.updatedAt !== solution.createdAt && (
-                        <span className="text-xs text-muted-foreground block">
-                          {t('errors:detail.lastEdited')}: {new Date(solution.updatedAt).toLocaleDateString()}
-                        </span>
-                      )}
                     </div>
                   </div>
                 </CardContent>

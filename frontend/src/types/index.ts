@@ -216,6 +216,7 @@ export interface Solution {
   userVote?: 'upvote' | 'downvote' | null;
   createdAt: string;
   updatedAt?: string;
+  lastEditedAt?: string;
 }
 
 export interface CreateSolutionRequest {

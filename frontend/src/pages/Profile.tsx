@@ -252,7 +252,7 @@ const Profile: React.FC = () => {
                 <div key={solution.id} className="border rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-muted-foreground">
-                      {new Date(solution.createdAt).toLocaleDateString()}
+                      Last edited: {new Date(solution.lastEditedAt || solution.createdAt).toLocaleDateString()}
                     </span>
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1 text-sm text-green-600">
@@ -297,7 +297,7 @@ const Profile: React.FC = () => {
                 <div key={solution.id} className="border rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-muted-foreground">
-                      Score: {solution.score}
+                      Last edited: {new Date(solution.lastEditedAt || solution.createdAt).toLocaleDateString()}
                     </span>
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1 text-sm text-green-600">

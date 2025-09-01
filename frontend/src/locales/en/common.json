@@ -67,5 +67,8 @@
   "loading": "Loading...",
   "noResults": "No results found",
   "errorLoading": "Error loading content. Please try again.",
-  "tryAgain": "Try Again"
+  "tryAgain": "Try Again",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "deleting": "Deleting..."
 }

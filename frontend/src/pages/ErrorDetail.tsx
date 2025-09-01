@@ -7,8 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useTranslation } from 'react-i18next';
-import { ThumbsUp, ThumbsDown, MessageSquare, Eye, Calendar, CheckCircle } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageSquare, Eye, Calendar, CheckCircle, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
 import { Solution, CreateSolutionRequest } from '@/types';
@@ -16,10 +17,12 @@ import toast from 'react-hot-toast';
 
 const ErrorDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
   const [solutionText, setSolutionText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [solutionToDelete, setSolutionToDelete] = useState<Solution | null>(null);
   const { t } = useTranslation();
 
   // Character limit constants
@@ -79,6 +82,23 @@ const ErrorDetail: React.FC = () => {
     },
   });
 
+  // Delete solution mutation
+  const deleteSolutionMutation = useMutation({
+    mutationFn: (solutionId: string) =>
+      api.deleteSolution(solutionId),
+    onSuccess: () => {
+      setDeleteDialogOpen(false);
+      setSolutionToDelete(null);
+      queryClient.invalidateQueries({ queryKey: ['error-detail', id] });
+      toast.success(t('errors:messages.solutionDeleted'));
+    },
+    onError: () => {
+      setDeleteDialogOpen(false);
+      setSolutionToDelete(null);
+      // Error is handled by global API interceptor, no need for duplicate toast
+    },
+  });
+
   const handleVote = (solutionId: string, voteType: 'upvote' | 'downvote') => {
     if (!isAuthenticated) {
       toast.error(t('errors:messages.signInToVote'));
@@ -100,6 +120,25 @@ const ErrorDetail: React.FC = () => {
     
     setIsSubmitting(true);
     addSolutionMutation.mutate({ solutionText: solutionText.trim() });
+  };
+
+  const handleDeleteSolution = (solution: Solution) => {
+    if (!isAuthenticated) {
+      toast.error(t('errors:messages.signInToDelete'));
+      return;
+    }
+    setSolutionToDelete(solution);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteSolution = () => {
+    if (solutionToDelete) {
+      deleteSolutionMutation.mutate(solutionToDelete.id);
+    }
+  };
+
+  const isSolutionAuthor = (solution: Solution) => {
+    return user && solution.author.id === user.id;
   };
 
   if (isLoading) {
@@ -245,12 +284,25 @@ const ErrorDetail: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                    {solution.isVerified && (
-                      <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        {t('errors:detail.verified')}
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {solution.isVerified && (
+                        <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                          {t('errors:detail.verified')}
+                        </Badge>
+                      )}
+                      {isAuthenticated && isSolutionAuthor(solution) && !solution.isVerified && (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDeleteSolution(solution)}
+                          disabled={deleteSolutionMutation.isPending}
+                          className="h-8 px-2"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -363,6 +415,34 @@ const ErrorDetail: React.FC = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('errors:detail.deleteSolutionTitle')}</DialogTitle>
+            <DialogDescription>
+              {t('errors:detail.deleteSolutionDescription')}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+              disabled={deleteSolutionMutation.isPending}
+            >
+              {t('common:cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDeleteSolution}
+              disabled={deleteSolutionMutation.isPending}
+            >
+              {deleteSolutionMutation.isPending ? t('common:deleting') : t('common:delete')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

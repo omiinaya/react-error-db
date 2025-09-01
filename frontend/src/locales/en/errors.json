@@ -25,7 +25,9 @@
     "downvote": "Downvote",
     "characterLimitExceeded": "Character limit exceeded",
     "approachingLimit": "Approaching character limit",
-    "characters": "characters"
+    "characters": "characters",
+    "deleteSolutionTitle": "Delete Solution",
+    "deleteSolutionDescription": "Are you sure you want to delete this solution? This action cannot be undone."
   },
   "create": {
     "title": "Create New Error Code",
@@ -53,9 +55,11 @@
     "voteFailed": "Failed to vote",
     "signInToVote": "Please sign in to vote",
     "signInToAddSolution": "Please sign in to add a solution",
+    "signInToDelete": "Please sign in to delete solutions",
     "solutionRequired": "Please enter a solution",
     "solutionAdded": "Solution added successfully!",
-    "solutionFailed": "Failed to add solution"
+    "solutionFailed": "Failed to add solution",
+    "solutionDeleted": "Solution deleted successfully!"
   },
   "validation": {
     "solutionTextTooSmall": "Solution text must be at least 10 characters",

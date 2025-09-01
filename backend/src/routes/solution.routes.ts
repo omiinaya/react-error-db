@@ -9,7 +9,7 @@ const router = Router();
 
 
 // Vote on solution
-router.post('/solutions/:solutionId/vote', authenticateToken, validateRequest(voteSchema), async (req: AuthenticatedRequest, res) => {
+router.post('/:solutionId/vote', authenticateToken, validateRequest(voteSchema), async (req: AuthenticatedRequest, res) => {
   try {
     const { solutionId } = req.params;
     const { voteType } = req.body;
@@ -166,7 +166,7 @@ router.post('/solutions/:solutionId/vote', authenticateToken, validateRequest(vo
 });
 
 // Update solution (Owner or Admin)
-router.put('/solutions/:solutionId', authenticateToken, validateRequest(updateSolutionSchema), async (req: AuthenticatedRequest, res) => {
+router.put('/:solutionId', authenticateToken, validateRequest(updateSolutionSchema), async (req: AuthenticatedRequest, res) => {
   try {
     const { solutionId } = req.params;
     const { solutionText } = req.body;
@@ -233,7 +233,7 @@ router.put('/solutions/:solutionId', authenticateToken, validateRequest(updateSo
 });
 
 // Delete solution (Owner or Admin)
-router.delete('/solutions/:solutionId', authenticateToken, async (req: AuthenticatedRequest, res) => {
+router.delete('/:solutionId', authenticateToken, async (req: AuthenticatedRequest, res) => {
   try {
     const { solutionId } = req.params;
 
@@ -284,7 +284,7 @@ router.delete('/solutions/:solutionId', authenticateToken, async (req: Authentic
 });
 
 // Verify solution (Admin only)
-router.post('/solutions/:solutionId/verify', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res) => {
+router.post('/:solutionId/verify', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res) => {
   try {
     const { solutionId } = req.params;
 

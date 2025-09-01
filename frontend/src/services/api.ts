@@ -366,6 +366,13 @@ class ApiClient {
     });
   }
 
+  async deleteSolution(solutionId: string) {
+    return this.request<{ message: string }>({
+      method: 'delete',
+      url: `/solutions/${solutionId}`,
+    });
+  }
+
   // Search endpoint
   async globalSearch(params: { q: string; type?: string; page?: number; limit?: number }) {
     return this.request<{ results: any[] }>({

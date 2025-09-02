@@ -217,8 +217,8 @@ router.get('/:id', optionalAuth, async (req: AuthenticatedRequest, res) => {
   }
 });
 
-// Create error code (Admin only)
-router.post('/', authenticateToken, requireAdmin, validateRequest(createErrorCodeSchema), async (req: AuthenticatedRequest, res) => {
+// Create error code
+router.post('/', authenticateToken, validateRequest(createErrorCodeSchema), async (req: AuthenticatedRequest, res) => {
   try {
     const errorCodeData = req.body;
 

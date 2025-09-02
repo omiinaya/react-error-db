@@ -19,7 +19,6 @@ const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({ onCategoryC
     name: '',
     slug: '',
     description: '',
-    icon: '',
     sortOrder: 0
   });
 
@@ -155,20 +154,6 @@ const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({ onCategoryC
         />
       </div>
 
-      {/* Icon */}
-      <div className="space-y-2">
-        <Label htmlFor="icon">Icon (optional)</Label>
-        <Input
-          id="icon"
-          name="icon"
-          placeholder="e.g., database, globe, code"
-          value={formData.icon}
-          onChange={handleInputChange}
-        />
-        <p className="text-sm text-muted-foreground">
-          Icon name from Lucide or similar icon library
-        </p>
-      </div>
 
       <div className="flex justify-end gap-3 pt-4">
         <Button type="button" variant="outline" onClick={onClose}>

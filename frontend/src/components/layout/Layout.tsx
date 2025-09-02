@@ -21,6 +21,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Debug logging for authentication state
+  console.log('Layout - Authentication state:', {
+    isAuthenticated,
+    user: user ? { id: user.id, username: user.username, isAdmin: user.isAdmin } : null
+  });
+
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
     { code: 'es', name: 'Español', flag: '🇪🇸' },
@@ -106,14 +112,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </div>
               
               {/* Add Error Button positioned to the right of search bar */}
-              {isAuthenticated && (
-                <Link to="/error/create">
-                  <Button size="sm" className="flex items-center gap-2 whitespace-nowrap h-8 shrink-0">
-                    <Plus className="h-4 w-4" />
-                    {t('common:navigation.addError')}
-                  </Button>
-                </Link>
-              )}
+              {/* Temporarily showing button for testing */}
+              <Link to="/error/create">
+                <Button size="sm" className="flex items-center gap-2 whitespace-nowrap h-8 shrink-0">
+                  <Plus className="h-4 w-4" />
+                  {t('common:navigation.addError')}
+                </Button>
+              </Link>
             </form>
           </div>
 

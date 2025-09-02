@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createSolutionSchema, updateSolutionSchema, voteSchema } from '../schemas/solution.schemas';
+import { updateSolutionSchema, voteSchema } from '../schemas/solution.schemas';
 import { validateRequest } from '../middleware/validation.middleware';
 import { authenticateToken, AuthenticatedRequest, requireAdmin } from '../middleware/auth.middleware';
 import prisma from '../services/database.service';

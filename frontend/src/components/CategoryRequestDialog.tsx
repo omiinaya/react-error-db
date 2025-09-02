@@ -18,8 +18,7 @@ const CategoryRequestDialog: React.FC<CategoryRequestDialogProps> = ({ onRequest
   const [formData, setFormData] = useState<CreateCategoryRequestInput>({
     name: '',
     slug: '',
-    description: '',
-    icon: ''
+    description: ''
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -131,20 +130,6 @@ const CategoryRequestDialog: React.FC<CategoryRequestDialogProps> = ({ onRequest
         />
       </div>
 
-      {/* Icon */}
-      <div className="space-y-2">
-        <Label htmlFor="icon">Icon (optional)</Label>
-        <Input
-          id="icon"
-          name="icon"
-          placeholder="e.g., database, globe, code"
-          value={formData.icon}
-          onChange={handleInputChange}
-        />
-        <p className="text-sm text-muted-foreground">
-          Icon name from Lucide or similar icon library
-        </p>
-      </div>
 
       <div className="flex justify-end gap-3 pt-4">
         <Button type="button" variant="outline" onClick={onClose}>

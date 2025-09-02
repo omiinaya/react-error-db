@@ -100,8 +100,10 @@ function App() {
         </ThemeProvider>
       </AuthProvider>
       
-      {/* React Query Devtools */}
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/* React Query Devtools - only show when debug mode is enabled */}
+      {import.meta.env.VITE_ENABLE_DEBUG === 'true' && (
+        <ReactQueryDevtools initialIsOpen={false} />
+      )}
       
       {/* Toast notifications */}
       <Toaster

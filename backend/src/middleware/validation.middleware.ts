@@ -16,8 +16,6 @@ export const validateRequest = (schema: AnyZodObject) => {
           field: err.path.join('.'),
           message: err.message,
           code: err.code,
-          received: err.received,
-          expected: err.expected,
         }));
 
         // Enhanced logging with full request context
@@ -70,8 +68,6 @@ export const validateQuery = (schema: AnyZodObject) => {
           field: err.path.join('.'),
           message: err.message,
           code: err.code,
-          received: err.received,
-          expected: err.expected,
         }));
 
         // Enhanced logging with full request context

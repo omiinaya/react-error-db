@@ -284,14 +284,30 @@ router.delete('/:userId', authenticateToken, requireAdmin, async (req: Authentic
 // Get current user's theme preference
 router.get('/me/theme', authenticateToken, async (req: AuthenticatedRequest, res) => {
   try {
+    logger.info('Theme preference request received');
+    
+    if (!req.user?.id) {
+      logger.error('No user ID found in request');
+      return res.status(401).json({
+        success: false,
+        error: {
+          code: 'UNAUTHORIZED',
+          message: 'User ID not found in token'
+        }
+      });
+    }
+
+    logger.info(`Fetching theme preference for user ID: ${req.user.id}`);
+
     const user = await prisma.user.findUnique({
-      where: { id: req.user!.id },
+      where: { id: req.user.id },
       select: {
         themePreference: true,
       }
     });
 
     if (!user) {
+      logger.error(`User not found with ID: ${req.user.id}`);
       return res.status(404).json({
         success: false,
         error: {
@@ -301,6 +317,7 @@ router.get('/me/theme', authenticateToken, async (req: AuthenticatedRequest, res
       });
     }
 
+    logger.info(`Theme preference fetched successfully: ${user.themePreference}`);
     return res.json({
       success: true,
       data: {
@@ -309,6 +326,8 @@ router.get('/me/theme', authenticateToken, async (req: AuthenticatedRequest, res
     });
   } catch (error) {
     logger.error('Get theme preference error:', error);
+    logger.error(`Error details: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    logger.error(`Error stack: ${error instanceof Error ? error.stack : 'No stack trace'}`);
     return res.status(500).json({
       success: false,
       error: {

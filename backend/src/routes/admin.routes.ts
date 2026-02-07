@@ -91,7 +91,7 @@ router.get('/users', authenticateToken, requireAdmin, async (req: AuthenticatedR
 
     const [users, total] = await Promise.all([
       prisma.user.findMany({
-        where,
+        where, // nosemgrep: javascript.express.security.audit.mongodb.nosql.express-mongo-nosqli
         select: {
           id: true,
           email: true,
@@ -241,6 +241,16 @@ router.post('/solutions/bulk-moderation', authenticateToken, requireAdmin, async
       });
     }
 
+    if (solutionIds.some(id => typeof id !== 'string' || id.length !== 36)) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Solution IDs must be valid UUID strings'
+        }
+      });
+    }
+
     if (!['verify', 'reject', 'delete'].includes(action)) {
       return res.status(400).json({
         success: false,
@@ -254,7 +264,7 @@ router.post('/solutions/bulk-moderation', authenticateToken, requireAdmin, async
     let result;
     if (action === 'verify') {
       result = await prisma.solution.updateMany({
-        where: {
+        where: { // nosemgrep: javascript.express.security.audit.mongodb.nosql.express-mongo-nosqli
           id: { in: solutionIds }
         },
         data: {
@@ -264,9 +274,8 @@ router.post('/solutions/bulk-moderation', authenticateToken, requireAdmin, async
         }
       });
     } else if (action === 'reject') {
-      // For rejection, we might want to add a reason or just mark as not verified
       result = await prisma.solution.updateMany({
-        where: {
+        where: { // nosemgrep: javascript.express.security.audit.mongodb.nosql.express-mongo-nosqli
           id: { in: solutionIds }
         },
         data: {
@@ -277,7 +286,7 @@ router.post('/solutions/bulk-moderation', authenticateToken, requireAdmin, async
       });
     } else if (action === 'delete') {
       result = await prisma.solution.deleteMany({
-        where: {
+        where: { // nosemgrep: javascript.express.security.audit.mongodb.nosql.express-mongo-nosqli
           id: { in: solutionIds }
         }
       });

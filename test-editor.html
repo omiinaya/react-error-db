@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Markdown Editor Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .error { color: red; }
+        .success { color: green; }
+        .warning { color: orange; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>Markdown Editor Diagnostic Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="test-results">
+            <p class="info">Testing markdown editor functionality...</p>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Editor Test Area</h2>
+        <iframe id="app-frame" src="http://localhost:3005/error/create" width="100%" height="800" style="border: 2px solid #333;"></iframe>
+    </div>
+
+    <script>
+        const results = document.getElementById('test-results');
+        
+        function log(message, type = 'info') {
+            const p = document.createElement('p');
+            p.className = type;
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            results.appendChild(p);
+        }
+        
+        // Test script
+        async function runTests() {
+            log('Starting markdown editor diagnostic tests...', 'info');
+            
+            try {
+                // Wait for iframe to load
+                const iframe = document.getElementById('app-frame');
+                
+                iframe.onload = async function() {
+                    log('Application iframe loaded successfully', 'success');
+                    
+                    try {
+                        // Check if the iframe content is accessible
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        
+                        // Look for markdown editor elements
+                        const editorContainer = iframeDoc.querySelector('.markdown-editor-wrapper');
+                        const toolbarButtons = iframeDoc.querySelectorAll('.rc-md-navigation .button-wrap');
+                        const tabs = iframeDoc.querySelectorAll('[data-state]');
+                        const textarea = iframeDoc.querySelector('textarea');
+                        
+                        log(`Found ${toolbarButtons.length} toolbar buttons`, 'info');
+                        log(`Found ${tabs.length} tabs`, 'info');
+                        log(`Found textarea: ${!!textarea}`, 'info');
+                        log(`Found editor container: ${!!editorContainer}`, 'info');
+                        
+                        // Check for specific toolbar buttons
+                        const boldButton = iframeDoc.querySelector('[data-type="bold"]');
+                        const italicButton = iframeDoc.querySelector('[data-type="italic"]');
+                        const previewTab = iframeDoc.querySelector('[data-state="inactive"]');
+                        
+                        log(`Bold button visible: ${!!boldButton}`, boldButton ? 'success' : 'error');
+                        log(`Italic button visible: ${!!italicButton}`, italicButton ? 'success' : 'error');
+                        log(`Preview tab found: ${!!previewTab}`, previewTab ? 'success' : 'warning');
+                        
+                        // Test basic functionality
+                        if (textarea) {
+                            log('Testing textarea functionality...', 'info');
+                            textarea.value = '**Bold text** and *italic text*';
+                            textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                            log('Textarea input test completed', 'success');
+                        }
+                        
+                        // Check for JavaScript errors in the iframe
+                        const scripts = iframeDoc.querySelectorAll('script');
+                        log(`Found ${scripts.length} script elements`, 'info');
+                        
+                        // Look for error indicators
+                        const errorElements = iframeDoc.querySelectorAll('.error, .text-red-500, [style*="color: red"]');
+                        log(`Found ${errorElements.length} potential error indicators`, errorElements.length === 0 ? 'success' : 'warning');
+                        
+                    } catch (iframeError) {
+                        log(`Iframe access error: ${iframeError.message}`, 'error');
+                        log('This may be due to CORS restrictions', 'warning');
+                    }
+                };
+                
+                // Set a timeout for the iframe load
+                setTimeout(() => {
+                    if (!iframe.contentDocument) {
+                        log('Iframe content not accessible - possible CORS issue', 'warning');
+                        log('Attempting alternative test method...', 'info');
+                        
+                        // Try to load the page content directly
+                        fetch('http://localhost:3005/error/create')
+                            .then(response => response.text())
+                            .then(html => {
+                                log('Successfully fetched page content', 'success');
+                                log(`Page length: ${html.length} characters`, 'info');
+                                
+                                // Check for key elements in the HTML
+                                const hasMarkdownEditor = html.includes('markdown-editor');
+                                const hasToolbar = html.includes('rc-md-navigation');
+                                const hasTabs = html.includes('Tabs');
+                                
+                                log(`Markdown editor found in HTML: ${hasMarkdownEditor}`, hasMarkdownEditor ? 'success' : 'error');
+                                log(`Toolbar found in HTML: ${hasToolbar}`, hasToolbar ? 'success' : 'error');
+                                log(`Tabs found in HTML: ${hasTabs}`, hasTabs ? 'success' : 'error');
+                                
+                                // Check for common error patterns
+                                const has404 = html.includes('404') || html.includes('Not Found');
+                                const hasError = html.includes('error') || html.includes('Error');
+                                const hasStackTrace = html.includes('at ') && html.includes('.js');
+                                
+                                if (has404) log('404 error detected in page', 'error');
+                                if (hasStackTrace) log('JavaScript stack trace found - possible runtime error', 'error');
+                                if (hasError && !has404) log('Error message found in page', 'warning');
+                                
+                            })
+                            .catch(fetchError => {
+                                log(`Failed to fetch page: ${fetchError.message}`, 'error');
+                            });
+                    }
+                }, 5000);
+                
+            } catch (error) {
+                log(`Test error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Run tests when page loads
+        window.onload = runTests;
+    </script>
+</body>
+</html>

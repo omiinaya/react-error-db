@@ -2,7 +2,8 @@
 const axios = require('axios');
 const fs = require('fs');
 
-const BASE_URL = 'http://localhost:3001/api'; // Assuming backend runs on port 3001
+const USE_HTTPS = process.env.USE_HTTPS === 'true';
+const BASE_URL = `${USE_HTTPS ? 'https' : 'http'}://localhost:3001/api`;
 
 async function testValidation() {
   console.log('Testing validation scenarios...\n');

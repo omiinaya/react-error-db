@@ -1,0 +1,590 @@
+/* Markdown Editor Custom Styles */
+.markdown-editor-wrapper {
+  width: 100%;
+}
+
+.markdown-editor {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.markdown-editor .rc-md-navigation {
+  background: hsl(var(--background));
+  border-bottom: 1px solid hsl(var(--border));
+  padding: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  min-height: 48px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+
+.markdown-editor .rc-md-navigation::-webkit-scrollbar {
+  height: 6px;
+}
+
+.markdown-editor .rc-md-navigation::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.markdown-editor .rc-md-navigation::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 3px;
+}
+
+.markdown-editor .button-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 0 1px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.markdown-editor .button-wrap:hover {
+  background: hsl(var(--accent));
+  border-color: hsl(var(--border));
+}
+
+.markdown-editor .button-wrap.active {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.markdown-editor .button-wrap .button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 14px;
+  color: inherit;
+}
+
+.markdown-editor .rc-md-editor {
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.markdown-editor .editor-container {
+  background: hsl(var(--background));
+}
+
+.markdown-editor .sec-md {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.markdown-editor .sec-html {
+  background: hsl(var(--muted));
+  border-left: 1px solid hsl(var(--border));
+}
+
+.markdown-editor .custom-html-style {
+  padding: 16px;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  line-height: 1.6;
+}
+
+.markdown-editor .rc-md-editor.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  background: hsl(var(--background));
+}
+
+.markdown-editor .rc-md-navigation.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+}
+
+/* Ensure toolbar buttons are visible and accessible */
+.markdown-editor .rc-md-navigation .button-wrap {
+  position: relative;
+  z-index: 10;
+}
+
+/* Fix for dropdown menus if they exist */
+.markdown-editor .rc-md-navigation .dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  min-width: 120px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Ensure proper spacing and visibility for all toolbar items */
+.markdown-editor .rc-md-navigation > * {
+  flex-shrink: 0;
+  margin: 0 1px;
+}
+
+/* Fix for header dropdown specifically */
+.markdown-editor .rc-md-navigation .button-wrap[data-type="header"] {
+  position: relative;
+}
+
+.markdown-editor .rc-md-navigation .button-wrap[data-type="header"] .dropdown {
+  top: calc(100% + 4px);
+  left: 0;
+}
+
+/* Ensure the editor container doesn't hide overflow content */
+.markdown-editor .rc-md-editor {
+  position: relative;
+  overflow: visible;
+}
+
+.markdown-editor .rc-md-navigation {
+  position: relative;
+  overflow: visible;
+}
+
+/* Make sure dropdowns appear above the editor content */
+.markdown-editor .rc-md-navigation .dropdown {
+  z-index: 1001;
+}
+
+/* Style for individual dropdown items */
+.markdown-editor .rc-md-navigation .dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.markdown-editor .rc-md-navigation .dropdown-item:hover {
+  background: hsl(var(--accent));
+}
+
+/* Ensure proper contrast and visibility */
+.markdown-editor .rc-md-navigation {
+  min-height: 48px;
+  align-items: center;
+}
+
+/* Fix any potential overflow issues */
+.markdown-editor .editor-toolbar {
+  overflow: visible !important;
+}
+
+.markdown-editor .toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Dark mode support for toolbar */
+.dark .markdown-editor .rc-md-navigation {
+  background: hsl(var(--background));
+  border-color: hsl(var(--border));
+}
+
+.dark .markdown-editor .button-wrap:hover {
+  background: hsl(var(--accent));
+}
+
+/* Ensure proper contrast for toolbar buttons */
+.markdown-editor .button-wrap {
+  color: hsl(var(--foreground));
+}
+
+.markdown-editor .button-wrap:hover {
+  color: hsl(var(--foreground));
+}
+
+.markdown-editor .button-wrap.active {
+  color: hsl(var(--primary-foreground));
+}
+
+/* Markdown Content Styles */
+.markdown-content {
+  line-height: 1.6;
+}
+
+.markdown-content > *:first-child {
+  margin-top: 0;
+}
+
+.markdown-content > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Code syntax highlighting theme (GitHub-like) */
+.markdown-content pre {
+  background: #f6f8fa;
+  border-radius: 6px;
+  font-size: 85%;
+  line-height: 1.45;
+  overflow: auto;
+  padding: 16px;
+}
+
+.dark .markdown-content pre {
+  background: #161b22;
+}
+
+.markdown-content code {
+  background: rgba(175, 184, 193, 0.2);
+  border-radius: 6px;
+  font-size: 85%;
+  margin: 0;
+  padding: 0.2em 0.4em;
+}
+
+.dark .markdown-content code {
+  background: rgba(110, 118, 129, 0.4);
+}
+
+.markdown-content pre code {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+}
+
+/* Table styles */
+.markdown-content table {
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+
+.markdown-content table th,
+.markdown-content table td {
+  border: 1px solid #d0d7de;
+  padding: 6px 13px;
+}
+
+.dark .markdown-content table th,
+.dark .markdown-content table td {
+  border-color: #30363d;
+}
+
+.markdown-content table tr:nth-child(2n) {
+  background-color: #f6f8fa;
+}
+
+.dark .markdown-content table tr:nth-child(2n) {
+  background-color: #161b22;
+}
+
+/* Blockquote styles */
+.markdown-content blockquote {
+  background: hsl(var(--muted));
+  border-left: 4px solid hsl(var(--border));
+  margin: 16px 0;
+  padding: 0 16px;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Link styles */
+.markdown-content a {
+  color: hsl(var(--primary));
+  text-decoration: none;
+}
+
+.markdown-content a:hover {
+  text-decoration: underline;
+}
+
+/* Specific styles for different toolbar button types */
+.markdown-editor .button-wrap[data-type="bold"],
+.markdown-editor .button-wrap[data-type="italic"],
+.markdown-editor .button-wrap[data-type="strikethrough"],
+.markdown-editor .button-wrap[data-type="list-ul"],
+.markdown-editor .button-wrap[data-type="list-ol"],
+.markdown-editor .button-wrap[data-type="link"],
+.markdown-editor .button-wrap[data-type="quote"],
+.markdown-editor .button-wrap[data-type="code"],
+.markdown-editor .button-wrap[data-type="inline-code"],
+.markdown-editor .button-wrap[data-type="table"] {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure the toolbar container shows all buttons */
+.markdown-editor .rc-md-navigation {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  white-space: nowrap !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Fix for react-markdown-editor-lite specific structure */
+.markdown-editor .editor-toolbar {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 2px !important;
+}
+
+.markdown-editor .editor-toolbar > * {
+  flex-shrink: 0 !important;
+}
+
+/* Ensure dropdown menus are properly positioned and visible */
+.markdown-editor .rc-md-navigation .dropdown-menu {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  z-index: 9999 !important;
+  background: hsl(var(--background)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+  max-height: 300px !important;
+  overflow-y: auto !important;
+  min-width: 150px !important;
+}
+
+/* Make sure the editor doesn't clip overflow content */
+.markdown-editor {
+  overflow: visible !important;
+  position: relative !important;
+}
+
+.markdown-editor .rc-md-editor {
+  overflow: visible !important;
+  position: relative !important;
+}
+
+/* High z-index for dropdowns to ensure they appear above everything */
+.markdown-editor .dropdown,
+.markdown-editor .dropdown-menu,
+.markdown-editor .rc-md-navigation .dropdown {
+  z-index: 9999 !important;
+}
+
+/* React Markdown Editor Lite specific fixes */
+.rc-md-editor {
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 6px !important;
+  background: hsl(var(--background)) !important;
+}
+
+.rc-md-editor .rc-md-navigation {
+  background: hsl(var(--muted)) !important;
+  border-bottom: 1px solid hsl(var(--border)) !important;
+  padding: 8px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 2px !important;
+  overflow-x: auto !important;
+  white-space: nowrap !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: hsl(var(--border)) transparent !important;
+}
+
+.rc-md-editor .rc-md-navigation::-webkit-scrollbar {
+  height: 6px !important;
+}
+
+.rc-md-editor .rc-md-navigation::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.rc-md-editor .rc-md-navigation::-webkit-scrollbar-thumb {
+  background: hsl(var(--border)) !important;
+  border-radius: 3px !important;
+}
+
+.rc-md-editor .button-wrap {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  margin: 0 2px !important;
+  border: 1px solid transparent !important;
+  border-radius: 4px !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  flex-shrink: 0 !important;
+}
+
+.rc-md-editor .button-wrap:hover {
+  background: hsl(var(--accent)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.rc-md-editor .button-wrap.active {
+  background: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+.rc-md-editor .button-wrap .button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+  background: transparent !important;
+  color: inherit !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+}
+
+.rc-md-editor .button-wrap .button span {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Ensure all toolbar buttons are visible */
+.rc-md-editor .button-wrap[data-type] {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Fix dropdown positioning */
+.rc-md-editor .dropdown {
+  position: relative !important;
+}
+
+.rc-md-editor .dropdown-menu {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  z-index: 9999 !important;
+  background: hsl(var(--background)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+  max-height: 300px !important;
+  overflow-y: auto !important;
+  min-width: 150px !important;
+}
+
+/* Editor content area */
+.rc-md-editor .editor-container {
+  background: hsl(var(--background)) !important;
+}
+
+.rc-md-editor .section-container {
+  background: hsl(var(--background)) !important;
+}
+
+.rc-md-editor .section-md,
+.rc-md-editor .section-html {
+  background: hsl(var(--background)) !important;
+}
+
+.rc-md-editor .custom-html-style {
+  background: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Textarea styling */
+.rc-md-editor textarea {
+  background: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+  border: none !important;
+  outline: none !important;
+  font-family: inherit !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  padding: 16px !important;
+  resize: none !important;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .rc-md-editor {
+    background: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+  
+  .rc-md-editor .rc-md-navigation {
+    background: hsl(var(--muted)) !important;
+  }
+  
+  .rc-md-editor .button-wrap:hover {
+    background: hsl(var(--accent)) !important;
+  }
+}
+
+/* Force display of all toolbar items */
+.rc-md-editor .rc-md-navigation > * {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure flex container allows horizontal scrolling */
+.rc-md-editor .rc-md-navigation {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* Make sure buttons don't wrap */
+.rc-md-editor .button-wrap {
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+}
+
+/* Fix for potential max-width issues */
+.rc-md-editor .rc-md-navigation {
+  max-width: none !important;
+  width: 100% !important;
+}
+
+/* Ensure container doesn't clip content */
+.rc-md-editor {
+  overflow: visible !important;
+}
+
+.rc-md-editor .editor-container {
+  overflow: visible !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .markdown-editor .button-wrap {
+    width: 28px;
+    height: 28px;
+    margin: 0 1px;
+  }
+  
+  .markdown-editor .rc-md-navigation {
+    padding: 6px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}

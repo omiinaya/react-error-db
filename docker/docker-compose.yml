@@ -1,10 +1,10 @@
 version: '3.8'
 
 services:
-  # PostgreSQL database
   postgres:
     image: postgres:15-alpine
     container_name: errdb-postgres
+    read_only: true
     environment:
       POSTGRES_DB: errdb
       POSTGRES_USER: user
@@ -14,6 +14,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
+    security_opt:
+      - no-new-privileges:true
     networks:
       - errdb-network
     healthcheck:
@@ -22,14 +27,18 @@ services:
       timeout: 5s
       retries: 5
 
-  # Redis for caching and sessions
   redis:
     image: redis:7-alpine
     container_name: errdb-redis
+    read_only: true
     ports:
       - "6380:6379"
     volumes:
       - redis_data:/data
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
     networks:
       - errdb-network
     healthcheck:

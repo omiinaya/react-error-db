@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -11,6 +10,7 @@ import { useAuthStore } from '@/store/authStore';
 import { api } from '@/services/api';
 import { CreateErrorCodeRequest } from '@/types';
 import CategoryApplicationSelector from '@/components/CategoryApplicationSelector';
+import MarkdownEditor from '@/components/MarkdownEditor';
 
 const ErrorCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -163,13 +163,14 @@ const ErrorCreate: React.FC = () => {
             {/* Description */}
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                name="description"
+              <MarkdownEditor
+                value={formData.description || ''}
+                onChange={(value) => setFormData(prev => ({ ...prev, description: value }))}
                 placeholder="Describe the error, common causes, and any additional context..."
-                value={formData.description}
-                onChange={handleInputChange}
-                rows={4}
+                height={300}
+                maxLength={5000}
+                showCharacterCount={true}
+                showToolbar={true}
               />
             </div>
 

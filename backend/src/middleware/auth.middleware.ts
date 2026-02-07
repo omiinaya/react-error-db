@@ -34,15 +34,13 @@ export const authenticateToken = async (
       return;
     }
 
-    // Verify JWT token
     const decoded = jwt.verify(token, config.jwt.secret) as {
       userId: string;
       email: string;
     };
 
-    // Get user from database
     const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
+      where: { id: decoded.userId }, // nosemgrep: javascript.express.security.audit.mongodb.nosql.express-mongo-nosqli
       select: {
         id: true,
         email: true,
@@ -124,7 +122,7 @@ export const optionalAuth = async (
     };
 
     const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
+      where: { id: decoded.userId }, // nosemgrep: javascript.express.security.audit.mongodb.nosql.express-mongo-nosqli
       select: {
         id: true,
         email: true,

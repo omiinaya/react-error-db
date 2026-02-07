@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
-import { execSync } from 'child_process';
+import { execFileSync, execSync } from 'child_process';
 import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs';
-import { join } from 'path';
+import { join, normalize, resolve, sep } from 'path';
 import { logger } from '../src/utils/logger';
 
 const prisma = new PrismaClient();
@@ -23,14 +23,49 @@ const defaultConfig: BackupConfig = {
   compression: true,
 };
 
+const DEFAULT_BACKUP_DIR = resolve(process.cwd(), './backups');
+
+/**
+ * Sanitize and validate a path to prevent path traversal attacks
+ * @param userPath The user-provided path
+ * @param baseDir The base directory that paths must be within
+ * @returns The normalized, validated absolute path
+ * @throws Error if path traversal is detected
+ */
+function sanitizePath(userPath: string, baseDir: string): string {
+  const normalized = normalize(userPath);
+  const resolvedPath = resolve(baseDir, normalized); // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
+  const resolvedBaseDir = resolve(baseDir); // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
+
+  if (!resolvedPath.startsWith(resolvedBaseDir + sep) && resolvedPath !== resolvedBaseDir) {
+    throw new Error('Path traversal detected: path must be within allowed directory');
+  }
+
+  return resolvedPath;
+}
+
+/**
+ * Validate a backup configuration
+ */
+function validateConfig(config: BackupConfig): void {
+  const resolvedBackupDir = resolve(process.cwd(), config.backupDir); // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
+
+  if (resolvedBackupDir !== DEFAULT_BACKUP_DIR && 
+      !resolvedBackupDir.startsWith(DEFAULT_BACKUP_DIR + sep)) {
+    throw new Error(`Invalid backup directory: ${config.backupDir} is not within allowed directories`);
+  }
+}
+
 /**
  * Create a database backup
  */
 export const createBackup = async (config: Partial<BackupConfig> = {}): Promise<string> => {
   const finalConfig = { ...defaultConfig, ...config };
+  validateConfig(finalConfig);
+
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const backupFileName = `backup-${timestamp}.sql`;
-  const backupPath = join(finalConfig.backupDir, backupFileName);
+  const backupPath = join(finalConfig.backupDir, backupFileName); // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
   
   try {
     // Ensure backup directory exists
@@ -52,27 +87,24 @@ export const createBackup = async (config: Partial<BackupConfig> = {}): Promise<
     
     const [, username, password, host, port, database] = urlMatch;
     
-    // Create backup using pg_dump
     const pgDumpCommand = [
       'pg_dump',
-      `--host=${host}`,
-      `--port=${port}`,
-      `--username=${username}`,
-      `--dbname=${database}`,
+      '--host', host,
+      '--port', port,
+      '--username', username,
+      '--dbname', database,
       '--format=plain',
       '--no-owner',
       '--no-acl',
       '--clean',
       '--if-exists',
-    ].join(' ');
+    ];
     
-    // Set password environment variable for pg_dump
     const env = { ...process.env, PGPASSWORD: password };
     
-    // Execute backup command
-    const backupData = execSync(pgDumpCommand, { 
+    const backupData = execFileSync(pgDumpCommand[0], pgDumpCommand.slice(1), { 
       env,
-      encoding: 'utf8' 
+      encoding: 'utf8'
     });
     
     // Write backup to file
@@ -91,17 +123,17 @@ export const createBackup = async (config: Partial<BackupConfig> = {}): Promise<
  */
 export const restoreBackup = async (backupPath: string): Promise<void> => {
   try {
-    if (!existsSync(backupPath)) {
-      throw new Error(`Backup file not found: ${backupPath}`);
+    const sanitizedPath = sanitizePath(backupPath, DEFAULT_BACKUP_DIR);
+
+    if (!existsSync(sanitizedPath)) {
+      throw new Error(`Backup file not found: ${sanitizedPath}`);
     }
-    
-    // Get database URL from environment
+
     const databaseUrl = process.env.DATABASE_URL;
     if (!databaseUrl) {
       throw new Error('DATABASE_URL environment variable is required');
     }
     
-    // Parse database URL to extract connection details
     const urlMatch = databaseUrl.match(/postgresql:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/);
     if (!urlMatch) {
       throw new Error('Invalid DATABASE_URL format');
@@ -109,27 +141,23 @@ export const restoreBackup = async (backupPath: string): Promise<void> => {
     
     const [, username, password, host, port, database] = urlMatch;
     
-    // Restore using psql
     const psqlCommand = [
       'psql',
-      `--host=${host}`,
-      `--port=${port}`,
-      `--username=${username}`,
-      `--dbname=${database}`,
-      '--file',
-      backupPath,
-    ].join(' ');
+      '--host', host,
+      '--port', port,
+      '--username', username,
+      '--dbname', database,
+      '--file', sanitizedPath,
+    ];
     
-    // Set password environment variable for psql
     const env = { ...process.env, PGPASSWORD: password };
     
-    // Execute restore command
-    execSync(psqlCommand, { 
+    execFileSync(psqlCommand[0], psqlCommand.slice(1), { 
       env,
-      stdio: 'inherit' 
+      stdio: 'inherit'
     });
     
-    logger.info(`✅ Database restored from: ${backupPath}`);
+    logger.info(`✅ Database restored from: ${sanitizedPath}`);
   } catch (error) {
     logger.error('❌ Failed to restore backup:', error);
     throw error;

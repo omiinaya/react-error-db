@@ -41,7 +41,7 @@ async function makeRequest(method, url, data = null, headers = {}) {
     const response = await axios(config);
     return response.data;
   } catch (error) {
-    console.error(`Error ${method} ${url}:`, error.response?.data || error.message);
+    console.error('Error', method, url, ':', error.response?.data || error.message);
     throw error;
   }
 }

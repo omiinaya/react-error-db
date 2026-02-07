@@ -1,17 +1,24 @@
 version: '3.8'
 
 services:
-  # Load balancer (Nginx)
   load-balancer:
     image: nginx:alpine
     container_name: errdb-load-balancer
+    read_only: true
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/nginx-load-balancer.conf:/etc/nginx/nginx.conf
-      - ./ssl/certs:/etc/ssl/certs
-      - ./ssl/private:/etc/ssl/private
+      - ./nginx/nginx-load-balancer.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl/certs:/etc/ssl/certs:ro
+      - ./ssl/private:/etc/ssl/private:ro
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
+      - /var/lib/nginx/tmp
+    security_opt:
+      - no-new-privileges:true
     networks:
       - errdb-network
     restart: unless-stopped
@@ -19,6 +26,10 @@ services:
       - backend
 
   # Backend API (multiple instances)
+  # Note: Intentionally no read_only or security_opt to allow:
+  # - Writable prisma volume for schema migrations and development
+  # - Hot reload capabilities in development environment
+  # For production, use docker-compose.prod.yml with hardened settings
   backend:
     image: errdb-backend:latest
     build:
@@ -49,10 +60,10 @@ services:
         max_attempts: 3
         window: 120s
 
-  # PostgreSQL database with replication
   postgres:
     image: postgres:15-alpine
     container_name: errdb-postgres-primary
+    read_only: true
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-errdb}
       POSTGRES_USER: ${POSTGRES_USER:-user}
@@ -62,6 +73,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
+    security_opt:
+      - no-new-privileges:true
     networks:
       - errdb-network
     restart: unless-stopped
@@ -69,10 +85,10 @@ services:
       placement:
         constraints: [node.role == manager]
 
-  # PostgreSQL replica (read-only)
   postgres-replica:
     image: postgres:15-alpine
     container_name: errdb-postgres-replica
+    read_only: true
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-errdb}
       POSTGRES_USER: ${POSTGRES_USER:-user}
@@ -86,19 +102,28 @@ services:
       "
     volumes:
       - postgres_replica_data:/var/lib/postgresql/data
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
+    security_opt:
+      - no-new-privileges:true
     networks:
       - errdb-network
     restart: unless-stopped
     depends_on:
       - postgres
 
-  # Redis cluster
   redis:
     image: redis:7-alpine
     container_name: errdb-redis-primary
+    read_only: true
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
     networks:
       - errdb-network
     restart: unless-stopped
@@ -108,9 +133,14 @@ services:
   redis-replica:
     image: redis:7-alpine
     container_name: errdb-redis-replica
+    read_only: true
     command: redis-server --appendonly yes --replica-of redis 6379
     volumes:
       - redis_replica_data:/data
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
     networks:
       - errdb-network
     restart: unless-stopped
@@ -119,15 +149,19 @@ services:
     deploy:
       replicas: 2
 
-  # Monitoring stack
   prometheus:
     image: prom/prometheus:latest
     container_name: errdb-prometheus
+    read_only: true
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
+    tmpfs:
+      - /prometheus
+    security_opt:
+      - no-new-privileges:true
     networks:
       - errdb-network
     restart: unless-stopped
@@ -135,12 +169,23 @@ services:
   grafana:
     image: grafana/grafana:latest
     container_name: errdb-grafana
+    read_only: true
     ports:
       - "3000:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_PATHS_DATA=/var/lib/grafana
+      - GF_PATHS_LOGS=/var/log/grafana
+      - GF_PATHS_PLUGINS=/var/lib/grafana/plugins
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    tmpfs:
+      - /tmp
+      - /var/log/grafana
+    security_opt:
+      - no-new-privileges:true
     networks:
       - errdb-network
     restart: unless-stopped

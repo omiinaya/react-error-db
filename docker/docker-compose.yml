@@ -48,11 +48,15 @@ services:
       retries: 5
 
   # Backend API
+  # Note: Development build - intentionally no hardening to allow:
+  # - Hot reload capabilities via mounted volumes
+  # - Prisma schema access and migrations
+  # - For production, use docker-compose.prod.yml with hardened settings
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
-    container_name: errdb-backend
+      container_name: errdb-backend
     ports:
       - "3010:3010"
     environment:
@@ -75,11 +79,14 @@ services:
     command: npm run dev
 
   # Frontend application
+  # Note: Development build - intentionally no hardening to allow:
+  # - Hot reload capabilities via mounted volumes
+  # - For production, use docker-compose.prod.yml with hardened nginx
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
-    container_name: errdb-frontend
+      container_name: errdb-frontend
     ports:
       - "3005:3005"
     environment:
@@ -95,6 +102,9 @@ services:
     command: npm run dev
 
   # Database management (optional)
+  # Note: Intentionally no read_only or security_opt to allow:
+  # - pgAdmin internal storage for user settings and sessions
+  # Note: This is a development tool, not recommended for production use
   pgadmin:
     image: dpage/pgadmin4
     container_name: errdb-pgadmin

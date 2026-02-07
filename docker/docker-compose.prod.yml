@@ -104,12 +104,14 @@ services:
     restart: unless-stopped
 
   # Database backup service (optional)
+  # Note: Intentionally no read_only or security_opt to allow:
+  # - Write access to save database backups to /backups volume
   backup:
     image: postgres:15-alpine
     container_name: errdb-backup-prod
     volumes:
       - backup_data:/backups
-      - ./backend/scripts/backup.ts:/app/backup.ts
+      - ./backend/scripts/backup.ts:/app/backup.ts:ro
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-errdb}
     networks:

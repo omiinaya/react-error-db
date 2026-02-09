@@ -1,0 +1,56 @@
+                   
+                   
+┌─────────────────┐
+│ 6 Code Findings │
+└─────────────────┘
+                                  
+    docker/docker-compose.prod.yml
+    ❯❱ yaml.docker-compose.security.no-new-privileges.no-new-privileges
+          Service 'backup' allows for privilege escalation via setuid or setgid binaries. Add 'no-new-
+          privileges:true' in 'security_opt' to prevent this.                                         
+          Details: https://sg.run/0n8q                                                                
+                                                                                                      
+          109┆ backup:
+   
+    ❯❱ yaml.docker-compose.security.writable-filesystem-service.writable-filesystem-service
+          Service 'backup' is running with a writable root filesystem. This may allow malicious applications
+          to download and run additional payloads, or modify container files. If an application inside a    
+          container has to save something temporarily consider using a tmpfs. Add 'read_only: true' to this 
+          service to prevent this.                                                                          
+          Details: https://sg.run/e4JE                                                                      
+                                                                                                            
+          109┆ backup:
+                                   
+    docker/docker-compose.scale.yml
+    ❯❱ yaml.docker-compose.security.no-new-privileges.no-new-privileges
+          Service 'backend' allows for privilege escalation via setuid or setgid binaries. Add 'no-new-
+          privileges:true' in 'security_opt' to prevent this.                                          
+          Details: https://sg.run/0n8q                                                                 
+                                                                                                       
+           33┆ backend:
+   
+    ❯❱ yaml.docker-compose.security.writable-filesystem-service.writable-filesystem-service
+          Service 'backend' is running with a writable root filesystem. This may allow malicious applications
+          to download and run additional payloads, or modify container files. If an application inside a     
+          container has to save something temporarily consider using a tmpfs. Add 'read_only: true' to this  
+          service to prevent this.                                                                           
+          Details: https://sg.run/e4JE                                                                       
+                                                                                                             
+           33┆ backend:
+                             
+    docker/docker-compose.yml
+    ❯❱ yaml.docker-compose.security.no-new-privileges.no-new-privileges
+          Service 'pgadmin' allows for privilege escalation via setuid or setgid binaries. Add 'no-new-
+          privileges:true' in 'security_opt' to prevent this.                                          
+          Details: https://sg.run/0n8q                                                                 
+                                                                                                       
+          108┆ pgadmin:
+   
+    ❯❱ yaml.docker-compose.security.writable-filesystem-service.writable-filesystem-service
+          Service 'pgadmin' is running with a writable root filesystem. This may allow malicious applications
+          to download and run additional payloads, or modify container files. If an application inside a     
+          container has to save something temporarily consider using a tmpfs. Add 'read_only: true' to this  
+          service to prevent this.                                                                           
+          Details: https://sg.run/e4JE                                                                       
+                                                                                                             
+          108┆ pgadmin:

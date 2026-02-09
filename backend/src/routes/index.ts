@@ -11,6 +11,9 @@ import adminRoutes from './admin.routes';
 import databaseSecurityRoutes from './database-security.routes';
 import secretsRoutes from './secrets.routes';
 import categoryRequestRoutes from './category-request.routes';
+import searchRoutes from './search.routes';
+import bookmarkRoutes from './bookmark.routes';
+import notificationRoutes from './notification.routes';
 import {
   cspReportHandler,
   xssReportHandler,
@@ -43,12 +46,18 @@ router.use('/admin', adminRoutes);
 router.use('/database-security', databaseSecurityRoutes);
 router.use('/secrets', secretsRoutes);
 router.use('/category-requests', categoryRequestRoutes);
+router.use('/search', searchRoutes);
+router.use('/bookmarks', bookmarkRoutes);
+router.use('/notifications', notificationRoutes);
+
 // Log all registered routes for debugging
 console.log('Registered API routes:');
 console.log('- POST /api/errors/:errorId/solutions');
 console.log('- GET /api/errors/:id (includes solutions)');
-
-// TODO: Add search routes when implemented
-// router.use('/search', searchRoutes);
+console.log('- GET /api/search (advanced search with filters)');
+console.log('- GET /api/search/suggestions (autocomplete)');
+console.log('- GET /api/search/history (search history)');
+console.log('- GET /api/bookmarks (user bookmarks)');
+console.log('- GET /api/notifications (user notifications)');
 
 export default router;

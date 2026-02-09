@@ -14,6 +14,8 @@ import categoryRequestRoutes from './category-request.routes';
 import searchRoutes from './search.routes';
 import bookmarkRoutes from './bookmark.routes';
 import notificationRoutes from './notification.routes';
+import webhookRoutes from './webhook.routes';
+import exportRoutes from './export.routes';
 import {
   cspReportHandler,
   xssReportHandler,
@@ -49,6 +51,8 @@ router.use('/category-requests', categoryRequestRoutes);
 router.use('/search', searchRoutes);
 router.use('/bookmarks', bookmarkRoutes);
 router.use('/notifications', notificationRoutes);
+router.use('/webhooks', webhookRoutes);
+router.use('/export', exportRoutes);
 
 // Log all registered routes for debugging
 console.log('Registered API routes:');
@@ -59,5 +63,7 @@ console.log('- GET /api/search/suggestions (autocomplete)');
 console.log('- GET /api/search/history (search history)');
 console.log('- GET /api/bookmarks (user bookmarks)');
 console.log('- GET /api/notifications (user notifications)');
+console.log('- GET /api/webhooks (webhook management)');
+console.log('- GET /api/export (data export)');
 
 export default router;

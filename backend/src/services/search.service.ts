@@ -77,15 +77,17 @@ export class SearchService {
 
     const searchDuration = Date.now() - startTime;
     
-    // Track search analytics
-    await this.trackSearchAnalytics({
-      query,
-      normalizedQuery,
-      filters,
-      resultCount: totalCount,
-      userId,
-      searchDuration,
-    });
+    // Track search analytics (only if userId is provided)
+    if (userId) {
+      await this.trackSearchAnalytics({
+        query,
+        normalizedQuery,
+        filters,
+        resultCount: totalCount,
+        userId,
+        searchDuration,
+      });
+    }
 
     return {
       errors,
@@ -208,15 +210,21 @@ export class SearchService {
     searchDuration: number;
   }) {
     try {
+      const analyticsData: any = {
+        query: data.query,
+        normalizedQuery: data.normalizedQuery,
+        filters: data.filters as any,
+        resultCount: data.resultCount,
+        searchDuration: data.searchDuration,
+      };
+      
+      // Only include userId if it's defined
+      if (data.userId) {
+        analyticsData.userId = data.userId;
+      }
+      
       await prisma.searchAnalytics.create({
-        data: {
-          query: data.query,
-          normalizedQuery: data.normalizedQuery,
-          filters: data.filters as any,
-          resultCount: data.resultCount,
-          userId: data.userId,
-          searchDuration: data.searchDuration,
-        },
+        data: analyticsData,
       });
     } catch (error) {
       console.error('Failed to track search analytics:', error);

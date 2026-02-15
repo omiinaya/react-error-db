@@ -18,8 +18,8 @@ export class NotificationService {
         type: data.type,
         title: data.title,
         message: data.message,
-        resourceType: data.resourceType,
-        resourceId: data.resourceId,
+        resourceType: data.resourceType ?? null,
+        resourceId: data.resourceId ?? null,
       },
       include: {
         user: {

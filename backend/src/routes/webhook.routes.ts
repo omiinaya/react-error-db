@@ -41,7 +41,7 @@ router.post('/', authenticateToken, async (req, res, next) => {
 
     const webhook = await webhookService.createWebhook(userId, url, events, secret);
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: {
         ...webhook,
@@ -49,7 +49,7 @@ router.post('/', authenticateToken, async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -60,13 +60,20 @@ router.patch('/:id', authenticateToken, async (req, res, next) => {
     const webhookId = req.params.id;
     const { url, events, isActive } = req.body;
 
+    if (!webhookId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Webhook ID is required',
+      });
+    }
+
     const webhook = await webhookService.updateWebhook(userId, webhookId, {
       url,
       events,
       isActive,
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         ...webhook,
@@ -74,7 +81,7 @@ router.patch('/:id', authenticateToken, async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -84,14 +91,21 @@ router.delete('/:id', authenticateToken, async (req, res, next) => {
     const userId = req.user!.id;
     const webhookId = req.params.id;
 
+    if (!webhookId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Webhook ID is required',
+      });
+    }
+
     await webhookService.deleteWebhook(userId, webhookId);
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Webhook deleted',
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -101,14 +115,21 @@ router.post('/:id/regenerate-secret', authenticateToken, async (req, res, next) 
     const userId = req.user!.id;
     const webhookId = req.params.id;
 
+    if (!webhookId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Webhook ID is required',
+      });
+    }
+
     const newSecret = await webhookService.regenerateSecret(userId, webhookId);
 
-    res.json({
+    return res.json({
       success: true,
       data: { secret: newSecret },
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -119,19 +140,26 @@ router.get('/:id/deliveries', authenticateToken, async (req, res, next) => {
     const webhookId = req.params.id;
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
 
+    if (!webhookId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Webhook ID is required',
+      });
+    }
+
     const deliveries = await webhookService.getWebhookDeliveries(webhookId, userId, limit);
 
-    res.json({
+    return res.json({
       success: true,
       data: deliveries,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
 // Get available event types
-router.get('/events/types', authenticateToken, async (req, res) => {
+router.get('/events/types', authenticateToken, async (_req, res) => {
   res.json({
     success: true,
     data: Object.entries(WebhookEvents).map(([key, value]) => ({

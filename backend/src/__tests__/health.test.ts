@@ -1,5 +1,6 @@
 import request from 'supertest';
-import app from '../app';
+import './setup'; // Import setup to ensure mocks are applied
+import { app } from './setup';
 
 describe('Health Check API', () => {
   describe('GET /health', () => {

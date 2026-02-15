@@ -1,5 +1,4 @@
 import prisma from './database.service';
-import { logger } from '../utils/logger';
 
 export type ExportFormat = 'json' | 'csv';
 

@@ -21,7 +21,7 @@ export class BookmarkService {
       data: {
         userId,
         solutionId,
-        note,
+        note: note ?? null,
       },
       include: {
         solution: {
@@ -44,7 +44,7 @@ export class BookmarkService {
     });
 
     // Notify solution author (if not bookmarking own solution)
-    if (bookmark.solution.authorId !== userId) {
+    if (bookmark.solution && bookmark.solution.authorId !== userId) {
       await notificationService.createNotification({
         userId: bookmark.solution.authorId,
         type: 'new_follower',

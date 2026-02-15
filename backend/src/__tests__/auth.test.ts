@@ -1,6 +1,6 @@
 import request from 'supertest';
-import app from '../app';
-import databaseService from '../services/database.service';
+import './setup'; // Import setup to ensure mocks are applied
+import { app, prisma } from './setup';
 import { hashPassword } from '../utils/auth.utils';
 
 describe('Auth API', () => {
@@ -19,8 +19,8 @@ describe('Auth API', () => {
         updatedAt: new Date(),
       };
 
-      (databaseService.user.findUnique as jest.Mock).mockResolvedValue(null);
-      (databaseService.user.create as jest.Mock).mockResolvedValue(mockUser);
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+      (prisma.user.create as jest.Mock).mockResolvedValue(mockUser);
 
       const response = await request(app)
         .post('/api/auth/register')
@@ -45,7 +45,7 @@ describe('Auth API', () => {
         username: 'existinguser',
       };
 
-      (databaseService.user.findUnique as jest.Mock).mockResolvedValue(existingUser);
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(existingUser);
 
       const response = await request(app)
         .post('/api/auth/register')
@@ -72,8 +72,8 @@ describe('Auth API', () => {
         isActive: true,
       };
 
-      (databaseService.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
-      (databaseService.userSession.create as jest.Mock).mockResolvedValue({});
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+      (prisma.userSession.create as jest.Mock).mockResolvedValue({});
 
       const response = await request(app)
         .post('/api/auth/login')
@@ -98,7 +98,7 @@ describe('Auth API', () => {
         isActive: true,
       };
 
-      (databaseService.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
       const response = await request(app)
         .post('/api/auth/login')
@@ -129,9 +129,9 @@ describe('Auth API', () => {
         isActive: true,
       };
 
-      (databaseService.userSession.findFirst as jest.Mock).mockResolvedValue(mockSession);
-      (databaseService.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
-      (databaseService.userSession.update as jest.Mock).mockResolvedValue({});
+      (prisma.userSession.findFirst as jest.Mock).mockResolvedValue(mockSession);
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+      (prisma.userSession.update as jest.Mock).mockResolvedValue({});
 
       const response = await request(app)
         .post('/api/auth/refresh')
@@ -144,7 +144,7 @@ describe('Auth API', () => {
     });
 
     it('should return error for invalid refresh token', async () => {
-      (databaseService.userSession.findFirst as jest.Mock).mockResolvedValue(null);
+      (prisma.userSession.findFirst as jest.Mock).mockResolvedValue(null);
 
       const response = await request(app)
         .post('/api/auth/refresh')
@@ -163,8 +163,8 @@ describe('Auth API', () => {
         userId: 1,
       };
 
-      (databaseService.userSession.findFirst as jest.Mock).mockResolvedValue(mockSession);
-      (databaseService.userSession.deleteMany as jest.Mock).mockResolvedValue({ count: 1 });
+      (prisma.userSession.findFirst as jest.Mock).mockResolvedValue(mockSession);
+      (prisma.userSession.deleteMany as jest.Mock).mockResolvedValue({ count: 1 });
 
       const response = await request(app)
         .post('/api/auth/logout')

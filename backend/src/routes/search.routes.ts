@@ -59,12 +59,12 @@ router.get('/suggestions', async (req, res, next) => {
       limit ? parseInt(limit as string) : 5
     );
 
-    res.json({
+    return res.json({
       success: true,
       data: suggestions,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -91,14 +91,21 @@ router.delete('/history/:id', authenticateToken, async (req, res, next) => {
     const userId = req.user!.id;
     const searchId = req.params.id;
     
+    if (!searchId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Search history ID is required',
+      });
+    }
+    
     await searchService.deleteSearchHistory(userId, searchId);
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Search history deleted',
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -132,12 +139,12 @@ router.get('/trends', authenticateToken, async (req, res, next) => {
     const days = req.query.days ? parseInt(req.query.days as string) : 7;
     const trends = await searchService.getSearchTrends(days);
 
-    res.json({
+    return res.json({
       success: true,
       data: trends,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 

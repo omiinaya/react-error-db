@@ -1,19 +1,19 @@
 import { Router } from 'express';
-import { authenticateToken, requireAdmin } from '../middleware/auth.middleware';
+import { authenticateToken } from '../middleware/auth.middleware';
 import { exportService } from '../services/export.service';
 
 const router = Router();
 
 // Get export stats
-router.get('/stats', authenticateToken, async (req, res, next) => {
+router.get('/stats', authenticateToken, async (_req, res, next) => {
   try {
     const stats = await exportService.getExportStats();
-    res.json({
+    return res.json({
       success: true,
       data: stats,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -31,17 +31,17 @@ router.get('/errors', authenticateToken, async (req, res, next) => {
     const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
     const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
 
-    const result = await exportService.exportErrors({
-      format,
-      startDate,
-      endDate,
-    });
+    const options: any = { format };
+    if (startDate) options.startDate = startDate;
+    if (endDate) options.endDate = endDate;
+
+    const result = await exportService.exportErrors(options);
 
     res.setHeader('Content-Type', result.contentType);
     res.setHeader('Content-Disposition', `attachment; filename="${result.filename}"`);
-    res.send(result.data);
+    return res.send(result.data);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -59,17 +59,17 @@ router.get('/solutions', authenticateToken, async (req, res, next) => {
     const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
     const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
 
-    const result = await exportService.exportSolutions({
-      format,
-      startDate,
-      endDate,
-    });
+    const options: any = { format };
+    if (startDate) options.startDate = startDate;
+    if (endDate) options.endDate = endDate;
+
+    const result = await exportService.exportSolutions(options);
 
     res.setHeader('Content-Type', result.contentType);
     res.setHeader('Content-Disposition', `attachment; filename="${result.filename}"`);
-    res.send(result.data);
+    return res.send(result.data);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -81,9 +81,9 @@ router.get('/user-data', authenticateToken, async (req, res, next) => {
 
     res.setHeader('Content-Type', result.contentType);
     res.setHeader('Content-Disposition', `attachment; filename="${result.filename}"`);
-    res.send(result.data);
+    return res.send(result.data);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -101,17 +101,17 @@ router.get('/analytics', authenticateToken, async (req, res, next) => {
     const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
     const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
 
-    const result = await exportService.exportAnalytics({
-      format,
-      startDate,
-      endDate,
-    });
+    const options: any = { format };
+    if (startDate) options.startDate = startDate;
+    if (endDate) options.endDate = endDate;
+
+    const result = await exportService.exportAnalytics(options);
 
     res.setHeader('Content-Type', result.contentType);
     res.setHeader('Content-Disposition', `attachment; filename="${result.filename}"`);
-    res.send(result.data);
+    return res.send(result.data);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 

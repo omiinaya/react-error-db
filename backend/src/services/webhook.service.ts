@@ -71,7 +71,7 @@ export class WebhookService {
         isActive: true,
         events: {
           has: eventType,
-        },
+        } as any,
       },
     });
 
@@ -91,6 +91,9 @@ export class WebhookService {
     const signature = this.generateSignature(payload, secret);
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -100,8 +103,10 @@ export class WebhookService {
           'X-Webhook-Timestamp': event.timestamp,
         },
         body: payload,
-        timeout: 30000, // 30 second timeout
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
 
       const success = response.ok;
       const responseBody = success ? await response.text() : null;
@@ -145,7 +150,7 @@ export class WebhookService {
           responseStatus,
           responseBody,
           success,
-          errorMessage,
+          errorMessage: errorMessage ?? null,
         },
       });
     } catch (error) {

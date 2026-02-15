@@ -1,5 +1,6 @@
 import request from 'supertest';
-import app from '../app';
+import './setup'; // Import setup to ensure mocks are applied
+import { app } from './setup';
 import * as metrics from '../utils/metrics';
 
 describe('Metrics API', () => {
@@ -89,7 +90,6 @@ describe('Metrics API', () => {
     });
 
     it('should track database queries', async () => {
-      const start = Date.now();
       const duration = 0.1; // 100ms
       
       metrics.trackDatabaseQuery('find', 'User', duration);

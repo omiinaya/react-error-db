@@ -45,14 +45,21 @@ router.delete('/:id', authenticateToken, async (req, res, next) => {
     const userId = req.user!.id;
     const bookmarkId = req.params.id;
     
+    if (!bookmarkId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Bookmark ID is required',
+      });
+    }
+    
     await bookmarkService.deleteBookmark(userId, bookmarkId);
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Bookmark deleted',
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -63,14 +70,21 @@ router.patch('/:id', authenticateToken, async (req, res, next) => {
     const bookmarkId = req.params.id;
     const { note } = req.body;
     
+    if (!bookmarkId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Bookmark ID is required',
+      });
+    }
+    
     const bookmark = await bookmarkService.updateBookmarkNote(userId, bookmarkId, note);
 
-    res.json({
+    return res.json({
       success: true,
       data: bookmark,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -80,14 +94,21 @@ router.get('/check/:solutionId', authenticateToken, async (req, res, next) => {
     const userId = req.user!.id;
     const solutionId = req.params.solutionId;
     
+    if (!solutionId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Solution ID is required',
+      });
+    }
+    
     const isBookmarked = await bookmarkService.isBookmarked(userId, solutionId);
 
-    res.json({
+    return res.json({
       success: true,
       data: { isBookmarked },
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 

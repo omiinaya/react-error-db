@@ -1,6 +1,6 @@
 import request from 'supertest';
-import app from '../app';
-import databaseService from '../services/database.service';
+import './setup'; // Import setup to ensure mocks are applied
+import { app, prisma } from './setup';
 
 describe('Error Routes API', () => {
   beforeEach(() => {
@@ -20,8 +20,8 @@ describe('Error Routes API', () => {
         },
       ];
 
-      (databaseService.errorCode.findMany as jest.Mock).mockResolvedValue(mockErrors);
-      (databaseService.errorCode.count as jest.Mock).mockResolvedValue(1);
+      (prisma.errorCode.findMany as jest.Mock).mockResolvedValue(mockErrors);
+      (prisma.errorCode.count as jest.Mock).mockResolvedValue(1);
 
       const response = await request(app)
         .get('/api/errors')
@@ -47,8 +47,8 @@ describe('Error Routes API', () => {
         },
       ];
 
-      (databaseService.errorCode.findMany as jest.Mock).mockResolvedValue(mockErrors);
-      (databaseService.errorCode.count as jest.Mock).mockResolvedValue(1);
+      (prisma.errorCode.findMany as jest.Mock).mockResolvedValue(mockErrors);
+      (prisma.errorCode.count as jest.Mock).mockResolvedValue(1);
 
       const response = await request(app)
         .get('/api/errors')
@@ -56,7 +56,7 @@ describe('Error Routes API', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
-      expect(databaseService.errorCode.findMany).toHaveBeenCalledWith(
+      expect(prisma.errorCode.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
             application: expect.objectContaining({
@@ -91,7 +91,7 @@ describe('Error Routes API', () => {
         _count: { solutions: 1 },
       };
 
-      (databaseService.errorCode.findUnique as jest.Mock).mockResolvedValue(mockError);
+      (prisma.errorCode.findUnique as jest.Mock).mockResolvedValue(mockError);
 
       const response = await request(app).get('/api/errors/1');
 
@@ -102,7 +102,7 @@ describe('Error Routes API', () => {
     });
 
     it('should return 404 for non-existent error', async () => {
-      (databaseService.errorCode.findUnique as jest.Mock).mockResolvedValue(null);
+      (prisma.errorCode.findUnique as jest.Mock).mockResolvedValue(null);
 
       const response = await request(app).get('/api/errors/999');
 
@@ -122,7 +122,7 @@ describe('Error Routes API', () => {
         applicationId: 1,
       };
 
-      (databaseService.errorCode.create as jest.Mock).mockResolvedValue(mockError);
+      (prisma.errorCode.create as jest.Mock).mockResolvedValue(mockError);
 
       const response = await request(app)
         .post('/api/errors')
@@ -145,7 +145,7 @@ describe('Error Routes API', () => {
         message: 'Existing error',
       };
 
-      (databaseService.errorCode.findUnique as jest.Mock).mockResolvedValue(existingError);
+      (prisma.errorCode.findUnique as jest.Mock).mockResolvedValue(existingError);
 
       const response = await request(app)
         .post('/api/errors')
@@ -172,8 +172,8 @@ describe('Error Routes API', () => {
         applicationId: 1,
       };
 
-      (databaseService.errorCode.findUnique as jest.Mock).mockResolvedValue(mockError);
-      (databaseService.errorCode.update as jest.Mock).mockResolvedValue(mockError);
+      (prisma.errorCode.findUnique as jest.Mock).mockResolvedValue(mockError);
+      (prisma.errorCode.update as jest.Mock).mockResolvedValue(mockError);
 
       const response = await request(app)
         .put('/api/errors/1')
@@ -188,7 +188,7 @@ describe('Error Routes API', () => {
     });
 
     it('should return 404 for non-existent error', async () => {
-      (databaseService.errorCode.findUnique as jest.Mock).mockResolvedValue(null);
+      (prisma.errorCode.findUnique as jest.Mock).mockResolvedValue(null);
 
       const response = await request(app)
         .put('/api/errors/999')
@@ -210,8 +210,8 @@ describe('Error Routes API', () => {
         message: 'Test error message',
       };
 
-      (databaseService.errorCode.findUnique as jest.Mock).mockResolvedValue(mockError);
-      (databaseService.errorCode.delete as jest.Mock).mockResolvedValue(mockError);
+      (prisma.errorCode.findUnique as jest.Mock).mockResolvedValue(mockError);
+      (prisma.errorCode.delete as jest.Mock).mockResolvedValue(mockError);
 
       const response = await request(app).delete('/api/errors/1');
 
@@ -221,7 +221,7 @@ describe('Error Routes API', () => {
     });
 
     it('should return 404 for non-existent error', async () => {
-      (databaseService.errorCode.findUnique as jest.Mock).mockResolvedValue(null);
+      (prisma.errorCode.findUnique as jest.Mock).mockResolvedValue(null);
 
       const response = await request(app).delete('/api/errors/999');
 

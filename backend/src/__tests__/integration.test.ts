@@ -1,6 +1,6 @@
 import request from 'supertest';
-import app from '../app';
-import databaseService from '../services/database.service';
+import './setup'; // Import setup to ensure mocks are applied
+import { app, prisma } from './setup';
 import { hashPassword } from '../utils/auth.utils';
 
 describe('Integration Tests', () => {
@@ -34,18 +34,18 @@ describe('Integration Tests', () => {
     };
 
     // Mock database responses
-    (databaseService.user.findUnique as jest.Mock).mockImplementation(({ where }) => {
+    (prisma.user.findUnique as jest.Mock).mockImplementation(({ where }) => {
       if (where.email === 'integration@test.com') return Promise.resolve(mockUser);
       return Promise.resolve(null);
     });
 
-    (databaseService.user.create as jest.Mock).mockResolvedValue(mockUser);
-    (databaseService.userSession.findFirst as jest.Mock).mockResolvedValue(mockSession);
-    (databaseService.userSession.create as jest.Mock).mockResolvedValue(mockSession);
-    (databaseService.errorCode.create as jest.Mock).mockResolvedValue(mockError);
-    (databaseService.errorCode.findUnique as jest.Mock).mockResolvedValue(mockError);
-    (databaseService.errorCode.findMany as jest.Mock).mockResolvedValue([mockError]);
-    (databaseService.errorCode.count as jest.Mock).mockResolvedValue(1);
+    (prisma.user.create as jest.Mock).mockResolvedValue(mockUser);
+    (prisma.userSession.findFirst as jest.Mock).mockResolvedValue(mockSession);
+    (prisma.userSession.create as jest.Mock).mockResolvedValue(mockSession);
+    (prisma.errorCode.create as jest.Mock).mockResolvedValue(mockError);
+    (prisma.errorCode.findUnique as jest.Mock).mockResolvedValue(mockError);
+    (prisma.errorCode.findMany as jest.Mock).mockResolvedValue([mockError]);
+    (prisma.errorCode.count as jest.Mock).mockResolvedValue(1);
   });
 
   beforeEach(() => {

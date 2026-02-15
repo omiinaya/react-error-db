@@ -49,14 +49,21 @@ router.patch('/:id/read', authenticateToken, async (req, res, next) => {
     const userId = req.user!.id;
     const notificationId = req.params.id;
     
+    if (!notificationId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Notification ID is required',
+      });
+    }
+    
     await notificationService.markAsRead(userId, notificationId);
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Notification marked as read',
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -67,12 +74,12 @@ router.patch('/read-all', authenticateToken, async (req, res, next) => {
     
     await notificationService.markAllAsRead(userId);
 
-    res.json({
+    return res.json({
       success: true,
       message: 'All notifications marked as read',
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -82,14 +89,21 @@ router.delete('/:id', authenticateToken, async (req, res, next) => {
     const userId = req.user!.id;
     const notificationId = req.params.id;
     
+    if (!notificationId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Notification ID is required',
+      });
+    }
+    
     await notificationService.deleteNotification(userId, notificationId);
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Notification deleted',
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 

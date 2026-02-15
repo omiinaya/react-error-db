@@ -1,7 +1,5 @@
 import request from 'supertest';
-import { app } from '../server';
-import prisma from '../services/database.service';
-import { createTestUser, createTestError, createTestSolution, getAuthToken } from './setup';
+import { app, createTestUser, createTestError, createTestSolution, getAuthToken, prisma } from './setup';
 
 describe('Solution Routes', () => {
   let adminToken: string;

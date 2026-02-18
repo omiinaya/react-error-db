@@ -6,11 +6,13 @@ dotenv.config({ path: '.env.test' });
 
 // Mock logger FIRST before any other imports that might use it
 jest.mock('../utils/logger', () => ({
-  info: jest.fn(),
-  error: jest.fn(),
-  warn: jest.fn(),
-  debug: jest.fn(),
-  verbose: jest.fn(),
+  logger: {
+    info: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
+    verbose: jest.fn(),
+  },
   stream: {
     write: jest.fn()
   }

@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
-import { Prisma } from '@prisma/client';
+import { PrismaClientKnownRequestError, PrismaClientUnknownRequestError, PrismaClientValidationError } from '@prisma/client/runtime/library';
 import { logger } from '../utils/logger';
 
 interface CustomError extends Error {
   statusCode?: number;
   code?: string;
+  meta?: { target?: string[] };
 }
 
 export const errorMiddleware = (
@@ -35,7 +36,7 @@ export const errorMiddleware = (
     message = 'Validation failed';
     errorCode = 'VALIDATION_ERROR';
     details = error.errors;
-  } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+  } else if (error instanceof PrismaClientKnownRequestError) {
     // Handle known Prisma errors
     statusCode = 400;
     errorCode = 'DATABASE_ERROR';
@@ -53,11 +54,11 @@ export const errorMiddleware = (
         message = 'Database operation failed';
         details = { code: error.code };
     }
-  } else if (error instanceof Prisma.PrismaClientUnknownRequestError) {
+  } else if (error instanceof PrismaClientUnknownRequestError) {
     statusCode = 500;
     message = 'Unknown database error';
     errorCode = 'DATABASE_ERROR';
-  } else if (error instanceof Prisma.PrismaClientValidationError) {
+  } else if (error instanceof PrismaClientValidationError) {
     statusCode = 400;
     message = 'Database validation error';
     errorCode = 'VALIDATION_ERROR';

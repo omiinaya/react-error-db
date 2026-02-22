@@ -46,7 +46,9 @@ error-database/
 └── 📄 README.md               # Project overview
 ```
 
-## 🚀 Quick Start
+## 📚 Documentation
+
+- **OpenAPI spec**: See `openapi.json` for full API reference.
 
 ### Prerequisites
 

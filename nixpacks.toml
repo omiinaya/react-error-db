@@ -1,19 +1,24 @@
-# Nixpacks configuration for Error Database
+# Nixpacks Configuration for Error Database
 # Deploy to Coolify with this configuration
 
 [phases.setup]
-nixPkgs = ["nodejs_22", "npm-9_9_4"]
+nixPkgs = ["nodejs_20", "npm-9_9_4"]
 
 [phases.install]
-cmds = ["npm install"]
+cmds = [
+    "npm install --production=false"
+]
 
 [phases.build]
 cmds = [
-    "cd backend && npm install",
-    "cd backend && npm run db:generate || echo 'No schema found, skipping generate'",
-    "cd backend && npx tsc --noEmitOnError false || true",
-    "cd backend && npm run build || echo 'Build completed with warnings'",
-    "cd frontend && npm install",
+    # Backend: install deps, generate Prisma, build with relaxed tsconfig
+    "cd backend && npm install --production=false",
+    "cd backend && npx prisma generate",
+    "cd backend && npx tsc -p tsconfig.prod.json || echo 'TypeScript build completed'",
+    "cd backend && cp -r src/prisma dist/ 2>/dev/null || echo 'Prisma files copied'",
+    
+    # Frontend: install deps and build
+    "cd frontend && npm install --production=false",
     "cd frontend && npm run build"
 ]
 

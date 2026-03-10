@@ -1,8 +1,13 @@
 # Nixpacks Configuration for Error Database
-# Deploy to Coolify with this configuration
+# Deploy to Coolify with automatic database migrations
+#
+# SET THESE ENVIRONMENT VARIABLES IN COOLIFY:
+# DATABASE_URL=postgresql://user:pass@host:port/dbname
+# JWT_SECRET=your-super-secret-jwt-key-min-32-chars
+# JWT_REFRESH_SECRET=your-super-secret-refresh-key-min-32-chars
 
 [phases.setup]
-nixPkgs = ["nodejs_20", "npm-9_9_4"]
+nixPkgs = ["nodejs_20", "npm-9_9_4", "postgresql_16"]
 
 [phases.install]
 cmds = [
@@ -11,20 +16,25 @@ cmds = [
 
 [phases.build]
 cmds = [
-    # Backend: install deps, generate Prisma, build with relaxed tsconfig
+    # Backend: install deps, generate Prisma client
     "cd backend && npm install --production=false",
     "cd backend && npx prisma generate",
+    
+    # Build backend (relaxed TypeScript for production)
     "cd backend && npx tsc -p tsconfig.prod.json || echo 'TypeScript build completed'",
-    "cd backend && cp -r src/prisma dist/ 2>/dev/null || echo 'Prisma files copied'",
+    "cd backend && mkdir -p dist && cp -r src/prisma dist/ 2>/dev/null || true",
     
     # Frontend: install deps and build
     "cd frontend && npm install --production=false",
     "cd frontend && npm run build"
 ]
 
+# Start command with pre-start migration
 [start]
-cmd = "cd backend && npm start"
+cmd = "cd backend && npx prisma migrate deploy && npm start"
 
+# Default environment variables
 [variables]
 NODE_ENV = "production"
 PORT = "3010"
+API_PORT = "3010"

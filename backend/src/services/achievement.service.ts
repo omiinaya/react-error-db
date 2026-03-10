@@ -1,5 +1,5 @@
 import prisma from './database.service';
-import { notificationService } from './notification.service';
+import { notificationService, NotificationType } from './notification.service';
 
 // Define BadgeTier locally until Prisma generates it
 export enum BadgeTier {
@@ -185,7 +185,7 @@ for (const badge of allBadges) {
     // Send notification
     await notificationService.createNotification({
       userId,
-      type: 'achievement_unlocked',
+      type: NotificationType.achievement_unlocked,
       title: 'Achievement Unlocked!',
       message: `You've earned the "${achievement.badge.name}" badge!`,
       resourceType: 'badge',

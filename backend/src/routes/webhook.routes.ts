@@ -39,7 +39,7 @@ router.post('/', authenticateToken, async (req, res, next) => {
     // Generate a random secret
     const secret = crypto.randomBytes(32).toString('hex');
 
-    const webhook = await webhookService.createWebhook(userId, url, events, secret);
+    const webhook = await webhookService.createWebhook(userId, url as string, events as string[], secret);
 
     return res.status(201).json({
       success: true,
@@ -67,11 +67,12 @@ router.patch('/:id', authenticateToken, async (req, res, next) => {
       });
     }
 
-    const webhook = await webhookService.updateWebhook(userId, webhookId, {
-      url: url as string | undefined,
-      events: events as string[] | undefined,
-      isActive: isActive as boolean | undefined,
-    });
+    const updateData: { url?: string; events?: string[]; isActive?: boolean } = {};
+    if (url !== undefined) updateData.url = url as string;
+    if (events !== undefined) updateData.events = events as string[];
+    if (isActive !== undefined) updateData.isActive = isActive as boolean;
+    
+    const webhook = await webhookService.updateWebhook(userId, webhookId, updateData);
 
     return res.json({
       success: true,
@@ -98,7 +99,7 @@ router.delete('/:id', authenticateToken, async (req, res, next) => {
       });
     }
 
-    await webhookService.deleteWebhook(userId, webhookId);
+    await webhookService.deleteWebhook(userId, webhookId as string);
 
     return res.json({
       success: true,
@@ -122,7 +123,7 @@ router.post('/:id/regenerate-secret', authenticateToken, async (req, res, next) 
       });
     }
 
-    const newSecret = await webhookService.regenerateSecret(userId, webhookId);
+    const newSecret = await webhookService.regenerateSecret(userId, webhookId as string);
 
     return res.json({
       success: true,

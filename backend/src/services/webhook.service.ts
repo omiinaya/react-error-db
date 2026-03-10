@@ -66,13 +66,16 @@ export class WebhookService {
   }
 
   async triggerEvent(eventType: string, data: any) {
-    const webhooks = await prisma.webhook.findMany({
+    // Fetch all active webhooks and filter by event type
+    const allWebhooks = await prisma.webhook.findMany({
       where: {
         isActive: true,
-        events: {
-          has: eventType,
-        } as any,
       },
+    });
+    
+    const webhooks = allWebhooks.filter(webhook => {
+      const events = webhook.events as string[];
+      return Array.isArray(events) && events.includes(eventType);
     });
 
     const event: WebhookEvent = {
@@ -139,7 +142,7 @@ export class WebhookService {
     responseStatus: number | null,
     responseBody: string | null,
     success: boolean,
-    errorMessage?: string
+    errorMessage: string | null = null
   ) {
     try {
       await prisma.webhookDelivery.create({
@@ -150,7 +153,7 @@ export class WebhookService {
           responseStatus,
           responseBody,
           success,
-          errorMessage: errorMessage ?? null,
+          errorMessage,
         },
       });
     } catch (error) {

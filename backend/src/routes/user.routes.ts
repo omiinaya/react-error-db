@@ -167,11 +167,11 @@ router.get('/', authenticateToken, requireAdmin, async (_req: AuthenticatedReque
       orderBy: { createdAt: 'desc' }
     });
 
-    const usersWithStats = users.map(user => ({
-      ...user,
-      solutionsCount: user._count.solutions,
-      _count: undefined
-    }));
+const usersWithStats = users.map((user: any) => ({
+    ...user,
+    solutionsCount: user._count.solutions,
+    _count: undefined
+  }));
 
     return res.json({
       success: true,

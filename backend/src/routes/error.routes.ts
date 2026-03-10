@@ -77,12 +77,12 @@ router.get('/', validateQuery(errorCodeQuerySchema), async (req, res) => {
       prisma.errorCode.count({ where }),
     ]);
 
-    // Transform data to include solutionCount
-    const errorCodesWithCount = errorCodes.map(errorCode => ({
-      ...errorCode,
-      solutionCount: errorCode._count.solutions,
-      _count: undefined
-    }));
+// Transform data to include solutionCount
+  const errorCodesWithCount = errorCodes.map((errorCode: any) => ({
+    ...errorCode,
+    solutionCount: errorCode._count.solutions,
+    _count: undefined
+  }));
 
     const totalPages = Math.ceil(total / limit);
 
@@ -178,11 +178,11 @@ router.get('/:id', optionalAuth, async (req: AuthenticatedRequest, res) => {
       ]
     });
 
-    // Transform solutions to include userVote
-    const solutionsWithVote = solutions.map(solution => {
-      const userVote = solution.votes && Array.isArray(solution.votes) && solution.votes.length > 0
-        ? solution.votes[0]?.voteType || null
-        : null;
+// Transform solutions to include userVote
+  const solutionsWithVote = solutions.map((solution: any) => {
+    const userVote = solution.votes && Array.isArray(solution.votes) && solution.votes.length > 0
+      ? solution.votes[0]?.voteType || null
+      : null;
 
       return {
         id: solution.id,

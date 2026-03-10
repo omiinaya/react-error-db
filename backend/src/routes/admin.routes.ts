@@ -116,12 +116,12 @@ router.get('/users', authenticateToken, requireAdmin, async (req: AuthenticatedR
       prisma.user.count({ where })
     ]);
 
-    const usersWithStats = users.map(user => ({
-      ...user,
-      solutionsCount: user._count.solutions,
-      votesCount: user._count.votes,
-      _count: undefined
-    }));
+const usersWithStats = users.map((user: any) => ({
+    ...user,
+    solutionsCount: user._count.solutions,
+    votesCount: user._count.votes,
+    _count: undefined
+  }));
 
     res.json({
       success: true,
@@ -374,11 +374,11 @@ router.get('/applications/stats', authenticateToken, requireAdmin, async (_req: 
       orderBy: { createdAt: 'desc' }
     });
 
-    const applicationsWithStats = applications.map(app => ({
-      ...app,
-      errorCount: app._count.errorCodes,
-      _count: undefined
-    }));
+const applicationsWithStats = applications.map((app: any) => ({
+    ...app,
+    errorCount: app._count.errorCodes,
+    _count: undefined
+  }));
 
     res.json({
       success: true,

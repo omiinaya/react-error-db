@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
+import path from 'path';
 // rateLimit is used in middleware files, not directly here
 
 import { config } from './config';
@@ -105,6 +106,10 @@ app.get('/health', (_req, res) => {
 
 // API routes
 app.use('/api', routes);
+
+// Serve API documentation
+app.use('/openapi.yaml', express.static(path.join(__dirname, '../openapi.yaml')));
+app.use('/api-docs', express.static(path.join(__dirname, '../public/api-docs.html')));
 
 // 404 handler
 app.use('*', (_req, res) => {

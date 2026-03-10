@@ -508,6 +508,245 @@ class ApiClient {
       data,
     });
   }
+
+  // Advanced Search endpoints
+  async advancedSearch(params: {
+    query: string;
+    applicationId?: string;
+    categoryId?: string;
+    severity?: string;
+    hasSolutions?: boolean;
+    sortBy?: string;
+    page?: number;
+    limit?: number;
+  }) {
+    return this.request<{
+      errors: any[];
+      totalCount: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    }>({
+      method: 'get',
+      url: '/search',
+      params,
+    });
+  }
+
+  async getSearchSuggestions(query: string, limit?: number) {
+    return this.request<{ suggestions: any[] }>({
+      method: 'get',
+      url: '/search/suggestions',
+      params: { query, limit },
+    });
+  }
+
+  async getSearchHistory(limit?: number) {
+    return this.request<{ history: any[] }>({
+      method: 'get',
+      url: '/search/history',
+      params: { limit },
+    });
+  }
+
+  async deleteSearchHistory(searchId: string) {
+    return this.request<{ success: boolean; message: string }>({
+      method: 'delete',
+      url: `/search/history/${searchId}`,
+    });
+  }
+
+  async clearSearchHistory() {
+    return this.request<{ success: boolean; message: string }>({
+      method: 'delete',
+      url: '/search/history',
+    });
+  }
+
+  async getSearchTrends(days?: number) {
+    return this.request<{ trends: any[] }>({
+      method: 'get',
+      url: '/search/trends',
+      params: { days },
+    });
+  }
+
+  // Bookmarks endpoints
+  async getBookmarks(page?: number, limit?: number) {
+    return this.request<{
+      bookmarks: any[];
+      totalCount: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    }>({
+      method: 'get',
+      url: '/bookmarks',
+      params: { page, limit },
+    });
+  }
+
+  async createBookmark(solutionId: string, note?: string) {
+    return this.request<{ bookmark: any }>({
+      method: 'post',
+      url: '/bookmarks',
+      data: { solutionId, note },
+    });
+  }
+
+  async deleteBookmark(bookmarkId: string) {
+    return this.request<{ success: boolean; message: string }>({
+      method: 'delete',
+      url: `/bookmarks/${bookmarkId}`,
+    });
+  }
+
+  async updateBookmarkNote(bookmarkId: string, note: string) {
+    return this.request<{ bookmark: any }>({
+      method: 'patch',
+      url: `/bookmarks/${bookmarkId}`,
+      data: { note },
+    });
+  }
+
+  async checkBookmark(solutionId: string) {
+    return this.request<{ isBookmarked: boolean }>({
+      method: 'get',
+      url: `/bookmarks/check/${solutionId}`,
+    });
+  }
+
+  // Notifications endpoints
+  async getNotifications(unreadOnly?: boolean, page?: number, limit?: number) {
+    return this.request<{
+      notifications: any[];
+      totalCount: number;
+      unreadCount: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    }>({
+      method: 'get',
+      url: '/notifications',
+      params: { unread: unreadOnly, page, limit },
+    });
+  }
+
+  async getUnreadNotificationCount() {
+    return this.request<{ count: number }>({
+      method: 'get',
+      url: '/notifications/unread-count',
+    });
+  }
+
+  async markNotificationAsRead(notificationId: string) {
+    return this.request<{ success: boolean; message: string }>({
+      method: 'patch',
+      url: `/notifications/${notificationId}/read`,
+    });
+  }
+
+  async markAllNotificationsAsRead() {
+    return this.request<{ success: boolean; message: string }>({
+      method: 'patch',
+      url: '/notifications/read-all',
+    });
+  }
+
+  async deleteNotification(notificationId: string) {
+    return this.request<{ success: boolean; message: string }>({
+      method: 'delete',
+      url: `/notifications/${notificationId}`,
+    });
+  }
+
+  // User Stats and Achievements
+  async getUserStats(userId: string) {
+    return this.request<{
+      user: any;
+      achievements: any[];
+      totalPoints: number;
+      badgeCount: number;
+    }>({
+      method: 'get',
+      url: `/users/${userId}/stats`,
+    });
+  }
+
+  // Webhooks endpoints
+  async getWebhooks() {
+    return this.request<{ webhooks: any[] }>({
+      method: 'get',
+      url: '/webhooks',
+    });
+  }
+
+  async createWebhook(url: string, events: string[]) {
+    return this.request<{ webhook: any; secret: string }>({
+      method: 'post',
+      url: '/webhooks',
+      data: { url, events },
+    });
+  }
+
+  async updateWebhook(webhookId: string, data: { url?: string; events?: string[]; isActive?: boolean }) {
+    return this.request<{ webhook: any }>({
+      method: 'patch',
+      url: `/webhooks/${webhookId}`,
+      data,
+    });
+  }
+
+  async deleteWebhook(webhookId: string) {
+    return this.request<{ success: boolean; message: string }>({
+      method: 'delete',
+      url: `/webhooks/${webhookId}`,
+    });
+  }
+
+  async regenerateWebhookSecret(webhookId: string) {
+    return this.request<{ secret: string }>({
+      method: 'post',
+      url: `/webhooks/${webhookId}/regenerate-secret`,
+    });
+  }
+
+  async getWebhookDeliveries(webhookId: string, limit?: number) {
+    return this.request<{ deliveries: any[] }>({
+      method: 'get',
+      url: `/webhooks/${webhookId}/deliveries`,
+      params: { limit },
+    });
+  }
+
+  async getWebhookEventTypes() {
+    return this.request<{ eventTypes: any[] }>({
+      method: 'get',
+      url: '/webhooks/events/types',
+    });
+  }
+
+  // Export endpoints
+  async getExportStats() {
+    return this.request<{
+      totalErrors: number;
+      totalSolutions: number;
+      totalUsers: number;
+      totalApplications: number;
+      totalCategories: number;
+      dateRange: { earliest: string | null; latest: string | null };
+    }>({
+      method: 'get',
+      url: '/export/stats',
+    });
+  }
+
+  async exportUserData() {
+    return this.request<{ downloadUrl: string; filename: string }>({
+      method: 'get',
+      url: '/export/user-data',
+    });
+  }
 }
 
 export const api = new ApiClient();

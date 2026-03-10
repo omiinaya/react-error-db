@@ -1,6 +1,13 @@
 import prisma from './database.service';
 import { notificationService } from './notification.service';
-import { BadgeTier } from '@prisma/client';
+
+// Define BadgeTier locally until Prisma generates it
+export enum BadgeTier {
+  bronze = 'bronze',
+  silver = 'silver',
+  gold = 'gold',
+  platinum = 'platinum',
+}
 
 export interface BadgeCriteria {
   type: 'solution_count' | 'verified_count' | 'upvote_count' | 'contribution_days' | 'first_solution';
@@ -77,13 +84,16 @@ export class AchievementService {
       },
     ];
 
-    for (const badge of defaultBadges) {
-      await prisma.badge.upsert({
-        where: { name: badge.name },
-        update: {},
-        create: badge,
-      });
-    }
+for (const badge of defaultBadges) {
+    await prisma.badge.upsert({
+      where: { name: badge.name },
+      update: {},
+      create: {
+        ...badge,
+        criteria: badge.criteria as any,
+      },
+    });
+  }
   }
 
   // Check and award badges for a user
@@ -111,11 +121,13 @@ export class AchievementService {
     const earnedBadgeIds = new Set(user.achievements.map(a => a.badgeId));
     const allBadges = await prisma.badge.findMany();
 
-    for (const badge of allBadges) {
-      if (earnedBadgeIds.has(badge.id)) continue;
+for (const badge of allBadges) {
+    if (earnedBadgeIds.has(badge.id)) continue;
 
-      const criteria = badge.criteria as BadgeCriteria;
-      let shouldAward = false;
+    const criteria = (badge.criteria as unknown) as BadgeCriteria;
+    if (!criteria || !criteria.type) continue;
+    
+    let shouldAward = false;
 
       switch (criteria.type) {
         case 'solution_count':
@@ -195,7 +207,7 @@ export class AchievementService {
       },
     });
 
-    const totalPoints = achievements.reduce((sum, a) => sum + a.badge.points, 0);
+    const totalPoints = achievements.reduce((sum: number, a: typeof achievements[0]) => sum + a.badge.points, 0);
 
     return {
       achievements,

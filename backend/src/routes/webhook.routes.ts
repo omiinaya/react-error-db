@@ -11,13 +11,13 @@ router.get('/', authenticateToken, async (req, res, next) => {
     const userId = req.user!.id;
     const webhooks = await webhookService.getUserWebhooks(userId);
 
-    res.json({
-      success: true,
-      data: webhooks.map(w => ({
-        ...w,
-        secret: undefined, // Don't expose secret
-      })),
-    });
+res.json({
+    success: true,
+    data: webhooks.map((w: any) => ({
+      ...w,
+      secret: undefined, // Don't expose secret
+    })),
+  });
   } catch (error) {
     next(error);
   }
@@ -56,8 +56,8 @@ router.post('/', authenticateToken, async (req, res, next) => {
 // Update webhook
 router.patch('/:id', authenticateToken, async (req, res, next) => {
   try {
-    const userId = req.user!.id;
-    const webhookId = req.params.id;
+    const userId = req.user?.id as string;
+    const webhookId = req.params.id as string;
     const { url, events, isActive } = req.body;
 
     if (!webhookId) {
@@ -68,9 +68,9 @@ router.patch('/:id', authenticateToken, async (req, res, next) => {
     }
 
     const webhook = await webhookService.updateWebhook(userId, webhookId, {
-      url,
-      events,
-      isActive,
+      url: url as string | undefined,
+      events: events as string[] | undefined,
+      isActive: isActive as boolean | undefined,
     });
 
     return res.json({

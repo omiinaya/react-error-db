@@ -1,0 +1,1298 @@
+openapi: 3.0.3
+info:
+  title: Error Database API
+  description: |
+    A comprehensive API for the Error Database application. This API provides endpoints for managing error codes, solutions, user authentication, and advanced features like bookmarks, notifications, achievements, webhooks, and data export.
+    
+    ## Features
+    - **Error Management**: Create, read, update, and search error codes
+    - **Solution Management**: Submit, vote on, and verify solutions
+    - **User Management**: Authentication, profiles, and achievements
+    - **Bookmarks**: Save solutions for later reference
+    - **Notifications**: Real-time in-app notifications
+    - **Webhooks**: External integrations with event subscriptions
+    - **Analytics**: Search analytics and usage statistics
+    - **Export**: Data export in JSON and CSV formats
+    
+    ## Authentication
+    All protected endpoints require a Bearer token in the Authorization header:
+    ```
+    Authorization: Bearer <your-jwt-token>
+    ```
+  version: 1.0.0
+  contact:
+    name: Error Database Team
+    email: support@errordb.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3010/api
+    description: Local development server
+  - url: https://api.errordb.com/api
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: User registration, login, and token management
+  - name: Search
+    description: Advanced search with filters, suggestions, and history
+  - name: Errors
+    description: Error code management
+  - name: Solutions
+    description: Solution submission, voting, and moderation
+  - name: Bookmarks
+    description: Save and manage bookmarked solutions
+  - name: Notifications
+    description: In-app notification system
+  - name: Users
+    description: User profiles, stats, and achievements
+  - name: Categories
+    description: Category management
+  - name: Applications
+    description: Application management
+  - name: Webhooks
+    description: External integrations and event subscriptions
+  - name: Export
+    description: Data export functionality
+  - name: Admin
+    description: Administrative operations
+
+paths:
+  # Authentication
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - username
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                username:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                password:
+                  type: string
+                  minLength: 8
+                displayName:
+                  type: string
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  refreshToken:
+                    type: string
+
+  # Search
+  /search:
+    get:
+      tags:
+        - Search
+      summary: Advanced search with filters
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: applicationId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: categoryId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: severity
+          in: query
+          schema:
+            type: string
+            enum: [low, medium, high, critical]
+        - name: hasSolutions
+          in: query
+          schema:
+            type: boolean
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [relevance, newest, popular, solutions]
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      errors:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ErrorCode'
+                      totalCount:
+                        type: integer
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      totalPages:
+                        type: integer
+
+  /search/suggestions:
+    get:
+      tags:
+        - Search
+      summary: Get search suggestions/autocomplete
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 2
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 5
+      responses:
+        '200':
+          description: Search suggestions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          enum: [error, popular, application, category]
+                        value:
+                          type: string
+                        label:
+                          type: string
+
+  /search/history:
+    get:
+      tags:
+        - Search
+      summary: Get user search history
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+      responses:
+        '200':
+          description: Search history
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SearchHistoryItem'
+
+    delete:
+      tags:
+        - Search
+      summary: Clear all search history
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: History cleared
+
+  /search/history/{id}:
+    delete:
+      tags:
+        - Search
+      summary: Delete a specific search history item
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Item deleted
+
+  /search/trends:
+    get:
+      tags:
+        - Search
+      summary: Get search trends (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: days
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 90
+            default: 7
+      responses:
+        '200':
+          description: Search trends
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        query:
+                          type: string
+                        count:
+                          type: integer
+        '403':
+          description: Admin access required
+
+  # Bookmarks
+  /bookmarks:
+    get:
+      tags:
+        - Bookmarks
+      summary: Get user bookmarks
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: User bookmarks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      bookmarks:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Bookmark'
+                      totalCount:
+                        type: integer
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      totalPages:
+                        type: integer
+
+    post:
+      tags:
+        - Bookmarks
+      summary: Create a bookmark
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - solutionId
+              properties:
+                solutionId:
+                  type: string
+                  format: uuid
+                note:
+                  type: string
+                  maxLength: 500
+      responses:
+        '201':
+          description: Bookmark created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Bookmark'
+
+  /bookmarks/{id}:
+    delete:
+      tags:
+        - Bookmarks
+      summary: Delete a bookmark
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Bookmark deleted
+
+  /bookmarks/check/{solutionId}:
+    get:
+      tags:
+        - Bookmarks
+      summary: Check if a solution is bookmarked
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: solutionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Bookmark status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      isBookmarked:
+                        type: boolean
+
+  # Notifications
+  /notifications:
+    get:
+      tags:
+        - Notifications
+      summary: Get user notifications
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: unread
+          in: query
+          schema:
+            type: boolean
+            default: false
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: User notifications
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      notifications:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Notification'
+                      totalCount:
+                        type: integer
+                      unreadCount:
+                        type: integer
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      totalPages:
+                        type: integer
+
+  /notifications/unread-count:
+    get:
+      tags:
+        - Notifications
+      summary: Get unread notification count
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Unread count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+
+  /notifications/read-all:
+    patch:
+      tags:
+        - Notifications
+      summary: Mark all notifications as read
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: All notifications marked as read
+
+  /notifications/{id}/read:
+    patch:
+      tags:
+        - Notifications
+      summary: Mark notification as read
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Notification marked as read
+
+  /notifications/{id}:
+    delete:
+      tags:
+        - Notifications
+      summary: Delete a notification
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Notification deleted
+
+  # Webhooks
+  /webhooks:
+    get:
+      tags:
+        - Webhooks
+      summary: Get user webhooks
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User webhooks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Webhook'
+
+    post:
+      tags:
+        - Webhooks
+      summary: Create a webhook
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+                - events
+              properties:
+                url:
+                  type: string
+                  format: uri
+                events:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - error.created
+                      - error.updated
+                      - solution.created
+                      - solution.verified
+                      - solution.upvoted
+                      - user.registered
+                      - category.created
+                      - application.created
+      responses:
+        '201':
+          description: Webhook created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      webhook:
+                        $ref: '#/components/schemas/Webhook'
+                      secret:
+                        type: string
+
+  /webhooks/{id}:
+    patch:
+      tags:
+        - Webhooks
+      summary: Update a webhook
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                events:
+                  type: array
+                  items:
+                    type: string
+                isActive:
+                  type: boolean
+      responses:
+        '200':
+          description: Webhook updated
+
+    delete:
+      tags:
+        - Webhooks
+      summary: Delete a webhook
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Webhook deleted
+
+  /webhooks/{id}/regenerate-secret:
+    post:
+      tags:
+        - Webhooks
+      summary: Regenerate webhook secret
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Secret regenerated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      secret:
+                        type: string
+
+  /webhooks/{id}/deliveries:
+    get:
+      tags:
+        - Webhooks
+      summary: Get webhook delivery history
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+      responses:
+        '200':
+          description: Delivery history
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WebhookDelivery'
+
+  /webhooks/events/types:
+    get:
+      tags:
+        - Webhooks
+      summary: Get available webhook event types
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Event types
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        key:
+                          type: string
+                        value:
+                          type: string
+                        description:
+                          type: string
+
+  # Export
+  /export/stats:
+    get:
+      tags:
+        - Export
+      summary: Get export statistics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Export statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      totalErrors:
+                        type: integer
+                      totalSolutions:
+                        type: integer
+                      totalUsers:
+                        type: integer
+                      totalApplications:
+                        type: integer
+                      totalCategories:
+                        type: integer
+                      dateRange:
+                        type: object
+                        properties:
+                          earliest:
+                            type: string
+                            format: date-time
+                          latest:
+                            type: string
+                            format: date-time
+
+  /export/errors:
+    get:
+      tags:
+        - Export
+      summary: Export errors (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [json, csv]
+            default: json
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Exported data
+          content:
+            application/json:
+              schema:
+                type: object
+            text/csv:
+              schema:
+                type: string
+        '403':
+          description: Admin access required
+
+  /export/solutions:
+    get:
+      tags:
+        - Export
+      summary: Export solutions (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [json, csv]
+            default: json
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Exported data
+          content:
+            application/json:
+              schema:
+                type: object
+            text/csv:
+              schema:
+                type: string
+
+  /export/user-data:
+    get:
+      tags:
+        - Export
+      summary: Export user data
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User data export
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /export/analytics:
+    get:
+      tags:
+        - Export
+      summary: Export analytics (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [json, csv]
+            default: json
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Analytics export
+          content:
+            application/json:
+              schema:
+                type: object
+            text/csv:
+              schema:
+                type: string
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    AuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            token:
+              type: string
+            refreshToken:
+              type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        displayName:
+          type: string
+        avatarUrl:
+          type: string
+        isVerified:
+          type: boolean
+        isAdmin:
+          type: boolean
+        reputation:
+          type: integer
+        solutionCount:
+          type: integer
+        verifiedSolutionCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+
+    ErrorCode:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+        viewCount:
+          type: integer
+        application:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            category:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+        solutions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Solution'
+        _count:
+          type: object
+          properties:
+            solutions:
+              type: integer
+
+    Solution:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        solutionText:
+          type: string
+        score:
+          type: integer
+        upvotes:
+          type: integer
+        downvotes:
+          type: integer
+        isVerified:
+          type: boolean
+        author:
+          type: object
+          properties:
+            id:
+              type: string
+            username:
+              type: string
+            displayName:
+              type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    Bookmark:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        solutionId:
+          type: string
+          format: uuid
+        note:
+          type: string
+        solution:
+          $ref: '#/components/schemas/Solution'
+        createdAt:
+          type: string
+          format: date-time
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum:
+            - solution_verified
+            - solution_upvoted
+            - new_follower
+            - new_solution
+            - category_request_approved
+            - category_request_rejected
+            - achievement_unlocked
+            - mention
+            - system
+        title:
+          type: string
+        message:
+          type: string
+        resourceType:
+          type: string
+        resourceId:
+          type: string
+        isRead:
+          type: boolean
+        readAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    Webhook:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+        isActive:
+          type: boolean
+        lastDeliveryAt:
+          type: string
+          format: date-time
+        lastDeliveryStatus:
+          type: string
+        failureCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    WebhookDelivery:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        webhookId:
+          type: string
+          format: uuid
+        event:
+          type: string
+        payload:
+          type: object
+        responseStatus:
+          type: integer
+        responseBody:
+          type: string
+        deliveredAt:
+          type: string
+          format: date-time
+        success:
+          type: boolean
+        errorMessage:
+          type: string
+
+    SearchHistoryItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        query:
+          type: string
+        filters:
+          type: object
+        resultCount:
+          type: integer
+        clickedResultId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: array
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                  message:
+                    type: string

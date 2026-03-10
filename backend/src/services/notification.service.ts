@@ -1,5 +1,17 @@
 import prisma from './database.service';
-import { NotificationType } from '@prisma/client';
+
+// Define NotificationType locally until Prisma generates it
+export enum NotificationType {
+  solution_verified = 'solution_verified',
+  solution_upvoted = 'solution_upvoted',
+  new_follower = 'new_follower',
+  new_solution = 'new_solution',
+  category_request_approved = 'category_request_approved',
+  category_request_rejected = 'category_request_rejected',
+  achievement_unlocked = 'achievement_unlocked',
+  mention = 'mention',
+  system = 'system',
+}
 
 export interface CreateNotificationData {
   userId: string;
@@ -12,15 +24,22 @@ export interface CreateNotificationData {
 
 export class NotificationService {
   async createNotification(data: CreateNotificationData) {
+    const createData: any = {
+      userId: data.userId,
+      type: data.type,
+      title: data.title,
+      message: data.message,
+    };
+    
+    if (data.resourceType !== undefined) {
+      createData.resourceType = data.resourceType;
+    }
+    if (data.resourceId !== undefined) {
+      createData.resourceId = data.resourceId;
+    }
+    
     return await prisma.notification.create({
-      data: {
-        userId: data.userId,
-        type: data.type,
-        title: data.title,
-        message: data.message,
-        resourceType: data.resourceType ?? null,
-        resourceId: data.resourceId ?? null,
-      },
+      data: createData,
       include: {
         user: {
           select: {

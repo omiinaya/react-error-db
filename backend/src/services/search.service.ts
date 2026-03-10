@@ -77,17 +77,20 @@ export class SearchService {
 
     const searchDuration = Date.now() - startTime;
     
-    // Track search analytics (only if userId is provided)
+    // Track search analytics
+    const analyticsPayload = {
+      query,
+      normalizedQuery,
+      filters,
+      resultCount: totalCount,
+      searchDuration,
+    } as any;
+    
     if (userId) {
-      await this.trackSearchAnalytics({
-        query,
-        normalizedQuery,
-        filters,
-        resultCount: totalCount,
-        userId,
-        searchDuration,
-      });
+      analyticsPayload.userId = userId;
     }
+    
+    await this.trackSearchAnalytics(analyticsPayload);
 
     return {
       errors,
@@ -147,18 +150,18 @@ export class SearchService {
       take: 3,
     });
 
-    const suggestions: SearchSuggestion[] = [
-      ...errorSuggestions.map(error => ({
-        type: 'error' as const,
-        value: `${error.application.name}: ${error.code}`,
-        label: error.title,
-      })),
-      ...popularSearches.map(search => ({
-        type: 'popular' as const,
-        value: search.normalizedQuery,
-        label: `Popular search: ${search.normalizedQuery}`,
-      })),
-    ];
+const suggestions: SearchSuggestion[] = [
+    ...errorSuggestions.map((error: any) => ({
+      type: 'error' as const,
+      value: `${error.application.name}: ${error.code}`,
+      label: error.title,
+    })),
+    ...popularSearches.map((search: any) => ({
+      type: 'popular' as const,
+      value: search.normalizedQuery,
+      label: `Popular search: ${search.normalizedQuery}`,
+    })),
+  ];
 
     return suggestions.slice(0, limit);
   }
@@ -218,8 +221,7 @@ export class SearchService {
         searchDuration: data.searchDuration,
       };
       
-      // Only include userId if it's defined
-      if (data.userId) {
+      if (data.userId !== undefined) {
         analyticsData.userId = data.userId;
       }
       

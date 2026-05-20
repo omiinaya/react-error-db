@@ -157,6 +157,8 @@ export function NotificationBell() {
             notifications.map((notification) => (
               <div
                 key={notification.id}
+                role="button"
+                tabIndex={0}
                 className={`p-3 border-b last:border-b-0 cursor-pointer hover:bg-accent transition-colors ${
                   !notification.isRead ? 'bg-accent/50' : ''
                 }`}
@@ -168,6 +170,17 @@ export function NotificationBell() {
                   if (notification.resourceType && notification.resourceId) {
                     setOpen(false);
                     // Navigate logic here
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    if (!notification.isRead) {
+                      markAsRead(notification.id);
+                    }
+                    if (notification.resourceType && notification.resourceId) {
+                      setOpen(false);
+                    }
                   }
                 }}
               >

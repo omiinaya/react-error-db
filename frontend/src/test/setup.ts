@@ -82,7 +82,7 @@ console.error = (...args) => {
   if (
     typeof args[0] === 'string' &&
     (args[0].includes('Error: Not implemented') ||
-     args[0].includes('Warning: ReactDOM.render is no longer supported'))
+      args[0].includes('Warning: ReactDOM.render is no longer supported'))
   ) {
     return;
   }
@@ -93,7 +93,7 @@ console.warn = (...args) => {
   if (
     typeof args[0] === 'string' &&
     (args[0].includes('Deprecation') ||
-     args[0].includes('Warning:') && args[0].includes('experimental'))
+      (args[0].includes('Warning:') && args[0].includes('experimental')))
   ) {
     return;
   }

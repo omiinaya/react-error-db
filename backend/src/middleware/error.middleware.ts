@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
-import { PrismaClientKnownRequestError, PrismaClientUnknownRequestError, PrismaClientValidationError } from '@prisma/client/runtime/library';
+import {
+  PrismaClientKnownRequestError,
+  PrismaClientUnknownRequestError,
+  PrismaClientValidationError,
+} from '@prisma/client/runtime/library';
 import { logger } from '../utils/logger';
 
 interface CustomError extends Error {
@@ -40,7 +44,7 @@ export const errorMiddleware = (
     // Handle known Prisma errors
     statusCode = 400;
     errorCode = 'DATABASE_ERROR';
-    
+
     switch (error.code) {
       case 'P2002':
         message = 'Unique constraint violation';

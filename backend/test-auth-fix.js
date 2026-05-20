@@ -15,17 +15,21 @@ if (!TEST_JWT_TOKEN) {
 // Test with an expired token (this should return 401 now instead of 400)
 async function testAuthFix() {
   console.log('Testing authentication fix...\n');
-  
+
   try {
-    const response = await axios.post(`${BASE_URL}/errors/test-error-id/solutions`, {
-      solutionText: 'This is a test solution that should be valid'
-    }, {
-      headers: {
-        'Authorization': `Bearer ${TEST_JWT_TOKEN}`,
-        'Content-Type': 'application/json'
+    const response = await axios.post(
+      `${BASE_URL}/errors/test-error-id/solutions`,
+      {
+        solutionText: 'This is a test solution that should be valid',
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${TEST_JWT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
       }
-    });
-    
+    );
+
     console.log('Unexpected success - should have failed with 401:');
     console.log('Status:', response.status);
     console.log('Response:', response.data);
@@ -34,12 +38,19 @@ async function testAuthFix() {
       console.log('Status:', error.response.status);
       console.log('Error Code:', error.response.data?.error?.code);
       console.log('Error Message:', error.response.data?.error?.message);
-      console.log('Full Response:', JSON.stringify(error.response.data, null, 2));
-      
+      console.log(
+        'Full Response:',
+        JSON.stringify(error.response.data, null, 2)
+      );
+
       if (error.response.status === 401) {
-        console.log('\n✅ SUCCESS: Authentication fix is working! Returning 401 for expired tokens.');
+        console.log(
+          '\n✅ SUCCESS: Authentication fix is working! Returning 401 for expired tokens.'
+        );
       } else if (error.response.status === 400) {
-        console.log('\n❌ FAILURE: Still returning 400 instead of 401 for authentication errors.');
+        console.log(
+          '\n❌ FAILURE: Still returning 400 instead of 401 for authentication errors.'
+        );
       }
     } else {
       console.log('Network error:', error.message);
@@ -50,12 +61,15 @@ async function testAuthFix() {
 // Also test without any token
 async function testNoToken() {
   console.log('\nTesting without any token...\n');
-  
+
   try {
-    const response = await axios.post(`${BASE_URL}/errors/test-error-id/solutions`, {
-      solutionText: 'This is a test solution'
-    });
-    
+    const response = await axios.post(
+      `${BASE_URL}/errors/test-error-id/solutions`,
+      {
+        solutionText: 'This is a test solution',
+      }
+    );
+
     console.log('Unexpected success - should have failed with 401:');
     console.log('Status:', response.status);
     console.log('Response:', response.data);
@@ -64,7 +78,7 @@ async function testNoToken() {
       console.log('Status:', error.response.status);
       console.log('Error Code:', error.response.data?.error?.code);
       console.log('Error Message:', error.response.data?.error?.message);
-      
+
       if (error.response.status === 401) {
         console.log('\n✅ SUCCESS: Properly returning 401 for missing tokens.');
       }
@@ -75,6 +89,8 @@ async function testNoToken() {
 }
 
 // Run tests
-testAuthFix().then(() => {
-  setTimeout(testNoToken, 1000);
-}).catch(console.error);
+testAuthFix()
+  .then(() => {
+    setTimeout(testNoToken, 1000);
+  })
+  .catch(console.error);

@@ -42,17 +42,20 @@ router.get('/', (_req, res) => {
  * @description Get secret value (masked for security)
  * @access Admin only
  */
-router.get('/:key', 
-  validateRequest(z.object({
-    params: z.object({
-      key: z.string().min(1),
-    }),
-  })),
+router.get(
+  '/:key',
+  validateRequest(
+    z.object({
+      params: z.object({
+        key: z.string().min(1),
+      }),
+    })
+  ),
   (req, res) => {
     try {
       const { key } = req.params as { key: string };
       const metadata = secretManager.getSecretMetadata(key);
-      
+
       if (!metadata) {
         return res.status(404).json({
           success: false,
@@ -80,15 +83,20 @@ router.get('/:key',
  * @description Rotate a specific secret
  * @access Admin only
  */
-router.post('/:key/rotate',
-  validateRequest(z.object({
-    params: z.object({
-      key: z.string().min(1),
-    }),
-    body: z.object({
-      newValue: z.string().min(16).optional(),
-    }).optional(),
-  })),
+router.post(
+  '/:key/rotate',
+  validateRequest(
+    z.object({
+      params: z.object({
+        key: z.string().min(1),
+      }),
+      body: z
+        .object({
+          newValue: z.string().min(16).optional(),
+        })
+        .optional(),
+    })
+  ),
   async (req, res) => {
     try {
       const { key } = req.params as { key: string };
@@ -149,16 +157,19 @@ router.post('/rotate-all', async (_req, res) => {
  * @description Create or update a secret
  * @access Admin only
  */
-router.post('/:key',
-  validateRequest(z.object({
-    params: z.object({
-      key: z.string().min(1),
-    }),
-    body: z.object({
-      value: z.string().min(16),
-      expiresInDays: z.number().min(1).max(365).optional(),
-    }),
-  })),
+router.post(
+  '/:key',
+  validateRequest(
+    z.object({
+      params: z.object({
+        key: z.string().min(1),
+      }),
+      body: z.object({
+        value: z.string().min(16),
+        expiresInDays: z.number().min(1).max(365).optional(),
+      }),
+    })
+  ),
   (req, res) => {
     try {
       const { key } = req.params as { key: string };
@@ -174,7 +185,9 @@ router.post('/:key',
         });
       }
 
-      const expiresInMs = expiresInDays ? expiresInDays * 24 * 60 * 60 * 1000 : undefined;
+      const expiresInMs = expiresInDays
+        ? expiresInDays * 24 * 60 * 60 * 1000
+        : undefined;
       secretManager.setSecret(key, value, expiresInMs);
 
       return res.status(200).json({
@@ -201,12 +214,15 @@ router.post('/:key',
  * @description Delete a secret
  * @access Admin only
  */
-router.delete('/:key',
-  validateRequest(z.object({
-    params: z.object({
-      key: z.string().min(1),
-    }),
-  })),
+router.delete(
+  '/:key',
+  validateRequest(
+    z.object({
+      params: z.object({
+        key: z.string().min(1),
+      }),
+    })
+  ),
   (req, res) => {
     try {
       const { key } = req.params as { key: string };
@@ -251,7 +267,9 @@ router.get('/health/rotation', (_req, res) => {
       data: {
         needsRotation: rotationStatus,
         total: rotationStatus.length,
-        nextRotationCheck: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours from now
+        nextRotationCheck: new Date(
+          Date.now() + 24 * 60 * 60 * 1000
+        ).toISOString(), // 24 hours from now
       },
     });
   } catch (error) {
@@ -268,17 +286,23 @@ router.get('/health/rotation', (_req, res) => {
  * @description Validate secret strength
  * @access Admin only
  */
-router.post('/validate',
-  validateRequest(z.object({
-    body: z.object({
-      secret: z.string().min(1),
-      minLength: z.number().min(8).max(128).optional().default(16),
-    }),
-  })),
+router.post(
+  '/validate',
+  validateRequest(
+    z.object({
+      body: z.object({
+        secret: z.string().min(1),
+        minLength: z.number().min(8).max(128).optional().default(16),
+      }),
+    })
+  ),
   (req, res) => {
     try {
       const { secret, minLength } = req.body;
-      const validation = secretManager.validateSecretStrength(secret, minLength);
+      const validation = secretManager.validateSecretStrength(
+        secret,
+        minLength
+      );
 
       return res.status(200).json({
         success: true,
@@ -299,12 +323,15 @@ router.post('/validate',
  * @description Generate a random secret
  * @access Admin only
  */
-router.post('/generate',
-  validateRequest(z.object({
-    body: z.object({
-      length: z.number().min(16).max(128).optional().default(32),
-    }),
-  })),
+router.post(
+  '/generate',
+  validateRequest(
+    z.object({
+      body: z.object({
+        length: z.number().min(16).max(128).optional().default(32),
+      }),
+    })
+  ),
   (req, res) => {
     try {
       const { length } = req.body;
@@ -334,12 +361,15 @@ router.post('/generate',
  * @description Export all secrets (encrypted)
  * @access Admin only
  */
-router.post('/export',
-  validateRequest(z.object({
-    body: z.object({
-      encryptionKey: z.string().min(32),
-    }),
-  })),
+router.post(
+  '/export',
+  validateRequest(
+    z.object({
+      body: z.object({
+        encryptionKey: z.string().min(32),
+      }),
+    })
+  ),
   (req, res) => {
     try {
       const { encryptionKey } = req.body;
@@ -368,13 +398,16 @@ router.post('/export',
  * @description Import secrets from backup
  * @access Admin only
  */
-router.post('/import',
-  validateRequest(z.object({
-    body: z.object({
-      encryptedData: z.string().min(1),
-      decryptionKey: z.string().min(32),
-    }),
-  })),
+router.post(
+  '/import',
+  validateRequest(
+    z.object({
+      body: z.object({
+        encryptedData: z.string().min(1),
+        decryptionKey: z.string().min(32),
+      }),
+    })
+  ),
   (req, res) => {
     try {
       const { encryptedData, decryptionKey } = req.body;

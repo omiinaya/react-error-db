@@ -19,7 +19,11 @@ declare global {
  * Security middleware that enhances Helmet with additional security headers
  * and Content Security Policy (CSP) configuration
  */
-export const securityMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const securityMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   // Enhanced CSP configuration
   const cspConfig = {
     directives: {
@@ -27,36 +31,31 @@ export const securityMiddleware = (req: Request, res: Response, next: NextFuncti
       scriptSrc: [
         "'self'",
         "'unsafe-inline'", // Required for some legacy browsers
-        "'unsafe-eval'",   // Required for some frameworks
-        "https://cdn.jsdelivr.net",
-        "https://unpkg.com",
-        "https://cdnjs.cloudflare.com",
+        "'unsafe-eval'", // Required for some frameworks
+        'https://cdn.jsdelivr.net',
+        'https://unpkg.com',
+        'https://cdnjs.cloudflare.com',
       ],
       styleSrc: [
         "'self'",
         "'unsafe-inline'", // Required for inline styles
-        "https://fonts.googleapis.com",
-        "https://cdn.jsdelivr.net",
-        "https://unpkg.com",
+        'https://fonts.googleapis.com',
+        'https://cdn.jsdelivr.net',
+        'https://unpkg.com',
       ],
       fontSrc: [
         "'self'",
-        "https://fonts.gstatic.com",
-        "https://cdn.jsdelivr.net",
-        "https://unpkg.com",
-        "data:",
+        'https://fonts.gstatic.com',
+        'https://cdn.jsdelivr.net',
+        'https://unpkg.com',
+        'data:',
       ],
-      imgSrc: [
-        "'self'",
-        "data:",
-        "blob:",
-        "https:",
-      ],
+      imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
       connectSrc: [
         "'self'",
         config.frontendUrl,
-        "https://api.sentry.io",
-        "wss://*.sentry.io",
+        'https://api.sentry.io',
+        'wss://*.sentry.io',
       ],
       frameSrc: ["'none'"], // Disable iframes
       objectSrc: ["'none'"], // Disable plugins
@@ -64,7 +63,8 @@ export const securityMiddleware = (req: Request, res: Response, next: NextFuncti
       frameAncestors: ["'none'"], // Prevent clickjacking
       formAction: ["'self'"],
       baseUri: ["'self'"],
-      reportUri: config.nodeEnv === 'production' ? '/api/security/csp-report' : null,
+      reportUri:
+        config.nodeEnv === 'production' ? '/api/security/csp-report' : null,
     },
     reportOnly: config.nodeEnv !== 'production', // Report only in development
   };
@@ -72,11 +72,11 @@ export const securityMiddleware = (req: Request, res: Response, next: NextFuncti
   // Apply enhanced security headers
   helmet({
     contentSecurityPolicy: cspConfig,
-    crossOriginEmbedderPolicy: { policy: "require-corp" },
-    crossOriginOpenerPolicy: { policy: "same-origin" },
-    crossOriginResourcePolicy: { policy: "same-site" },
+    crossOriginEmbedderPolicy: { policy: 'require-corp' },
+    crossOriginOpenerPolicy: { policy: 'same-origin' },
+    crossOriginResourcePolicy: { policy: 'same-site' },
     originAgentCluster: true,
-    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
     strictTransportSecurity: {
       maxAge: 31536000, // 1 year
       includeSubDomains: true,
@@ -85,8 +85,8 @@ export const securityMiddleware = (req: Request, res: Response, next: NextFuncti
     xContentTypeOptions: true,
     xDnsPrefetchControl: { allow: false },
     xDownloadOptions: true,
-    xFrameOptions: { action: "deny" },
-    xPermittedCrossDomainPolicies: { permittedPolicies: "none" },
+    xFrameOptions: { action: 'deny' },
+    xPermittedCrossDomainPolicies: { permittedPolicies: 'none' },
     xXssProtection: false, // Disable deprecated X-XSS-Protection header
   })(req, res, next);
 };
@@ -94,49 +94,64 @@ export const securityMiddleware = (req: Request, res: Response, next: NextFuncti
 /**
  * Additional security headers beyond Helmet's defaults
  */
-export const additionalSecurityHeaders = (req: Request, res: Response, next: NextFunction) => {
+export const additionalSecurityHeaders = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   // Prevent MIME type sniffing
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  
+
   // Prevent clickjacking
   res.setHeader('X-Frame-Options', 'DENY');
-  
+
   // Enable XSS protection
   res.setHeader('X-XSS-Protection', '1; mode=block');
-  
+
   // Prevent IE from executing downloads in site context
   res.setHeader('X-Download-Options', 'noopen');
-  
+
   // Disable browser caching for sensitive pages
   if (req.path.includes('/auth') || req.path.includes('/admin')) {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader(
+      'Cache-Control',
+      'no-store, no-cache, must-revalidate, proxy-revalidate'
+    );
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
     res.setHeader('Surrogate-Control', 'no-store');
   }
-  
+
   // Permissions policy (formerly Feature Policy)
-  res.setHeader('Permissions-Policy', 
+  res.setHeader(
+    'Permissions-Policy',
     'accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), ' +
-    'display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(), ' +
-    'gamepad=(), geolocation=(), gyroscope=(), layout-animations=(), legacy-image-formats=(), ' +
-    'magnetometer=(), microphone=(), midi=(), oversized-images=(), payment=(), ' +
-    'picture-in-picture=(), publickey-credentials-get=(), sync-xhr=(), usb=(), ' +
-    'vr=(), wake-lock=(), screen-wake-lock=(), web-share=(), xr-spatial-tracking=()'
+      'display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(), ' +
+      'gamepad=(), geolocation=(), gyroscope=(), layout-animations=(), legacy-image-formats=(), ' +
+      'magnetometer=(), microphone=(), midi=(), oversized-images=(), payment=(), ' +
+      'picture-in-picture=(), publickey-credentials-get=(), sync-xhr=(), usb=(), ' +
+      'vr=(), wake-lock=(), screen-wake-lock=(), web-share=(), xr-spatial-tracking=()'
   );
-  
+
   // Expect-CT header (Certificate Transparency)
   if (config.nodeEnv === 'production') {
-    res.setHeader('Expect-CT', 'max-age=86400, enforce, report-uri="/api/security/ct-report"');
+    res.setHeader(
+      'Expect-CT',
+      'max-age=86400, enforce, report-uri="/api/security/ct-report"'
+    );
   }
-  
+
   next();
 };
 
 /**
  * Rate limiting configuration per endpoint
  */
-export const endpointSpecificRateLimiting = (req: Request, _res: Response, next: NextFunction) => {
+export const endpointSpecificRateLimiting = (
+  req: Request,
+  _res: Response,
+  next: NextFunction
+) => {
   // Stricter rate limits for authentication endpoints
   if (req.path.includes('/auth')) {
     req.rateLimit = {
@@ -144,7 +159,7 @@ export const endpointSpecificRateLimiting = (req: Request, _res: Response, next:
       max: config.nodeEnv === 'production' ? 5 : 20, // 5 attempts in production
     };
   }
-  
+
   // Stricter rate limits for admin endpoints
   if (req.path.includes('/admin')) {
     req.rateLimit = {
@@ -152,7 +167,7 @@ export const endpointSpecificRateLimiting = (req: Request, _res: Response, next:
       max: config.nodeEnv === 'production' ? 10 : 50,
     };
   }
-  
+
   // Stricter rate limits for API endpoints
   if (req.path.startsWith('/api')) {
     req.rateLimit = {
@@ -160,14 +175,18 @@ export const endpointSpecificRateLimiting = (req: Request, _res: Response, next:
       max: config.nodeEnv === 'production' ? 100 : 1000,
     };
   }
-  
+
   next();
 };
 
 /**
  * Security logging middleware
  */
-export const securityLoggingMiddleware = (req: Request, _res: Response, next: NextFunction) => {
+export const securityLoggingMiddleware = (
+  req: Request,
+  _res: Response,
+  next: NextFunction
+) => {
   const securityRelevantHeaders = [
     'x-forwarded-for',
     'user-agent',
@@ -175,26 +194,29 @@ export const securityLoggingMiddleware = (req: Request, _res: Response, next: Ne
     'origin',
     'x-real-ip',
   ];
-  
+
   const securityContext = {
     timestamp: new Date().toISOString(),
     ip: req.ip || req.connection.remoteAddress,
     method: req.method,
     path: req.path,
-    headers: securityRelevantHeaders.reduce((acc, header) => {
-      if (req.headers[header]) {
-        acc[header] = req.headers[header];
-      }
-      return acc;
-    }, {} as Record<string, any>),
+    headers: securityRelevantHeaders.reduce(
+      (acc, header) => {
+        if (req.headers[header]) {
+          acc[header] = req.headers[header];
+        }
+        return acc;
+      },
+      {} as Record<string, any>
+    ),
     user: req.user ? { id: (req.user as any).id } : undefined,
   };
-  
+
   // Log security-relevant requests
   if (req.path.includes('/auth') || req.path.includes('/admin')) {
     console.log('Security event:', securityContext);
   }
-  
+
   next();
 };
 
@@ -205,7 +227,7 @@ export const cspReportHandler = (req: Request, res: Response) => {
   if (req.body && config.nodeEnv !== 'production') {
     console.warn('CSP Violation:', req.body);
   }
-  
+
   res.status(204).send();
 };
 
@@ -216,7 +238,7 @@ export const xssReportHandler = (req: Request, res: Response) => {
   if (req.body && config.nodeEnv !== 'production') {
     console.warn('XSS Violation:', req.body);
   }
-  
+
   res.status(204).send();
 };
 
@@ -227,7 +249,7 @@ export const ctReportHandler = (req: Request, res: Response) => {
   if (req.body && config.nodeEnv !== 'production') {
     console.warn('CT Violation:', req.body);
   }
-  
+
   res.status(204).send();
 };
 

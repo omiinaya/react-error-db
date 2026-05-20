@@ -63,10 +63,8 @@ export function NotificationBell() {
   const markAsRead = async (notificationId: string) => {
     try {
       await api.markNotificationAsRead(notificationId);
-      setNotifications((prev) =>
-        prev.map((n) =>
-          n.id === notificationId ? { ...n, isRead: true } : n
-        )
+      setNotifications(prev =>
+        prev.map(n => (n.id === notificationId ? { ...n, isRead: true } : n))
       );
       loadUnreadCount();
     } catch (error) {
@@ -77,9 +75,7 @@ export function NotificationBell() {
   const markAllAsRead = async () => {
     try {
       await api.markAllNotificationsAsRead();
-      setNotifications((prev) =>
-        prev.map((n) => ({ ...n, isRead: true }))
-      );
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
       setUnreadCount(0);
       toast.success('All notifications marked as read');
     } catch (error) {
@@ -154,7 +150,7 @@ export function NotificationBell() {
               No notifications
             </div>
           ) : (
-            notifications.map((notification) => (
+            notifications.map(notification => (
               <div
                 key={notification.id}
                 role="button"
@@ -172,7 +168,7 @@ export function NotificationBell() {
                     // Navigate logic here
                   }
                 }}
-                onKeyDown={(e) => {
+                onKeyDown={e => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     if (!notification.isRead) {
@@ -189,9 +185,7 @@ export function NotificationBell() {
                     {getNotificationIcon(notification.type)}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm">
-                      {notification.title}
-                    </p>
+                    <p className="font-medium text-sm">{notification.title}</p>
                     <p className="text-xs text-muted-foreground line-clamp-2">
                       {notification.message}
                     </p>

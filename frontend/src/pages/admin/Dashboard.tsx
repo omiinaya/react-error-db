@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -10,7 +16,7 @@ import {
   AlertTriangle,
   Activity,
   Shield,
-  Database
+  Database,
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -40,11 +46,14 @@ const Dashboard: React.FC = () => {
         setLoading(true);
         const response = await api.request<{ stats: DashboardStats }>({
           method: 'get',
-          url: '/admin/dashboard/stats'
+          url: '/admin/dashboard/stats',
         });
         setStats(response.stats);
       } catch (err: any) {
-        setError(err.response?.data?.error?.message || 'Failed to fetch dashboard statistics');
+        setError(
+          err.response?.data?.error?.message ||
+            'Failed to fetch dashboard statistics'
+        );
       } finally {
         setLoading(false);
       }
@@ -111,43 +120,46 @@ const Dashboard: React.FC = () => {
       value: stats?.totalUsers || 0,
       icon: Users,
       description: `${stats?.newUsersLast24h || 0} new today`,
-      color: 'text-blue-600'
+      color: 'text-blue-600',
     },
     {
       title: 'Applications',
       value: stats?.totalApplications || 0,
       icon: Database,
       description: 'Total applications',
-      color: 'text-green-600'
+      color: 'text-green-600',
     },
     {
       title: 'Error Codes',
       value: stats?.totalErrorCodes || 0,
       icon: AlertTriangle,
       description: 'Total error codes',
-      color: 'text-orange-600'
+      color: 'text-orange-600',
     },
     {
       title: 'Solutions',
       value: stats?.totalSolutions || 0,
       icon: FileText,
       description: `${stats?.unverifiedSolutions || 0} pending verification`,
-      color: 'text-purple-600'
+      color: 'text-purple-600',
     },
     {
       title: 'Active Users',
       value: stats?.activeUsersLast24h || 0,
       icon: Activity,
       description: 'Last 24 hours',
-      color: 'text-teal-600'
+      color: 'text-teal-600',
     },
     {
       title: 'System Health',
       value: stats?.systemHealth?.status === 'healthy' ? 'Healthy' : 'Degraded',
       icon: Shield,
       description: 'System status',
-      color: stats?.systemHealth?.status === 'healthy' ? 'text-green-600' : 'text-red-600'
-    }
+      color:
+        stats?.systemHealth?.status === 'healthy'
+          ? 'text-green-600'
+          : 'text-red-600',
+    },
   ];
 
   return (
@@ -185,9 +197,7 @@ const Dashboard: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>
-              Common administrative tasks
-            </CardDescription>
+            <CardDescription>Common administrative tasks</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Button variant="outline" className="w-full justify-start">
@@ -212,9 +222,7 @@ const Dashboard: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>
-              Latest system events
-            </CardDescription>
+            <CardDescription>Latest system events</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -233,7 +241,9 @@ const Dashboard: React.FC = () => {
               <div className="flex items-center">
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Error code added</p>
-                  <p className="text-xs text-muted-foreground">10 minutes ago</p>
+                  <p className="text-xs text-muted-foreground">
+                    10 minutes ago
+                  </p>
                 </div>
               </div>
             </div>

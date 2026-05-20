@@ -28,8 +28,12 @@ router.get('/errors', authenticateToken, async (req, res, next) => {
     }
 
     const format = (req.query.format as 'json' | 'csv') || 'json';
-    const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
-    const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
+    const startDate = req.query.startDate
+      ? new Date(req.query.startDate as string)
+      : undefined;
+    const endDate = req.query.endDate
+      ? new Date(req.query.endDate as string)
+      : undefined;
 
     const options: any = { format };
     if (startDate) options.startDate = startDate;
@@ -38,7 +42,10 @@ router.get('/errors', authenticateToken, async (req, res, next) => {
     const result = await exportService.exportErrors(options);
 
     res.setHeader('Content-Type', result.contentType);
-    res.setHeader('Content-Disposition', `attachment; filename="${result.filename}"`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${result.filename}"`
+    );
     return res.send(result.data);
   } catch (error) {
     return next(error);
@@ -56,8 +63,12 @@ router.get('/solutions', authenticateToken, async (req, res, next) => {
     }
 
     const format = (req.query.format as 'json' | 'csv') || 'json';
-    const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
-    const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
+    const startDate = req.query.startDate
+      ? new Date(req.query.startDate as string)
+      : undefined;
+    const endDate = req.query.endDate
+      ? new Date(req.query.endDate as string)
+      : undefined;
 
     const options: any = { format };
     if (startDate) options.startDate = startDate;
@@ -66,7 +77,10 @@ router.get('/solutions', authenticateToken, async (req, res, next) => {
     const result = await exportService.exportSolutions(options);
 
     res.setHeader('Content-Type', result.contentType);
-    res.setHeader('Content-Disposition', `attachment; filename="${result.filename}"`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${result.filename}"`
+    );
     return res.send(result.data);
   } catch (error) {
     return next(error);
@@ -80,7 +94,10 @@ router.get('/user-data', authenticateToken, async (req, res, next) => {
     const result = await exportService.exportUserData(userId);
 
     res.setHeader('Content-Type', result.contentType);
-    res.setHeader('Content-Disposition', `attachment; filename="${result.filename}"`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${result.filename}"`
+    );
     return res.send(result.data);
   } catch (error) {
     return next(error);
@@ -98,8 +115,12 @@ router.get('/analytics', authenticateToken, async (req, res, next) => {
     }
 
     const format = (req.query.format as 'json' | 'csv') || 'json';
-    const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
-    const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
+    const startDate = req.query.startDate
+      ? new Date(req.query.startDate as string)
+      : undefined;
+    const endDate = req.query.endDate
+      ? new Date(req.query.endDate as string)
+      : undefined;
 
     const options: any = { format };
     if (startDate) options.startDate = startDate;
@@ -108,7 +129,10 @@ router.get('/analytics', authenticateToken, async (req, res, next) => {
     const result = await exportService.exportAnalytics(options);
 
     res.setHeader('Content-Type', result.contentType);
-    res.setHeader('Content-Disposition', `attachment; filename="${result.filename}"`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${result.filename}"`
+    );
     return res.send(result.data);
   } catch (error) {
     return next(error);

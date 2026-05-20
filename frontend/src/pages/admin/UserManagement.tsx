@@ -1,11 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Search, User, Mail, Calendar } from 'lucide-react';
@@ -42,7 +61,7 @@ const UserManagement: React.FC = () => {
     page: 1,
     limit: 20,
     total: 0,
-    pages: 0
+    pages: 0,
   });
 
   useEffect(() => {
@@ -55,16 +74,19 @@ const UserManagement: React.FC = () => {
       setLoading(true);
       const params: any = {
         page: pagination.page,
-        limit: pagination.limit
+        limit: pagination.limit,
       };
 
       if (search) params.search = search;
       if (role && role !== 'all') params.role = role;
 
-      const response = await api.request<{ users: UserWithStats[]; pagination: PaginationMeta }>({
+      const response = await api.request<{
+        users: UserWithStats[];
+        pagination: PaginationMeta;
+      }>({
         method: 'get',
         url: '/admin/users',
-        params
+        params,
       });
 
       setUsers(response.users);
@@ -81,27 +103,33 @@ const UserManagement: React.FC = () => {
       await api.request({
         method: 'put',
         url: `/users/${userId}/role`,
-        data: { isAdmin }
+        data: { isAdmin },
       });
-      
+
       // Refresh the user list
       fetchUsers();
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Failed to update user role');
+      setError(
+        err.response?.data?.error?.message || 'Failed to update user role'
+      );
     }
   };
 
   const deleteUser = async (userId: string) => {
-    if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+    if (
+      !confirm(
+        'Are you sure you want to delete this user? This action cannot be undone.'
+      )
+    ) {
       return;
     }
 
     try {
       await api.request({
         method: 'delete',
-        url: `/users/${userId}`
+        url: `/users/${userId}`,
       });
-      
+
       // Refresh the user list
       fetchUsers();
     } catch (err: any) {
@@ -151,7 +179,7 @@ const UserManagement: React.FC = () => {
                   placeholder="Search users..."
                   className="pl-10"
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={e => setSearch(e.target.value)}
                 />
               </div>
             </div>
@@ -172,9 +200,7 @@ const UserManagement: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle>Users</CardTitle>
-          <CardDescription>
-            {pagination.total} users found
-          </CardDescription>
+          <CardDescription>{pagination.total} users found</CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -194,7 +220,9 @@ const UserManagement: React.FC = () => {
               <User className="mx-auto h-12 w-12 text-muted-foreground" />
               <h3 className="mt-4 text-lg font-semibold">No users found</h3>
               <p className="text-muted-foreground">
-                {search || role ? 'Try adjusting your search criteria' : 'No users in the system yet'}
+                {search || role
+                  ? 'Try adjusting your search criteria'
+                  : 'No users in the system yet'}
               </p>
             </div>
           ) : (
@@ -211,7 +239,7 @@ const UserManagement: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.map((userItem) => (
+                  {users.map(userItem => (
                     <TableRow key={userItem.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
@@ -243,7 +271,9 @@ const UserManagement: React.FC = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={userItem.isAdmin ? "default" : "secondary"}>
+                        <Badge
+                          variant={userItem.isAdmin ? 'default' : 'secondary'}
+                        >
                           {userItem.isAdmin ? 'Admin' : 'User'}
                         </Badge>
                       </TableCell>
@@ -262,7 +292,9 @@ const UserManagement: React.FC = () => {
                         <div className="flex gap-2">
                           <Select
                             value={userItem.isAdmin ? 'admin' : 'user'}
-                            onValueChange={(value) => updateUserRole(userItem.id, value === 'admin')}
+                            onValueChange={value =>
+                              updateUserRole(userItem.id, value === 'admin')
+                            }
                           >
                             <SelectTrigger className="w-[100px]">
                               <SelectValue />
@@ -292,15 +324,17 @@ const UserManagement: React.FC = () => {
           {pagination.pages > 1 && (
             <div className="flex items-center justify-between mt-6">
               <div className="text-sm text-muted-foreground">
-                Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
-                {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
-                {pagination.total} users
+                Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
+                {Math.min(pagination.page * pagination.limit, pagination.total)}{' '}
+                of {pagination.total} users
               </div>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                  onClick={() =>
+                    setPagination(prev => ({ ...prev, page: prev.page - 1 }))
+                  }
                   disabled={pagination.page === 1}
                 >
                   Previous
@@ -308,7 +342,9 @@ const UserManagement: React.FC = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                  onClick={() =>
+                    setPagination(prev => ({ ...prev, page: prev.page + 1 }))
+                  }
                   disabled={pagination.page === pagination.pages}
                 >
                   Next

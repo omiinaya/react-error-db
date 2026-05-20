@@ -5,10 +5,10 @@ module.exports = {
   testMatch: [
     '**/__tests__/**/*.+(ts|tsx|js)',
     '**/?(*.)+(spec|test).+(ts|tsx|js)',
-    '!**/__tests__/setup.ts'
+    '!**/__tests__/setup.ts',
   ],
   transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest'
+    '^.+\\.(ts|tsx)$': 'ts-jest',
   },
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
@@ -17,16 +17,16 @@ module.exports = {
     '^@/config/(.*)$': '<rootDir>/src/config/$1',
     '^@/middleware/(.*)$': '<rootDir>/src/middleware/$1',
     '^@/services/(.*)$': '<rootDir>/src/services/$1',
-    '^@/routes/(.*)$': '<rootDir>/src/routes/$1'
+    '^@/routes/(.*)$': '<rootDir>/src/routes/$1',
   },
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
     '!src/**/index.ts',
     '!src/**/types.ts',
-    '!src/seed.ts'
+    '!src/seed.ts',
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
-  setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts']
+  setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts'],
 };

@@ -11,7 +11,7 @@ router.get('/', authenticateToken, async (req, res, next) => {
     const unreadOnly = req.query.unread === 'true';
     const page = req.query.page ? parseInt(req.query.page as string) : 1;
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
-    
+
     const notifications = await notificationService.getUserNotifications(
       userId,
       unreadOnly,
@@ -48,14 +48,14 @@ router.patch('/:id/read', authenticateToken, async (req, res, next) => {
   try {
     const userId = req.user!.id;
     const notificationId = req.params.id;
-    
+
     if (!notificationId) {
       return res.status(400).json({
         success: false,
         message: 'Notification ID is required',
       });
     }
-    
+
     await notificationService.markAsRead(userId, notificationId);
 
     return res.json({
@@ -71,7 +71,7 @@ router.patch('/:id/read', authenticateToken, async (req, res, next) => {
 router.patch('/read-all', authenticateToken, async (req, res, next) => {
   try {
     const userId = req.user!.id;
-    
+
     await notificationService.markAllAsRead(userId);
 
     return res.json({
@@ -88,14 +88,14 @@ router.delete('/:id', authenticateToken, async (req, res, next) => {
   try {
     const userId = req.user!.id;
     const notificationId = req.params.id;
-    
+
     if (!notificationId) {
       return res.status(400).json({
         success: false,
         message: 'Notification ID is required',
       });
     }
-    
+
     await notificationService.deleteNotification(userId, notificationId);
 
     return res.json({

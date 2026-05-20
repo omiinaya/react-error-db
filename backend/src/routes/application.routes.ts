@@ -1,7 +1,15 @@
 import { Router } from 'express';
-import { applicationQuerySchema, createApplicationSchema, updateApplicationSchema } from '../schemas/application.schemas';
+import {
+  applicationQuerySchema,
+  createApplicationSchema,
+  updateApplicationSchema,
+} from '../schemas/application.schemas';
 import { validateRequest } from '../middleware/validation.middleware';
-import { authenticateToken, AuthenticatedRequest, requireAdmin } from '../middleware/auth.middleware';
+import {
+  authenticateToken,
+  AuthenticatedRequest,
+  requireAdmin,
+} from '../middleware/auth.middleware';
 import prisma from '../services/database.service';
 import { logger } from '../utils/logger';
 
@@ -37,7 +45,7 @@ router.get('/', validateRequest(applicationQuerySchema), async (req, res) => {
             id: true,
             name: true,
             slug: true,
-          }
+          },
         },
       },
       orderBy: { name: 'asc' },
@@ -55,9 +63,9 @@ router.get('/', validateRequest(applicationQuerySchema), async (req, res) => {
       },
       where: {
         applicationId: {
-          in: applications.map((app: any) => app.id)
-        }
-      }
+          in: applications.map((app: any) => app.id),
+        },
+      },
     });
 
     // Create a map of applicationId to error count
@@ -69,7 +77,7 @@ router.get('/', validateRequest(applicationQuerySchema), async (req, res) => {
     // Transform data to include errorCount
     const applicationsWithCount = applications.map((app: any) => ({
       ...app,
-      errorCount: errorCountMap.get(app.id) || 0
+      errorCount: errorCountMap.get(app.id) || 0,
     }));
 
     const totalPages = Math.ceil(total / limit);
@@ -85,8 +93,8 @@ router.get('/', validateRequest(applicationQuerySchema), async (req, res) => {
           limit,
           total,
           pages: totalPages,
-        }
-      }
+        },
+      },
     });
   } catch (error) {
     logger.error('Get applications error:', error);
@@ -94,8 +102,8 @@ router.get('/', validateRequest(applicationQuerySchema), async (req, res) => {
       success: false,
       error: {
         code: 'SERVER_ERROR',
-        message: 'Failed to fetch applications'
-      }
+        message: 'Failed to fetch applications',
+      },
     });
   }
 });
@@ -113,9 +121,9 @@ router.get('/:slug', async (req, res) => {
             id: true,
             name: true,
             slug: true,
-          }
+          },
         },
-      }
+      },
     });
 
     if (!application) {
@@ -123,26 +131,26 @@ router.get('/:slug', async (req, res) => {
         success: false,
         error: {
           code: 'NOT_FOUND',
-          message: 'Application not found'
-        }
+          message: 'Application not found',
+        },
       });
     }
 
     // Get error count separately
     const errorCount = await prisma.errorCode.count({
-      where: { applicationId: application.id }
+      where: { applicationId: application.id },
     });
 
     const applicationWithCount = {
       ...application,
-      errorCount
+      errorCount,
     };
 
     return res.json({
       success: true,
       data: {
-        application: applicationWithCount
-      }
+        application: applicationWithCount,
+      },
     });
   } catch (error) {
     logger.error('Get application by slug error:', error);
@@ -150,155 +158,168 @@ router.get('/:slug', async (req, res) => {
       success: false,
       error: {
         code: 'SERVER_ERROR',
-        message: 'Failed to fetch application'
-      }
+        message: 'Failed to fetch application',
+      },
     });
   }
 });
 
 // Create application (Admin only)
-router.post('/', authenticateToken, requireAdmin, validateRequest(createApplicationSchema), async (req: AuthenticatedRequest, res) => {
-  try {
-    const applicationData = req.body;
+router.post(
+  '/',
+  authenticateToken,
+  requireAdmin,
+  validateRequest(createApplicationSchema),
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const applicationData = req.body;
 
-    const existingApplication = await prisma.application.findFirst({
-      where: { // nosemgrep: javascript.express.security.audit.mongodb.nosql.express-mongo-nosqli
-        OR: [
-          { name: applicationData.name },
-          { slug: applicationData.slug }
-        ]
-      }
-    });
-
-    if (existingApplication) {
-      return res.status(409).json({
-        success: false,
-        error: {
-          code: 'APPLICATION_EXISTS',
-          message: existingApplication.name === applicationData.name 
-            ? 'Application with this name already exists' 
-            : 'Application with this slug already exists'
-        }
-      });
-    }
-
-    const application = await prisma.application.create({
-      data: applicationData,
-      include: {
-        category: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-          }
-        }
-      }
-    });
-
-    return res.status(201).json({
-      success: true,
-      data: {
-        application: {
-          ...application,
-          errorCount: 0
-        }
-      }
-    });
-  } catch (error) {
-    logger.error('Create application error:', error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'SERVER_ERROR',
-        message: 'Failed to create application'
-      }
-    });
-  }
-});
-
-// Update application (Admin only)
-router.put('/:id', authenticateToken, requireAdmin, validateRequest(updateApplicationSchema), async (req: AuthenticatedRequest, res) => {
-  try {
-    const { id } = req.params;
-    const updateData = req.body;
-
-    // Check if application exists
-    const existingApplication = await prisma.application.findUnique({
-      where: { id: id as string }
-    });
-
-    if (!existingApplication) {
-      return res.status(404).json({
-        success: false,
-        error: {
-          code: 'NOT_FOUND',
-          message: 'Application not found'
-        }
-      });
-    }
-
-    if (updateData.name || updateData.slug) {
-      const conflictingApplication = await prisma.application.findFirst({
-        where: { // nosemgrep: javascript.express.security.audit.mongodb.nosql.express-mongo-nosqli
-          id: { not: id as string },
-          OR: [
-            ...(updateData.name ? [{ name: updateData.name }] : []),
-            ...(updateData.slug ? [{ slug: updateData.slug }] : [])
-          ]
-        }
+      const existingApplication = await prisma.application.findFirst({
+        where: {
+          // nosemgrep: javascript.express.security.audit.mongodb.nosql.express-mongo-nosqli
+          OR: [{ name: applicationData.name }, { slug: applicationData.slug }],
+        },
       });
 
-      if (conflictingApplication) {
+      if (existingApplication) {
         return res.status(409).json({
           success: false,
           error: {
             code: 'APPLICATION_EXISTS',
-            message: 'Another application with this name or slug already exists'
-          }
+            message:
+              existingApplication.name === applicationData.name
+                ? 'Application with this name already exists'
+                : 'Application with this slug already exists',
+          },
         });
       }
-    }
 
-    const application = await prisma.application.update({
-      where: { id: id as string },
-      data: updateData,
-      include: {
-        category: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-          }
+      const application = await prisma.application.create({
+        data: applicationData,
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
         },
-      }
-    });
+      });
 
-    // Get error count separately
-    const errorCount = await prisma.errorCode.count({
-      where: { applicationId: application.id }
-    });
-
-    const applicationWithCount = {
-      ...application,
-      errorCount
-    };
-
-    return res.json({
-      success: true,
-      data: {
-        application: applicationWithCount
-      }
-    });
-  } catch (error) {
-    logger.error('Update application error:', error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'SERVER_ERROR',
-        message: 'Failed to update application'
-      }
-    });
+      return res.status(201).json({
+        success: true,
+        data: {
+          application: {
+            ...application,
+            errorCount: 0,
+          },
+        },
+      });
+    } catch (error) {
+      logger.error('Create application error:', error);
+      return res.status(500).json({
+        success: false,
+        error: {
+          code: 'SERVER_ERROR',
+          message: 'Failed to create application',
+        },
+      });
+    }
   }
-});
+);
+
+// Update application (Admin only)
+router.put(
+  '/:id',
+  authenticateToken,
+  requireAdmin,
+  validateRequest(updateApplicationSchema),
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+
+      // Check if application exists
+      const existingApplication = await prisma.application.findUnique({
+        where: { id: id as string },
+      });
+
+      if (!existingApplication) {
+        return res.status(404).json({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Application not found',
+          },
+        });
+      }
+
+      if (updateData.name || updateData.slug) {
+        const conflictingApplication = await prisma.application.findFirst({
+          where: {
+            // nosemgrep: javascript.express.security.audit.mongodb.nosql.express-mongo-nosqli
+            id: { not: id as string },
+            OR: [
+              ...(updateData.name ? [{ name: updateData.name }] : []),
+              ...(updateData.slug ? [{ slug: updateData.slug }] : []),
+            ],
+          },
+        });
+
+        if (conflictingApplication) {
+          return res.status(409).json({
+            success: false,
+            error: {
+              code: 'APPLICATION_EXISTS',
+              message:
+                'Another application with this name or slug already exists',
+            },
+          });
+        }
+      }
+
+      const application = await prisma.application.update({
+        where: { id: id as string },
+        data: updateData,
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+        },
+      });
+
+      // Get error count separately
+      const errorCount = await prisma.errorCode.count({
+        where: { applicationId: application.id },
+      });
+
+      const applicationWithCount = {
+        ...application,
+        errorCount,
+      };
+
+      return res.json({
+        success: true,
+        data: {
+          application: applicationWithCount,
+        },
+      });
+    } catch (error) {
+      logger.error('Update application error:', error);
+      return res.status(500).json({
+        success: false,
+        error: {
+          code: 'SERVER_ERROR',
+          message: 'Failed to update application',
+        },
+      });
+    }
+  }
+);
 
 export default router;

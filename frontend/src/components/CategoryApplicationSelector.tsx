@@ -1,8 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { api } from '@/services/api';
 import { Category, Application } from '@/types';
@@ -16,10 +29,9 @@ interface CategoryApplicationSelectorProps {
   selectedApplicationId?: string;
 }
 
-const CategoryApplicationSelector: React.FC<CategoryApplicationSelectorProps> = ({
-  onApplicationSelect,
-  selectedApplicationId
-}) => {
+const CategoryApplicationSelector: React.FC<
+  CategoryApplicationSelectorProps
+> = ({ onApplicationSelect, selectedApplicationId }) => {
   const { toast } = useToast();
   const { user } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
@@ -53,7 +65,7 @@ const CategoryApplicationSelector: React.FC<CategoryApplicationSelectorProps> = 
       toast({
         title: 'Error',
         description: 'Failed to load categories',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -68,7 +80,7 @@ const CategoryApplicationSelector: React.FC<CategoryApplicationSelectorProps> = 
       toast({
         title: 'Error',
         description: 'Failed to load applications',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     }
   };
@@ -88,7 +100,8 @@ const CategoryApplicationSelector: React.FC<CategoryApplicationSelectorProps> = 
   const handleCategoryRequestCreated = () => {
     toast({
       title: 'Request Submitted',
-      description: 'Your category request has been submitted for review by an administrator.',
+      description:
+        'Your category request has been submitted for review by an administrator.',
     });
     setIsRequestCategoryOpen(false);
   };
@@ -109,7 +122,10 @@ const CategoryApplicationSelector: React.FC<CategoryApplicationSelectorProps> = 
         <div className="flex items-center justify-between">
           <Label htmlFor="category">Category</Label>
           {user?.isAdmin ? (
-            <Dialog open={isCreateCategoryOpen} onOpenChange={setIsCreateCategoryOpen}>
+            <Dialog
+              open={isCreateCategoryOpen}
+              onOpenChange={setIsCreateCategoryOpen}
+            >
               <DialogTrigger asChild>
                 <Button variant="link" size="sm" className="h-8 px-0">
                   + New Category
@@ -129,7 +145,10 @@ const CategoryApplicationSelector: React.FC<CategoryApplicationSelectorProps> = 
               </DialogContent>
             </Dialog>
           ) : (
-            <Dialog open={isRequestCategoryOpen} onOpenChange={setIsRequestCategoryOpen}>
+            <Dialog
+              open={isRequestCategoryOpen}
+              onOpenChange={setIsRequestCategoryOpen}
+            >
               <DialogTrigger asChild>
                 <Button variant="link" size="sm" className="h-8 px-0">
                   + Request Category
@@ -139,7 +158,8 @@ const CategoryApplicationSelector: React.FC<CategoryApplicationSelectorProps> = 
                 <DialogHeader>
                   <DialogTitle>Request New Category</DialogTitle>
                   <DialogDescription>
-                    Submit a request for a new category. An administrator will review your request.
+                    Submit a request for a new category. An administrator will
+                    review your request.
                   </DialogDescription>
                 </DialogHeader>
                 <CategoryRequestDialog
@@ -150,12 +170,15 @@ const CategoryApplicationSelector: React.FC<CategoryApplicationSelectorProps> = 
             </Dialog>
           )}
         </div>
-        <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId}>
+        <Select
+          value={selectedCategoryId}
+          onValueChange={setSelectedCategoryId}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>
           <SelectContent>
-            {categories.map((category) => (
+            {categories.map(category => (
               <SelectItem key={category.id} value={category.id}>
                 {category.name} ({category.applicationCount || 0} apps)
               </SelectItem>
@@ -169,7 +192,10 @@ const CategoryApplicationSelector: React.FC<CategoryApplicationSelectorProps> = 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="application">Application *</Label>
-            <Dialog open={isCreateApplicationOpen} onOpenChange={setIsCreateApplicationOpen}>
+            <Dialog
+              open={isCreateApplicationOpen}
+              onOpenChange={setIsCreateApplicationOpen}
+            >
               <DialogTrigger asChild>
                 <Button variant="link" size="sm" className="h-8 px-0">
                   + New Application
@@ -182,15 +208,15 @@ const CategoryApplicationSelector: React.FC<CategoryApplicationSelectorProps> = 
                     Add a new application to the selected category.
                   </DialogDescription>
                 </DialogHeader>
-                <CreateApplicationDialog 
+                <CreateApplicationDialog
                   categoryId={selectedCategoryId}
                   onApplicationCreated={handleApplicationCreated}
                 />
               </DialogContent>
             </Dialog>
           </div>
-          <Select 
-            value={selectedApplicationId} 
+          <Select
+            value={selectedApplicationId}
             onValueChange={onApplicationSelect}
             required
           >
@@ -198,7 +224,7 @@ const CategoryApplicationSelector: React.FC<CategoryApplicationSelectorProps> = 
               <SelectValue placeholder="Select an application" />
             </SelectTrigger>
             <SelectContent>
-              {applications.map((application) => (
+              {applications.map(application => (
                 <SelectItem key={application.id} value={application.id}>
                   {application.name} ({application.errorCount} errors)
                 </SelectItem>

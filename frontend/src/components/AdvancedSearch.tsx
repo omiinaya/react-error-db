@@ -181,7 +181,7 @@ export function AdvancedSearch() {
               type="text"
               placeholder="Search error codes, titles, or descriptions..."
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={e => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
               onFocus={() => setShowSuggestions(true)}
               className="pl-10"
@@ -196,61 +196,64 @@ export function AdvancedSearch() {
             )}
 
             {/* Suggestions Dropdown */}
-            {showSuggestions && (suggestions.length > 0 || searchHistory.length > 0) && (
-              <Card className="absolute top-full left-0 right-0 mt-1 z-50">
-                <CardContent className="p-2">
-                  {suggestions.length > 0 && (
-                    <div className="mb-4">
-                      <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                        Suggestions
-                      </h4>
-                      {suggestions.map((suggestion, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleSuggestionClick(suggestion)}
-                          className="w-full text-left px-3 py-2 hover:bg-accent rounded-sm flex items-center gap-2"
-                        >
-                          <Search className="h-3 w-3" />
-                          <span>{suggestion.label}</span>
-                          {suggestion.type === 'popular' && (
-                            <TrendingUp className="h-3 w-3 text-muted-foreground ml-auto" />
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  {searchHistory.length > 0 && (
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="text-sm font-medium text-muted-foreground">
-                          Recent Searches
+            {showSuggestions &&
+              (suggestions.length > 0 || searchHistory.length > 0) && (
+                <Card className="absolute top-full left-0 right-0 mt-1 z-50">
+                  <CardContent className="p-2">
+                    {suggestions.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                          Suggestions
                         </h4>
-                        <button
-                          onClick={clearSearchHistory}
-                          className="text-xs text-muted-foreground hover:text-foreground"
-                        >
-                          Clear
-                        </button>
+                        {suggestions.map((suggestion, index) => (
+                          <button
+                            key={index}
+                            onClick={() => handleSuggestionClick(suggestion)}
+                            className="w-full text-left px-3 py-2 hover:bg-accent rounded-sm flex items-center gap-2"
+                          >
+                            <Search className="h-3 w-3" />
+                            <span>{suggestion.label}</span>
+                            {suggestion.type === 'popular' && (
+                              <TrendingUp className="h-3 w-3 text-muted-foreground ml-auto" />
+                            )}
+                          </button>
+                        ))}
                       </div>
-                      {searchHistory.map((item) => (
-                        <button
-                          key={item.id}
-                          onClick={() => handleHistoryClick(item)}
-                          className="w-full text-left px-3 py-2 hover:bg-accent rounded-sm flex items-center gap-2"
-                        >
-                          <Clock className="h-3 w-3 text-muted-foreground" />
-                          <span className="flex-1 truncate">{item.query}</span>
-                          <span className="text-xs text-muted-foreground">
-                            {item.resultCount} results
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
+                    )}
+
+                    {searchHistory.length > 0 && (
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="text-sm font-medium text-muted-foreground">
+                            Recent Searches
+                          </h4>
+                          <button
+                            onClick={clearSearchHistory}
+                            className="text-xs text-muted-foreground hover:text-foreground"
+                          >
+                            Clear
+                          </button>
+                        </div>
+                        {searchHistory.map(item => (
+                          <button
+                            key={item.id}
+                            onClick={() => handleHistoryClick(item)}
+                            className="w-full text-left px-3 py-2 hover:bg-accent rounded-sm flex items-center gap-2"
+                          >
+                            <Clock className="h-3 w-3 text-muted-foreground" />
+                            <span className="flex-1 truncate">
+                              {item.query}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {item.resultCount} results
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
           </div>
           <Button onClick={() => performSearch()} disabled={loading}>
             {loading ? (
@@ -279,8 +282,8 @@ export function AdvancedSearch() {
         <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Select
             value={filters.severity}
-            onValueChange={(value) =>
-              setFilters((f) => ({ ...f, severity: value }))
+            onValueChange={value =>
+              setFilters(f => ({ ...f, severity: value }))
             }
           >
             <SelectTrigger>
@@ -296,9 +299,7 @@ export function AdvancedSearch() {
 
           <Select
             value={filters.sortBy}
-            onValueChange={(value) =>
-              setFilters((f) => ({ ...f, sortBy: value }))
-            }
+            onValueChange={value => setFilters(f => ({ ...f, sortBy: value }))}
           >
             <SelectTrigger>
               <SelectValue placeholder="Sort by" />
@@ -313,10 +314,15 @@ export function AdvancedSearch() {
 
           <Select
             value={filters.hasSolutions?.toString()}
-            onValueChange={(value) =>
-              setFilters((f) => ({
+            onValueChange={value =>
+              setFilters(f => ({
                 ...f,
-                hasSolutions: value === 'true' ? true : value === 'false' ? false : undefined,
+                hasSolutions:
+                  value === 'true'
+                    ? true
+                    : value === 'false'
+                      ? false
+                      : undefined,
               }))
             }
           >
@@ -360,7 +366,7 @@ export function AdvancedSearch() {
             </div>
           </div>
 
-          {results.map((error) => (
+          {results.map(error => (
             <Card
               key={error.id}
               className="cursor-pointer hover:shadow-md transition-shadow"
@@ -381,7 +387,9 @@ export function AdvancedSearch() {
                       {error.title}
                     </p>
                     {error.description && (
-                      <p className="text-sm line-clamp-2">{error.description}</p>
+                      <p className="text-sm line-clamp-2">
+                        {error.description}
+                      </p>
                     )}
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <span>{error._count?.solutions || 0} solutions</span>
@@ -409,7 +417,9 @@ export function AdvancedSearch() {
   );
 }
 
-function getSeverityVariant(severity: string): 'default' | 'secondary' | 'destructive' | 'outline' {
+function getSeverityVariant(
+  severity: string
+): 'default' | 'secondary' | 'destructive' | 'outline' {
   switch (severity?.toLowerCase()) {
     case 'critical':
       return 'destructive';

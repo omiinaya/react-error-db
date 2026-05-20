@@ -33,7 +33,7 @@ router.get('/readiness', async (_req, res) => {
   try {
     // Check database connection
     await databaseService.$queryRaw`SELECT 1`;
-    
+
     res.status(200).json({
       success: true,
       data: {
@@ -168,13 +168,14 @@ router.get('/uptime', (_req, res) => {
  */
 router.get('/info', (_req, res) => {
   const metrics = uptimeMonitor.getMetrics();
-  
+
   res.status(200).json({
     success: true,
     data: {
       name: 'Error Database API',
       version: process.env.npm_package_version || '1.0.0',
-      description: 'A comprehensive error code database with community-driven solutions',
+      description:
+        'A comprehensive error code database with community-driven solutions',
       environment: config.nodeEnv,
       uptime: process.uptime(),
       totalUptime: metrics.totalUptime,

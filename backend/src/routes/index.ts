@@ -20,7 +20,7 @@ import {
   cspReportHandler,
   xssReportHandler,
   ctReportHandler,
-  securityHeadersTest
+  securityHeadersTest,
 } from '../middleware/security.middleware';
 
 const router = Router();

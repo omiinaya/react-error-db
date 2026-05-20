@@ -30,14 +30,14 @@ export class NotificationService {
       title: data.title,
       message: data.message,
     };
-    
+
     if (data.resourceType !== undefined) {
       createData.resourceType = data.resourceType;
     }
     if (data.resourceId !== undefined) {
       createData.resourceId = data.resourceId;
     }
-    
+
     return await prisma.notification.create({
       data: createData,
       include: {
@@ -52,9 +52,14 @@ export class NotificationService {
     });
   }
 
-  async getUserNotifications(userId: string, unreadOnly: boolean = false, page: number = 1, limit: number = 20) {
+  async getUserNotifications(
+    userId: string,
+    unreadOnly: boolean = false,
+    page: number = 1,
+    limit: number = 20
+  ) {
     const skip = (page - 1) * limit;
-    
+
     const where: any = { userId };
     if (unreadOnly) {
       where.isRead = false;

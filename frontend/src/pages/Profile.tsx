@@ -1,13 +1,27 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Calendar, Edit, Save, X, ThumbsUp, ThumbsDown, CheckCircle } from 'lucide-react';
+import {
+  Calendar,
+  Edit,
+  Save,
+  X,
+  ThumbsUp,
+  ThumbsDown,
+  CheckCircle,
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
 import { UpdateProfileRequest, Solution } from '@/types';
@@ -20,12 +34,16 @@ const Profile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
     displayName: '',
-    avatarUrl: ''
+    avatarUrl: '',
   });
   const { t } = useTranslation();
 
   // Fetch user profile
-  const { data: profile, isLoading, error } = useQuery({
+  const {
+    data: profile,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['user-profile', user?.id],
     queryFn: async () => {
       const response = await api.getUserProfile(user!.id);
@@ -36,8 +54,7 @@ const Profile: React.FC = () => {
 
   // Update profile mutation
   const updateProfileMutation = useMutation({
-    mutationFn: (data: UpdateProfileRequest) =>
-      api.updateProfile(data),
+    mutationFn: (data: UpdateProfileRequest) => api.updateProfile(data),
     onSuccess: () => {
       setIsEditing(false);
       queryClient.invalidateQueries({ queryKey: ['user-profile', user?.id] });
@@ -53,7 +70,7 @@ const Profile: React.FC = () => {
     if (profile?.user) {
       setEditData({
         displayName: profile.user.displayName,
-        avatarUrl: profile.user.avatarUrl || ''
+        avatarUrl: profile.user.avatarUrl || '',
       });
     }
     setIsEditing(true);
@@ -102,7 +119,9 @@ const Profile: React.FC = () => {
       <div className="container py-8 max-w-4xl mx-auto">
         <Card>
           <CardContent className="pt-6 text-center">
-            <p className="text-destructive">Error loading profile. Please try again.</p>
+            <p className="text-destructive">
+              Error loading profile. Please try again.
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -124,7 +143,7 @@ const Profile: React.FC = () => {
             </AvatarFallback>
           </Avatar>
         </div>
-        
+
         <div className="flex-1">
           {isEditing ? (
             <div className="space-y-4">
@@ -133,7 +152,9 @@ const Profile: React.FC = () => {
                 <Input
                   id="displayName"
                   value={editData.displayName}
-                  onChange={(e) => handleInputChange('displayName', e.target.value)}
+                  onChange={e =>
+                    handleInputChange('displayName', e.target.value)
+                  }
                   placeholder="Enter display name"
                 />
               </div>
@@ -142,12 +163,15 @@ const Profile: React.FC = () => {
                 <Input
                   id="avatarUrl"
                   value={editData.avatarUrl}
-                  onChange={(e) => handleInputChange('avatarUrl', e.target.value)}
+                  onChange={e => handleInputChange('avatarUrl', e.target.value)}
                   placeholder="Enter avatar URL (optional)"
                 />
               </div>
               <div className="flex gap-2">
-                <Button onClick={handleSave} disabled={updateProfileMutation.isPending}>
+                <Button
+                  onClick={handleSave}
+                  disabled={updateProfileMutation.isPending}
+                >
                   {updateProfileMutation.isPending ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -171,13 +195,19 @@ const Profile: React.FC = () => {
               <div className="flex items-center gap-3 mb-2">
                 <h1 className="text-3xl font-bold">{userData.displayName}</h1>
                 {userData.isVerified && (
-                  <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
+                  <Badge
+                    variant="default"
+                    className="bg-green-100 text-green-800 border-green-200"
+                  >
                     <CheckCircle className="h-3 w-3 mr-1" />
                     Verified
                   </Badge>
                 )}
                 {userData.isAdmin && (
-                  <Badge variant="default" className="bg-blue-100 text-blue-800 border-blue-200">
+                  <Badge
+                    variant="default"
+                    className="bg-blue-100 text-blue-800 border-blue-200"
+                  >
                     Admin
                   </Badge>
                 )}
@@ -189,7 +219,12 @@ const Profile: React.FC = () => {
                   Joined {new Date(userData.joinedAt).toLocaleDateString()}
                 </div>
               </div>
-              <Button variant="outline" size="sm" className="mt-4" onClick={handleEdit}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-4"
+                onClick={handleEdit}
+              >
                 <Edit className="h-4 w-4 mr-2" />
                 Edit Profile
               </Button>
@@ -202,7 +237,9 @@ const Profile: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Solutions Submitted</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Solutions Submitted
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.solutionsSubmitted}</div>
@@ -211,7 +248,9 @@ const Profile: React.FC = () => {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Solutions Verified</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Solutions Verified
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.solutionsVerified}</div>
@@ -229,7 +268,9 @@ const Profile: React.FC = () => {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Total Downvotes</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Downvotes
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalDownvotes}</div>
@@ -241,7 +282,9 @@ const Profile: React.FC = () => {
       <Card className="mb-8">
         <CardHeader>
           <CardTitle>Recent Solutions</CardTitle>
-          <CardDescription>Your most recently submitted solutions</CardDescription>
+          <CardDescription>
+            Your most recently submitted solutions
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {profile.recentSolutions.length === 0 ? (
@@ -254,7 +297,10 @@ const Profile: React.FC = () => {
                 <div key={solution.id} className="border rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-muted-foreground">
-                      {t('errors:detail.lastEdited')}: {new Date(solution.lastEditedAt || solution.createdAt).toLocaleDateString()}
+                      {t('errors:detail.lastEdited')}:{' '}
+                      {new Date(
+                        solution.lastEditedAt || solution.createdAt
+                      ).toLocaleDateString()}
                     </span>
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1 text-sm text-green-600">
@@ -266,7 +312,10 @@ const Profile: React.FC = () => {
                         {solution.downvotes}
                       </div>
                       {solution.isVerified && (
-                        <Badge variant="default" className="bg-green-100 text-green-800 border-green-200 text-xs">
+                        <Badge
+                          variant="default"
+                          className="bg-green-100 text-green-800 border-green-200 text-xs"
+                        >
                           Verified
                         </Badge>
                       )}
@@ -299,7 +348,10 @@ const Profile: React.FC = () => {
                 <div key={solution.id} className="border rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-muted-foreground">
-                      Last edited: {new Date(solution.lastEditedAt || solution.createdAt).toLocaleDateString()}
+                      Last edited:{' '}
+                      {new Date(
+                        solution.lastEditedAt || solution.createdAt
+                      ).toLocaleDateString()}
                     </span>
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1 text-sm text-green-600">
@@ -311,7 +363,10 @@ const Profile: React.FC = () => {
                         {solution.downvotes}
                       </div>
                       {solution.isVerified && (
-                        <Badge variant="default" className="bg-green-100 text-green-800 border-green-200 text-xs">
+                        <Badge
+                          variant="default"
+                          className="bg-green-100 text-green-800 border-green-200 text-xs"
+                        >
                           Verified
                         </Badge>
                       )}

@@ -12,20 +12,24 @@ async function checkForTemplateContent() {
         OR: [
           { title: { contains: '{{s}}', mode: 'insensitive' } },
           { description: { contains: '{{s}}', mode: 'insensitive' } },
-        ]
-      }
+        ],
+      },
     });
 
-    console.log(`Found ${errorCodes.length} error codes with template content:`);
+    console.log(
+      `Found ${errorCodes.length} error codes with template content:`
+    );
     errorCodes.forEach(error => {
-      console.log(`- ID: ${error.id}, Code: ${error.code}, Title: "${error.title}"`);
+      console.log(
+        `- ID: ${error.id}, Code: ${error.code}, Title: "${error.title}"`
+      );
     });
 
     // Check solutions
     const solutions = await prisma.solution.findMany({
       where: {
-        solutionText: { contains: '{{s}}', mode: 'insensitive' }
-      }
+        solutionText: { contains: '{{s}}', mode: 'insensitive' },
+      },
     });
 
     console.log(`\nFound ${solutions.length} solutions with template content:`);
@@ -34,9 +38,10 @@ async function checkForTemplateContent() {
     });
 
     if (errorCodes.length === 0 && solutions.length === 0) {
-      console.log('\n✅ No template content found in database. The issue might be elsewhere.');
+      console.log(
+        '\n✅ No template content found in database. The issue might be elsewhere.'
+      );
     }
-
   } catch (error) {
     console.error('Error checking database:', error);
   } finally {

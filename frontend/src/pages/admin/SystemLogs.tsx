@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Search, Download, AlertCircle, Info, Bug, Shield } from 'lucide-react';
@@ -38,7 +50,7 @@ const SystemLogs: React.FC = () => {
     page: 1,
     limit: 50,
     total: 0,
-    pages: 0
+    pages: 0,
   });
 
   useEffect(() => {
@@ -51,22 +63,27 @@ const SystemLogs: React.FC = () => {
       setLoading(true);
       const params: any = {
         page: pagination.page,
-        limit: pagination.limit
+        limit: pagination.limit,
       };
 
       if (search) params.search = search;
       if (level && level !== 'all') params.level = level;
 
-      const response = await api.request<{ logs: SystemLog[]; pagination: PaginationMeta }>({
+      const response = await api.request<{
+        logs: SystemLog[];
+        pagination: PaginationMeta;
+      }>({
         method: 'get',
         url: '/admin/system/logs',
-        params
+        params,
       });
 
       setLogs(response.logs);
       setPagination(response.pagination);
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Failed to fetch system logs');
+      setError(
+        err.response?.data?.error?.message || 'Failed to fetch system logs'
+      );
     } finally {
       setLoading(false);
     }
@@ -77,7 +94,7 @@ const SystemLogs: React.FC = () => {
       const response = await api.request<string>({
         method: 'get',
         url: '/admin/export/logs',
-        params: { format: 'csv' }
+        params: { format: 'csv' },
       });
 
       // Create a download link
@@ -115,11 +132,32 @@ const SystemLogs: React.FC = () => {
       case 'error':
         return <Badge variant="destructive">Error</Badge>;
       case 'warn':
-        return <Badge variant="outline" className="text-yellow-600 border-yellow-200 bg-yellow-50">Warning</Badge>;
+        return (
+          <Badge
+            variant="outline"
+            className="text-yellow-600 border-yellow-200 bg-yellow-50"
+          >
+            Warning
+          </Badge>
+        );
       case 'info':
-        return <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50">Info</Badge>;
+        return (
+          <Badge
+            variant="outline"
+            className="text-blue-600 border-blue-200 bg-blue-50"
+          >
+            Info
+          </Badge>
+        );
       case 'debug':
-        return <Badge variant="outline" className="text-purple-600 border-purple-200 bg-purple-50">Debug</Badge>;
+        return (
+          <Badge
+            variant="outline"
+            className="text-purple-600 border-purple-200 bg-purple-50"
+          >
+            Debug
+          </Badge>
+        );
       default:
         return <Badge variant="outline">Unknown</Badge>;
     }
@@ -167,7 +205,7 @@ const SystemLogs: React.FC = () => {
                   placeholder="Search logs..."
                   className="pl-10"
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={e => setSearch(e.target.value)}
                 />
               </div>
             </div>
@@ -202,7 +240,10 @@ const SystemLogs: React.FC = () => {
           {loading ? (
             <div className="space-y-4">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="flex items-start gap-4 p-4 border rounded-lg">
+                <div
+                  key={i}
+                  className="flex items-start gap-4 p-4 border rounded-lg"
+                >
                   <Skeleton className="h-4 w-4 rounded-full" />
                   <div className="flex-1 space-y-2">
                     <Skeleton className="h-4 w-3/4" />
@@ -217,13 +258,18 @@ const SystemLogs: React.FC = () => {
               <Shield className="mx-auto h-12 w-12 text-muted-foreground" />
               <h3 className="mt-4 text-lg font-semibold">No logs found</h3>
               <p className="text-muted-foreground">
-                {search || level ? 'Try adjusting your search criteria' : 'No log entries yet'}
+                {search || level
+                  ? 'Try adjusting your search criteria'
+                  : 'No log entries yet'}
               </p>
             </div>
           ) : (
             <div className="space-y-2">
-              {logs.map((log) => (
-                <div key={log.id} className="p-4 border rounded-lg hover:bg-muted/50">
+              {logs.map(log => (
+                <div
+                  key={log.id}
+                  className="p-4 border rounded-lg hover:bg-muted/50"
+                >
                   <div className="flex items-start gap-3">
                     {getLevelIcon(log.level)}
                     <div className="flex-1">
@@ -254,15 +300,17 @@ const SystemLogs: React.FC = () => {
           {pagination.pages > 1 && (
             <div className="flex items-center justify-between mt-6">
               <div className="text-sm text-muted-foreground">
-                Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
-                {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
-                {pagination.total} entries
+                Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
+                {Math.min(pagination.page * pagination.limit, pagination.total)}{' '}
+                of {pagination.total} entries
               </div>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                  onClick={() =>
+                    setPagination(prev => ({ ...prev, page: prev.page - 1 }))
+                  }
                   disabled={pagination.page === 1}
                 >
                   Previous
@@ -270,7 +318,9 @@ const SystemLogs: React.FC = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                  onClick={() =>
+                    setPagination(prev => ({ ...prev, page: prev.page + 1 }))
+                  }
                   disabled={pagination.page === pagination.pages}
                 >
                   Next

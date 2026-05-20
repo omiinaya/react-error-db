@@ -44,67 +44,67 @@ function App() {
           <Router
             future={{
               v7_startTransition: true,
-              v7_relativeSplatPath: true
+              v7_relativeSplatPath: true,
             }}
           >
             <Layout>
               <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/search" element={<Search />} />
-              <Route path="/error/:id" element={<ErrorDetail />} />
-              <Route
-                path="/login"
-                element={
-                  <ProtectedRoute requireAuth={false}>
-                    <Login />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/register"
-                element={
-                  <ProtectedRoute requireAuth={false}>
-                    <Register />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/error/create"
-                element={
-                  <ProtectedRoute>
-                    <ErrorCreate />
-                  </ProtectedRoute>
-                }
-              />
+                <Route path="/" element={<Home />} />
+                <Route path="/search" element={<Search />} />
+                <Route path="/error/:id" element={<ErrorDetail />} />
+                <Route
+                  path="/login"
+                  element={
+                    <ProtectedRoute requireAuth={false}>
+                      <Login />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/register"
+                  element={
+                    <ProtectedRoute requireAuth={false}>
+                      <Register />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/error/create"
+                  element={
+                    <ProtectedRoute>
+                      <ErrorCreate />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Admin Routes */}
-              <Route
-                path="/admin/*"
-                element={
-                  <ProtectedRoute requireAdmin>
-                    <AdminPanel />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Admin Routes */}
+                <Route
+                  path="/admin/*"
+                  element={
+                    <ProtectedRoute requireAdmin>
+                      <AdminPanel />
+                    </ProtectedRoute>
+                  }
+                />
               </Routes>
             </Layout>
           </Router>
         </ThemeProvider>
       </AuthProvider>
-      
+
       {/* React Query Devtools - only show when debug mode is enabled */}
       {import.meta.env.VITE_ENABLE_DEBUG === 'true' && (
         <ReactQueryDevtools initialIsOpen={false} />
       )}
-      
+
       {/* Toast notifications */}
       <Toaster
         position="top-center"

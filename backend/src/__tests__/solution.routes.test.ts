@@ -1,5 +1,12 @@
 import request from 'supertest';
-import { app, createTestUser, createTestError, createTestSolution, getAuthToken, prisma } from './setup';
+import {
+  app,
+  createTestUser,
+  createTestError,
+  createTestSolution,
+  getAuthToken,
+  prisma,
+} from './setup';
 
 describe('Solution Routes', () => {
   let adminToken: string;
@@ -15,9 +22,17 @@ describe('Solution Routes', () => {
   beforeAll(async () => {
     // Create test users
     const adminUser = await createTestUser('admin@test.com', 'adminuser', true);
-    const regularUser = await createTestUser('user@test.com', 'regularuser', false);
-    const otherUser = await createTestUser('other@test.com', 'otheruser', false);
-    
+    const regularUser = await createTestUser(
+      'user@test.com',
+      'regularuser',
+      false
+    );
+    const otherUser = await createTestUser(
+      'other@test.com',
+      'otheruser',
+      false
+    );
+
     adminToken = getAuthToken(adminUser);
     userToken = getAuthToken(regularUser);
     otherUserToken = getAuthToken(otherUser);
@@ -39,8 +54,8 @@ describe('Solution Routes', () => {
       data: {
         isVerified: true,
         verifiedById: adminId,
-        verifiedAt: new Date()
-      }
+        verifiedAt: new Date(),
+      },
     });
     verifiedSolutionId = verifiedSolution.id;
   });
@@ -61,12 +76,14 @@ describe('Solution Routes', () => {
         .put(`/api/solutions/${solutionId}`)
         .set('Authorization', `Bearer ${userToken}`)
         .send({
-          solutionText: 'Updated solution text with more than 10 characters'
+          solutionText: 'Updated solution text with more than 10 characters',
         });
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
-      expect(response.body.data.solution.solutionText).toBe('Updated solution text with more than 10 characters');
+      expect(response.body.data.solution.solutionText).toBe(
+        'Updated solution text with more than 10 characters'
+      );
       expect(response.body.data.solution.editCount).toBe(1);
       expect(response.body.data.solution.lastEditedById).toBe(userId);
     });
@@ -76,7 +93,7 @@ describe('Solution Routes', () => {
         .put(`/api/solutions/${verifiedSolutionId}`)
         .set('Authorization', `Bearer ${userToken}`)
         .send({
-          solutionText: 'Attempt to edit verified solution'
+          solutionText: 'Attempt to edit verified solution',
         });
 
       expect(response.status).toBe(403);
@@ -89,7 +106,7 @@ describe('Solution Routes', () => {
         .put(`/api/solutions/${solutionId}`)
         .set('Authorization', `Bearer ${otherUserToken}`)
         .send({
-          solutionText: 'Unauthorized edit attempt'
+          solutionText: 'Unauthorized edit attempt',
         });
 
       expect(response.status).toBe(403);
@@ -102,12 +119,15 @@ describe('Solution Routes', () => {
         .put(`/api/solutions/${verifiedSolutionId}`)
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
-          solutionText: 'Admin edited this verified solution with proper content'
+          solutionText:
+            'Admin edited this verified solution with proper content',
         });
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
-      expect(response.body.data.solution.solutionText).toBe('Admin edited this verified solution with proper content');
+      expect(response.body.data.solution.solutionText).toBe(
+        'Admin edited this verified solution with proper content'
+      );
       expect(response.body.data.solution.isVerified).toBe(false); // Should reset verification
       expect(response.body.data.solution.verifiedById).toBeNull();
       expect(response.body.data.solution.editCount).toBe(1);
@@ -118,7 +138,7 @@ describe('Solution Routes', () => {
         .put(`/api/solutions/${solutionId}`)
         .set('Authorization', `Bearer ${userToken}`)
         .send({
-          solutionText: 'Short'
+          solutionText: 'Short',
         });
 
       expect(response.status).toBe(400);
@@ -132,7 +152,7 @@ describe('Solution Routes', () => {
         .put(`/api/solutions/${solutionId}`)
         .set('Authorization', `Bearer ${userToken}`)
         .send({
-          solutionText: longText
+          solutionText: longText,
         });
 
       expect(response.status).toBe(400);
@@ -145,7 +165,7 @@ describe('Solution Routes', () => {
         .put('/api/solutions/nonexistent-id')
         .set('Authorization', `Bearer ${userToken}`)
         .send({
-          solutionText: 'Valid solution text with enough characters'
+          solutionText: 'Valid solution text with enough characters',
         });
 
       expect(response.status).toBe(404);
@@ -157,7 +177,7 @@ describe('Solution Routes', () => {
       const response = await request(app)
         .put(`/api/solutions/${solutionId}`)
         .send({
-          solutionText: 'Unauthenticated edit attempt'
+          solutionText: 'Unauthenticated edit attempt',
         });
 
       expect(response.status).toBe(401);
@@ -176,7 +196,7 @@ describe('Solution Routes', () => {
 
       // Verify solution was actually deleted
       const deletedSolution = await prisma.solution.findUnique({
-        where: { id: solutionToDelete.id }
+        where: { id: solutionToDelete.id },
       });
       expect(deletedSolution).toBeNull();
     });

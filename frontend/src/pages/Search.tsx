@@ -5,7 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from 'react-i18next';
 import { Search, Filter, X, TrendingUp } from 'lucide-react';
@@ -15,8 +21,12 @@ import { ErrorCode, Application } from '@/types';
 const SearchPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
-  const [applicationFilter, setApplicationFilter] = useState(searchParams.get('application') || 'all');
-  const [severityFilter, setSeverityFilter] = useState(searchParams.get('severity') || 'all');
+  const [applicationFilter, setApplicationFilter] = useState(
+    searchParams.get('application') || 'all'
+  );
+  const [severityFilter, setSeverityFilter] = useState(
+    searchParams.get('severity') || 'all'
+  );
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'recent');
   const { t } = useTranslation();
 
@@ -30,15 +40,27 @@ const SearchPage: React.FC = () => {
   });
 
   // Fetch search results
-  const { data: searchResults, isLoading, error } = useQuery({
-    queryKey: ['search-errors', searchQuery, applicationFilter, severityFilter, sortBy],
+  const {
+    data: searchResults,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: [
+      'search-errors',
+      searchQuery,
+      applicationFilter,
+      severityFilter,
+      sortBy,
+    ],
     queryFn: async () => {
       const params: any = {};
       if (searchQuery) params.search = searchQuery;
-      if (applicationFilter && applicationFilter !== 'all') params.applicationId = applicationFilter;
-      if (severityFilter && severityFilter !== 'all') params.severity = severityFilter;
+      if (applicationFilter && applicationFilter !== 'all')
+        params.applicationId = applicationFilter;
+      if (severityFilter && severityFilter !== 'all')
+        params.severity = severityFilter;
       if (sortBy) params.sort = sortBy;
-      
+
       const response = await api.searchErrors(params);
       return response;
     },
@@ -53,8 +75,10 @@ const SearchPage: React.FC = () => {
   const updateSearchParams = () => {
     const params = new URLSearchParams();
     if (searchQuery) params.set('q', searchQuery);
-    if (applicationFilter && applicationFilter !== 'all') params.set('application', applicationFilter);
-    if (severityFilter && severityFilter !== 'all') params.set('severity', severityFilter);
+    if (applicationFilter && applicationFilter !== 'all')
+      params.set('application', applicationFilter);
+    if (severityFilter && severityFilter !== 'all')
+      params.set('severity', severityFilter);
     if (sortBy) params.set('sort', sortBy);
     setSearchParams(params);
   };
@@ -67,7 +91,8 @@ const SearchPage: React.FC = () => {
     setSearchParams({});
   };
 
-  const hasActiveFilters = searchQuery || applicationFilter || severityFilter || sortBy !== 'recent';
+  const hasActiveFilters =
+    searchQuery || applicationFilter || severityFilter || sortBy !== 'recent';
 
   useEffect(() => {
     updateSearchParams();
@@ -92,8 +117,10 @@ const SearchPage: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         {/* Search Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">{t('errors:search.title')}</h1>
-          
+          <h1 className="text-3xl font-bold mb-4">
+            {t('errors:search.title')}
+          </h1>
+
           {/* Search Form */}
           <form onSubmit={handleSearch} className="mb-6">
             <div className="relative">
@@ -103,7 +130,7 @@ const SearchPage: React.FC = () => {
                 placeholder={t('errors:search.placeholder')}
                 className="pl-10 pr-4 py-6 text-lg"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
               />
               <Button
                 type="submit"
@@ -118,15 +145,22 @@ const SearchPage: React.FC = () => {
           <div className="flex flex-wrap gap-4 items-center">
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium">{t('common:search.filters')}:</span>
+              <span className="text-sm font-medium">
+                {t('common:search.filters')}:
+              </span>
             </div>
 
-            <Select value={applicationFilter} onValueChange={setApplicationFilter}>
+            <Select
+              value={applicationFilter}
+              onValueChange={setApplicationFilter}
+            >
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder={t('common:search.allApplications')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t('common:search.allApplications')}</SelectItem>
+                <SelectItem value="all">
+                  {t('common:search.allApplications')}
+                </SelectItem>
                 {applications?.map((app: Application) => (
                   <SelectItem key={app.id} value={app.id}>
                     {app.name}
@@ -140,7 +174,7 @@ const SearchPage: React.FC = () => {
                 <SelectValue placeholder={t('common:search.allSeverities')} />
               </SelectTrigger>
               <SelectContent>
-                {severityOptions.map((option) => (
+                {severityOptions.map(option => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
@@ -153,7 +187,7 @@ const SearchPage: React.FC = () => {
                 <SelectValue placeholder={t('common:search.sortBy')} />
               </SelectTrigger>
               <SelectContent>
-                {sortOptions.map((option) => (
+                {sortOptions.map(option => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
@@ -197,8 +231,14 @@ const SearchPage: React.FC = () => {
           ) : searchResults?.errors?.length === 0 ? (
             <Card>
               <CardContent className="pt-6 text-center">
-                <p className="text-muted-foreground">{t('errors:search.noResults')}</p>
-                <Button variant="outline" className="mt-4" onClick={clearFilters}>
+                <p className="text-muted-foreground">
+                  {t('errors:search.noResults')}
+                </p>
+                <Button
+                  variant="outline"
+                  className="mt-4"
+                  onClick={clearFilters}
+                >
                   {t('errors:search.clearAndTry')}
                 </Button>
               </CardContent>
@@ -206,28 +246,45 @@ const SearchPage: React.FC = () => {
           ) : (
             <>
               <div className="text-sm text-muted-foreground">
-                {t('errors:search.results', { count: searchResults?.meta?.pagination?.total || searchResults?.errors?.length || 0 })}
+                {t('errors:search.results', {
+                  count:
+                    searchResults?.meta?.pagination?.total ||
+                    searchResults?.errors?.length ||
+                    0,
+                })}
               </div>
-              
+
               {searchResults?.errors?.map((error: ErrorCode) => (
-                <Card key={error.id} className="hover:shadow-md transition-shadow">
+                <Card
+                  key={error.id}
+                  className="hover:shadow-md transition-shadow"
+                >
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         {error.application.category ? (
-                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                          <Badge
+                            variant="outline"
+                            className="bg-blue-50 text-blue-700 border-blue-200 text-xs"
+                          >
                             {error.application.category.name}
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="bg-gray-50 text-gray-500 border-gray-200 text-xs">
+                          <Badge
+                            variant="outline"
+                            className="bg-gray-50 text-gray-500 border-gray-200 text-xs"
+                          >
                             {t('common:error.noCategory')}
                           </Badge>
                         )}
-                        <Badge variant="secondary">{error.application.name}</Badge>
+                        <Badge variant="secondary">
+                          {error.application.name}
+                        </Badge>
                       </div>
                       <div className="flex items-center text-sm text-muted-foreground">
                         <TrendingUp className="h-4 w-4 mr-1" />
-                        {error.viewCount.toLocaleString()} {t('common:error.views')}
+                        {error.viewCount.toLocaleString()}{' '}
+                        {t('common:error.views')}
                       </div>
                     </div>
                     <CardTitle className="text-xl">
@@ -244,19 +301,26 @@ const SearchPage: React.FC = () => {
                       {error.description}
                     </p>
                     <div className="flex items-center justify-between">
-                      <Badge variant={
-                        error.severity === 'high' || error.severity === 'critical'
-                          ? 'destructive'
-                          : error.severity === 'medium'
-                          ? 'default'
-                          : 'outline'
-                      }>
+                      <Badge
+                        variant={
+                          error.severity === 'high' ||
+                          error.severity === 'critical'
+                            ? 'destructive'
+                            : error.severity === 'medium'
+                              ? 'default'
+                              : 'outline'
+                        }
+                      >
                         {error.severity}
                       </Badge>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>{error.solutionCount} {t('common:error.solutions')}</span>
+                        <span>
+                          {error.solutionCount} {t('common:error.solutions')}
+                        </span>
                         <span>•</span>
-                        <span>{new Date(error.createdAt).toLocaleDateString()}</span>
+                        <span>
+                          {new Date(error.createdAt).toLocaleDateString()}
+                        </span>
                       </div>
                     </div>
                   </CardContent>

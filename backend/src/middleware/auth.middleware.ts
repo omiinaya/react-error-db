@@ -28,8 +28,8 @@ export const authenticateToken = async (
         success: false,
         error: {
           code: 'UNAUTHORIZED',
-          message: 'Access token required'
-        }
+          message: 'Access token required',
+        },
       });
       return;
     }
@@ -46,8 +46,8 @@ export const authenticateToken = async (
         email: true,
         username: true,
         displayName: true,
-        isAdmin: true
-      }
+        isAdmin: true,
+      },
     });
 
     if (!user) {
@@ -55,8 +55,8 @@ export const authenticateToken = async (
         success: false,
         error: {
           code: 'UNAUTHORIZED',
-          message: 'User not found'
-        }
+          message: 'User not found',
+        },
       });
       return;
     }
@@ -67,7 +67,7 @@ export const authenticateToken = async (
     return;
   } catch (error) {
     logger.error('Authentication error:', error);
-    
+
     // Handle specific JWT error types
     if (error instanceof jwt.TokenExpiredError) {
       res.status(401).json({
@@ -75,19 +75,19 @@ export const authenticateToken = async (
         error: {
           code: 'TOKEN_EXPIRED',
           message: 'Token has expired',
-          details: { expiredAt: error.expiredAt }
-        }
+          details: { expiredAt: error.expiredAt },
+        },
       });
       return;
     }
-    
+
     if (error instanceof jwt.JsonWebTokenError) {
       res.status(401).json({
         success: false,
         error: {
           code: 'INVALID_TOKEN',
-          message: 'Invalid token'
-        }
+          message: 'Invalid token',
+        },
       });
       return;
     }
@@ -96,8 +96,8 @@ export const authenticateToken = async (
       success: false,
       error: {
         code: 'AUTH_ERROR',
-        message: 'Authentication failed'
-      }
+        message: 'Authentication failed',
+      },
     });
     return;
   }
@@ -128,8 +128,8 @@ export const optionalAuth = async (
         email: true,
         username: true,
         displayName: true,
-        isAdmin: true
-      }
+        isAdmin: true,
+      },
     });
 
     if (user) {
@@ -153,8 +153,8 @@ export const requireAdmin = (
       success: false,
       error: {
         code: 'UNAUTHORIZED',
-        message: 'Authentication required'
-      }
+        message: 'Authentication required',
+      },
     });
   }
 
@@ -163,8 +163,8 @@ export const requireAdmin = (
       success: false,
       error: {
         code: 'FORBIDDEN',
-        message: 'Admin access required'
-      }
+        message: 'Admin access required',
+      },
     });
   }
 

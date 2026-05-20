@@ -9,11 +9,11 @@ async function main() {
         id: true,
         email: true,
         themePreference: true,
-        createdAt: true
+        createdAt: true,
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: 'desc',
+      },
     });
 
     console.log('User Theme Preferences:');
@@ -21,7 +21,9 @@ async function main() {
     users.forEach(user => {
       console.log(`ID: ${user.id}`);
       console.log(`Email: ${user.email}`);
-      console.log(`Theme Preference: ${user.themePreference || 'NULL (no preference)'}`);
+      console.log(
+        `Theme Preference: ${user.themePreference || 'NULL (no preference)'}`
+      );
       console.log(`Created: ${user.createdAt}`);
       console.log('---');
     });

@@ -11,9 +11,11 @@ export interface ExportOptions {
 }
 
 export class ExportService {
-  async exportErrors(options: ExportOptions): Promise<{ data: string; filename: string; contentType: string }> {
+  async exportErrors(
+    options: ExportOptions
+  ): Promise<{ data: string; filename: string; contentType: string }> {
     const where: any = {};
-    
+
     if (options.startDate || options.endDate) {
       where.createdAt = {};
       if (options.startDate) where.createdAt.gte = options.startDate;
@@ -54,9 +56,11 @@ export class ExportService {
     };
   }
 
-  async exportSolutions(options: ExportOptions): Promise<{ data: string; filename: string; contentType: string }> {
+  async exportSolutions(
+    options: ExportOptions
+  ): Promise<{ data: string; filename: string; contentType: string }> {
     const where: any = {};
-    
+
     if (options.startDate || options.endDate) {
       where.createdAt = {};
       if (options.startDate) where.createdAt.gte = options.startDate;
@@ -97,7 +101,9 @@ export class ExportService {
     };
   }
 
-  async exportUserData(userId: string): Promise<{ data: string; filename: string; contentType: string }> {
+  async exportUserData(
+    userId: string
+  ): Promise<{ data: string; filename: string; contentType: string }> {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
@@ -159,9 +165,11 @@ export class ExportService {
     };
   }
 
-  async exportAnalytics(options: ExportOptions): Promise<{ data: string; filename: string; contentType: string }> {
+  async exportAnalytics(
+    options: ExportOptions
+  ): Promise<{ data: string; filename: string; contentType: string }> {
     const where: any = {};
-    
+
     if (options.startDate || options.endDate) {
       where.createdAt = {};
       if (options.startDate) where.createdAt.gte = options.startDate;
@@ -181,7 +189,9 @@ export class ExportService {
         by: ['createdAt'],
         where: {
           createdAt: {
-            gte: options.startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+            gte:
+              options.startDate ||
+              new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
           },
         },
         _count: { id: true },
@@ -207,7 +217,10 @@ export class ExportService {
     };
   }
 
-  private convertToCSV(data: any[], filename: string): { data: string; filename: string; contentType: string } {
+  private convertToCSV(
+    data: any[],
+    filename: string
+  ): { data: string; filename: string; contentType: string } {
     if (data.length === 0) {
       return {
         data: '',
@@ -218,22 +231,28 @@ export class ExportService {
 
     // Get headers from first object
     const headers = Object.keys(data[0]);
-    
+
     // Create CSV rows
     const rows = data.map(item => {
-      return headers.map(header => {
-        const value = item[header];
-        // Handle arrays and objects
-        if (typeof value === 'object' && value !== null) {
-          return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
-        }
-        // Escape quotes and wrap in quotes if needed
-        const stringValue = String(value ?? '');
-        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
-          return `"${stringValue.replace(/"/g, '""')}"`;
-        }
-        return stringValue;
-      }).join(',');
+      return headers
+        .map(header => {
+          const value = item[header];
+          // Handle arrays and objects
+          if (typeof value === 'object' && value !== null) {
+            return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
+          }
+          // Escape quotes and wrap in quotes if needed
+          const stringValue = String(value ?? '');
+          if (
+            stringValue.includes(',') ||
+            stringValue.includes('"') ||
+            stringValue.includes('\n')
+          ) {
+            return `"${stringValue.replace(/"/g, '""')}"`;
+          }
+          return stringValue;
+        })
+        .join(',');
     });
 
     const csv = [headers.join(','), ...rows].join('\n');

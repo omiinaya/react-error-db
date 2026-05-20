@@ -35,7 +35,8 @@ describe('Integration Tests', () => {
 
     // Mock database responses
     (prisma.user.findUnique as jest.Mock).mockImplementation(({ where }) => {
-      if (where.email === 'integration@test.com') return Promise.resolve(mockUser);
+      if (where.email === 'integration@test.com')
+        return Promise.resolve(mockUser);
       return Promise.resolve(null);
     });
 
@@ -65,15 +66,15 @@ describe('Integration Tests', () => {
         });
 
       expect(registerResponse.status).toBe(201);
-      expect(registerResponse.body.data.user.email).toBe('integration@test.com');
+      expect(registerResponse.body.data.user.email).toBe(
+        'integration@test.com'
+      );
 
       // Login user
-      const loginResponse = await request(app)
-        .post('/api/auth/login')
-        .send({
-          email: 'integration@test.com',
-          password: 'password123',
-        });
+      const loginResponse = await request(app).post('/api/auth/login').send({
+        email: 'integration@test.com',
+        password: 'password123',
+      });
 
       expect(loginResponse.status).toBe(200);
       expect(loginResponse.body.data).toHaveProperty('accessToken');
@@ -104,12 +105,10 @@ describe('Integration Tests', () => {
   describe('Error Management Flow', () => {
     it('should complete error management flow', async () => {
       // Login first
-      const loginResponse = await request(app)
-        .post('/api/auth/login')
-        .send({
-          email: 'integration@test.com',
-          password: 'password123',
-        });
+      const loginResponse = await request(app).post('/api/auth/login').send({
+        email: 'integration@test.com',
+        password: 'password123',
+      });
 
       authToken = loginResponse.body.data.accessToken;
 
@@ -154,7 +153,9 @@ describe('Integration Tests', () => {
         });
 
       expect(updateResponse.status).toBe(200);
-      expect(updateResponse.body.data.error.message).toBe('Updated integration test error');
+      expect(updateResponse.body.data.error.message).toBe(
+        'Updated integration test error'
+      );
 
       // Delete error
       const deleteResponse = await request(app)
@@ -168,13 +169,11 @@ describe('Integration Tests', () => {
 
   describe('Error Scenarios', () => {
     it('should handle unauthorized access', async () => {
-      const response = await request(app)
-        .post('/api/errors')
-        .send({
-          code: 'UNAUTH001',
-          message: 'Unauthorized test',
-          applicationId: 1,
-        });
+      const response = await request(app).post('/api/errors').send({
+        code: 'UNAUTH001',
+        message: 'Unauthorized test',
+        applicationId: 1,
+      });
 
       expect(response.status).toBe(401);
       expect(response.body.error).toBe('Access token required');
@@ -196,12 +195,12 @@ describe('Integration Tests', () => {
 
     it('should handle rate limiting', async () => {
       // Make multiple requests to trigger rate limiting
-      const requests = Array(10).fill(0).map(() => 
-        request(app).get('/api/health')
-      );
+      const requests = Array(10)
+        .fill(0)
+        .map(() => request(app).get('/api/health'));
 
       const responses = await Promise.all(requests);
-      
+
       // All should succeed since we're not hitting the rate limit in test mode
       responses.forEach(response => {
         expect(response.status).toBe(200);

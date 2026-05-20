@@ -1,15 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
-import { Search, CheckCircle, XCircle, Clock, User, Calendar } from 'lucide-react';
+import {
+  Search,
+  CheckCircle,
+  XCircle,
+  Clock,
+  User,
+  Calendar,
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { CategoryRequest } from '@/types';
 
@@ -32,10 +58,12 @@ const CategoryRequestManagement: React.FC = () => {
     page: 1,
     limit: 20,
     total: 0,
-    pages: 0
+    pages: 0,
   });
   const [rejectReason, setRejectReason] = useState('');
-  const [processingRequest, setProcessingRequest] = useState<string | null>(null);
+  const [processingRequest, setProcessingRequest] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     if (!user?.isAdmin) return;
@@ -47,27 +75,35 @@ const CategoryRequestManagement: React.FC = () => {
       setLoading(true);
       const params: any = {
         page: pagination.page,
-        limit: pagination.limit
+        limit: pagination.limit,
       };
 
       if (search) params.search = search;
       if (status && status !== 'all') params.status = status;
 
-      const response = await api.request<{ categoryRequests: CategoryRequest[]; meta?: any }>({
+      const response = await api.request<{
+        categoryRequests: CategoryRequest[];
+        meta?: any;
+      }>({
         method: 'get',
         url: '/category-requests',
-        params
+        params,
       });
 
       setRequests(response.categoryRequests);
-      setPagination(response.meta?.pagination || {
-        page: 1,
-        limit: 20,
-        total: response.categoryRequests.length,
-        pages: 1
-      });
+      setPagination(
+        response.meta?.pagination || {
+          page: 1,
+          limit: 20,
+          total: response.categoryRequests.length,
+          pages: 1,
+        }
+      );
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Failed to fetch category requests');
+      setError(
+        err.response?.data?.error?.message ||
+          'Failed to fetch category requests'
+      );
     } finally {
       setLoading(false);
     }
@@ -79,14 +115,16 @@ const CategoryRequestManagement: React.FC = () => {
       await api.updateCategoryRequestStatus(requestId, { status: 'approved' });
       toast({
         title: 'Request Approved',
-        description: 'Category request has been approved and the category has been created.',
+        description:
+          'Category request has been approved and the category has been created.',
       });
       fetchRequests();
     } catch (err: any) {
       toast({
         title: 'Error',
-        description: err.response?.data?.error?.message || 'Failed to approve request',
-        variant: 'destructive'
+        description:
+          err.response?.data?.error?.message || 'Failed to approve request',
+        variant: 'destructive',
       });
     } finally {
       setProcessingRequest(null);
@@ -98,16 +136,16 @@ const CategoryRequestManagement: React.FC = () => {
       toast({
         title: 'Reason Required',
         description: 'Please provide a reason for rejection.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
 
     try {
       setProcessingRequest(requestId);
-      await api.updateCategoryRequestStatus(requestId, { 
-        status: 'rejected', 
-        reason: rejectReason 
+      await api.updateCategoryRequestStatus(requestId, {
+        status: 'rejected',
+        reason: rejectReason,
       });
       toast({
         title: 'Request Rejected',
@@ -118,8 +156,9 @@ const CategoryRequestManagement: React.FC = () => {
     } catch (err: any) {
       toast({
         title: 'Error',
-        description: err.response?.data?.error?.message || 'Failed to reject request',
-        variant: 'destructive'
+        description:
+          err.response?.data?.error?.message || 'Failed to reject request',
+        variant: 'destructive',
       });
     } finally {
       setProcessingRequest(null);
@@ -129,13 +168,22 @@ const CategoryRequestManagement: React.FC = () => {
   const getStatusBadge = (status: string) => {
     const variants = {
       pending: { variant: 'secondary' as const, text: 'Pending', icon: Clock },
-      approved: { variant: 'default' as const, text: 'Approved', icon: CheckCircle },
-      rejected: { variant: 'destructive' as const, text: 'Rejected', icon: XCircle }
+      approved: {
+        variant: 'default' as const,
+        text: 'Approved',
+        icon: CheckCircle,
+      },
+      rejected: {
+        variant: 'destructive' as const,
+        text: 'Rejected',
+        icon: XCircle,
+      },
     };
-    
-    const statusInfo = variants[status as keyof typeof variants] || variants.pending;
+
+    const statusInfo =
+      variants[status as keyof typeof variants] || variants.pending;
     const Icon = statusInfo.icon;
-    
+
     return (
       <Badge variant={statusInfo.variant} className="flex items-center gap-1">
         <Icon className="h-3 w-3" />
@@ -162,7 +210,9 @@ const CategoryRequestManagement: React.FC = () => {
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Category Request Management</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Category Request Management
+        </h1>
         <p className="text-muted-foreground">
           Review and manage category requests from users
         </p>
@@ -186,7 +236,7 @@ const CategoryRequestManagement: React.FC = () => {
                   placeholder="Search requests..."
                   className="pl-10"
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={e => setSearch(e.target.value)}
                 />
               </div>
             </div>
@@ -208,9 +258,7 @@ const CategoryRequestManagement: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle>Category Requests</CardTitle>
-          <CardDescription>
-            {pagination.total} requests found
-          </CardDescription>
+          <CardDescription>{pagination.total} requests found</CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -230,7 +278,9 @@ const CategoryRequestManagement: React.FC = () => {
               <Clock className="mx-auto h-12 w-12 text-muted-foreground" />
               <h3 className="mt-4 text-lg font-semibold">No requests found</h3>
               <p className="text-muted-foreground">
-                {search || status ? 'Try adjusting your search criteria' : 'No category requests pending review'}
+                {search || status
+                  ? 'Try adjusting your search criteria'
+                  : 'No category requests pending review'}
               </p>
             </div>
           ) : (
@@ -246,7 +296,7 @@ const CategoryRequestManagement: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {requests.map((request) => (
+                  {requests.map(request => (
                     <TableRow key={request.id}>
                       <TableCell>
                         <div>
@@ -269,12 +319,12 @@ const CategoryRequestManagement: React.FC = () => {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-muted-foreground" />
-                          {request.requestedBy?.displayName || request.requestedBy?.username || 'Unknown'}
+                          {request.requestedBy?.displayName ||
+                            request.requestedBy?.username ||
+                            'Unknown'}
                         </div>
                       </TableCell>
-                      <TableCell>
-                        {getStatusBadge(request.status)}
-                      </TableCell>
+                      <TableCell>{getStatusBadge(request.status)}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Calendar className="h-4 w-4" />
@@ -289,13 +339,15 @@ const CategoryRequestManagement: React.FC = () => {
                               onClick={() => handleApprove(request.id)}
                               disabled={processingRequest === request.id}
                             >
-                              {processingRequest === request.id ? 'Approving...' : 'Approve'}
+                              {processingRequest === request.id
+                                ? 'Approving...'
+                                : 'Approve'}
                             </Button>
                             <div className="space-y-2">
                               <Textarea
                                 placeholder="Reason for rejection..."
                                 value={rejectReason}
-                                onChange={(e) => setRejectReason(e.target.value)}
+                                onChange={e => setRejectReason(e.target.value)}
                                 className="text-sm"
                                 rows={2}
                               />
@@ -303,9 +355,14 @@ const CategoryRequestManagement: React.FC = () => {
                                 variant="destructive"
                                 size="sm"
                                 onClick={() => handleReject(request.id)}
-                                disabled={processingRequest === request.id || !rejectReason.trim()}
+                                disabled={
+                                  processingRequest === request.id ||
+                                  !rejectReason.trim()
+                                }
                               >
-                                {processingRequest === request.id ? 'Rejecting...' : 'Reject'}
+                                {processingRequest === request.id
+                                  ? 'Rejecting...'
+                                  : 'Reject'}
                               </Button>
                             </div>
                           </div>
@@ -321,15 +378,17 @@ const CategoryRequestManagement: React.FC = () => {
           {pagination.pages > 1 && (
             <div className="flex items-center justify-between mt-6">
               <div className="text-sm text-muted-foreground">
-                Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
-                {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
-                {pagination.total} requests
+                Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
+                {Math.min(pagination.page * pagination.limit, pagination.total)}{' '}
+                of {pagination.total} requests
               </div>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                  onClick={() =>
+                    setPagination(prev => ({ ...prev, page: prev.page - 1 }))
+                  }
                   disabled={pagination.page === 1}
                 >
                   Previous
@@ -337,7 +396,9 @@ const CategoryRequestManagement: React.FC = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                  onClick={() =>
+                    setPagination(prev => ({ ...prev, page: prev.page + 1 }))
+                  }
                   disabled={pagination.page === pagination.pages}
                 >
                   Next

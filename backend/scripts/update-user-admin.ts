@@ -14,7 +14,7 @@ export const updateUserAdminStatus = async (
 ): Promise<void> => {
   try {
     logger.info(`🔄 Updating admin status for user: ${email}`);
-    
+
     // Check if user exists
     const user = await prisma.user.findUnique({
       where: { email },
@@ -35,10 +35,11 @@ export const updateUserAdminStatus = async (
     logger.info(`- Email: ${updatedUser.email}`);
     logger.info(`- Username: ${updatedUser.username}`);
     logger.info(`- Display Name: ${updatedUser.displayName || 'Not set'}`);
-    logger.info(`- Admin Status: ${updatedUser.isAdmin ? '✅ ADMIN' : '❌ NOT ADMIN'}`);
+    logger.info(
+      `- Admin Status: ${updatedUser.isAdmin ? '✅ ADMIN' : '❌ NOT ADMIN'}`
+    );
     logger.info(`- Verified: ${updatedUser.isVerified ? '✅ YES' : '❌ NO'}`);
     logger.info(`- Created: ${updatedUser.createdAt.toISOString()}`);
-
   } catch (error) {
     logger.error('❌ Failed to update user admin status:', error);
     throw error;
@@ -52,7 +53,7 @@ export const updateUserAdminStatus = async (
 export const getUserDetails = async (email: string): Promise<void> => {
   try {
     logger.info(`🔍 Looking up user: ${email}`);
-    
+
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -66,11 +67,12 @@ export const getUserDetails = async (email: string): Promise<void> => {
     logger.info(`- Email: ${user.email}`);
     logger.info(`- Username: ${user.username}`);
     logger.info(`- Display Name: ${user.displayName || 'Not set'}`);
-    logger.info(`- Admin Status: ${user.isAdmin ? '✅ ADMIN' : '❌ NOT ADMIN'}`);
+    logger.info(
+      `- Admin Status: ${user.isAdmin ? '✅ ADMIN' : '❌ NOT ADMIN'}`
+    );
     logger.info(`- Verified: ${user.isVerified ? '✅ YES' : '❌ NO'}`);
     logger.info(`- Created: ${user.createdAt.toISOString()}`);
     logger.info(`- Updated: ${user.updatedAt.toISOString()}`);
-
   } catch (error) {
     logger.error('❌ Failed to get user details:', error);
     throw error;
@@ -88,7 +90,9 @@ if (require.main === module) {
       switch (command) {
         case 'update':
           if (!email || process.argv[4] === undefined) {
-            console.log('Usage: ts-node update-user-admin.ts update <email> <true|false>');
+            console.log(
+              'Usage: ts-node update-user-admin.ts update <email> <true|false>'
+            );
             process.exit(1);
           }
           await updateUserAdminStatus(email, isAdmin);
@@ -101,9 +105,13 @@ if (require.main === module) {
           await getUserDetails(email);
           break;
         default:
-          console.log('Usage: ts-node update-user-admin.ts [update|get] <email> [true|false]');
+          console.log(
+            'Usage: ts-node update-user-admin.ts [update|get] <email> [true|false]'
+          );
           console.log('Examples:');
-          console.log('  ts-node update-user-admin.ts update user@example.com true');
+          console.log(
+            '  ts-node update-user-admin.ts update user@example.com true'
+          );
           console.log('  ts-node update-user-admin.ts get user@example.com');
           process.exit(1);
       }

@@ -5,19 +5,30 @@ export const errorCodeQuerySchema = z.object({
   search: z.string().min(1, 'Search query cannot be empty').optional(),
   severity: z.enum(['low', 'medium', 'high', 'critical']).optional(),
   sort: z.enum(['createdAt', 'views', 'title', 'recent']).optional(),
-  page: z.string().transform(Number).pipe(z.number().min(1).default(1)).optional(),
-  limit: z.string().transform(Number).pipe(z.number().min(1).max(100).default(20)).optional(),
+  page: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(1).default(1))
+    .optional(),
+  limit: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(1).max(100).default(20))
+    .optional(),
 });
 
 export const createErrorCodeSchema = z.object({
-  code: z.string()
+  code: z
+    .string()
     .min(1, 'Error code is required')
     .max(50, 'Error code must be at most 50 characters'),
   applicationId: z.string().uuid('Invalid application ID'),
-  title: z.string()
+  title: z
+    .string()
     .min(5, 'Title must be at least 5 characters')
     .max(255, 'Title must be at most 255 characters'),
-  description: z.string()
+  description: z
+    .string()
     .min(10, 'Description must be at least 10 characters')
     .max(5000, 'Description must be at most 5000 characters')
     .optional()

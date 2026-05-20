@@ -7,7 +7,10 @@ import { logger } from './logger';
  */
 export class SecretManager {
   private static instance: SecretManager;
-  private secrets: Map<string, { value: string; expiresAt?: Date | undefined; rotatedAt: Date }> = new Map();
+  private secrets: Map<
+    string,
+    { value: string; expiresAt?: Date | undefined; rotatedAt: Date }
+  > = new Map();
   private readonly DEFAULT_ROTATION_INTERVAL = 90 * 24 * 60 * 60 * 1000; // 90 days in milliseconds
 
   private constructor() {
@@ -52,16 +55,18 @@ export class SecretManager {
    * Set a secret with optional expiration
    */
   public setSecret(key: string, value: string, expiresInMs?: number): void {
-    const expiresAt = expiresInMs ? new Date(Date.now() + expiresInMs) : undefined;
+    const expiresAt = expiresInMs
+      ? new Date(Date.now() + expiresInMs)
+      : undefined;
     this.secrets.set(key, {
       value,
       expiresAt: expiresAt || undefined,
       rotatedAt: new Date(),
     });
 
-    logger.debug(`Secret set: ${key}`, { 
+    logger.debug(`Secret set: ${key}`, {
       hasExpiration: !!expiresAt,
-      rotationTime: new Date().toISOString() 
+      rotationTime: new Date().toISOString(),
     });
   }
 
@@ -70,7 +75,7 @@ export class SecretManager {
    */
   public getSecret(key: string): string | null {
     const secret = this.secrets.get(key);
-    
+
     if (!secret) {
       logger.warn(`Secret not found: ${key}`);
       return null;
@@ -91,23 +96,23 @@ export class SecretManager {
    */
   public async rotateSecret(key: string, newValue?: string): Promise<boolean> {
     const currentSecret = this.secrets.get(key);
-    
+
     if (!currentSecret) {
       logger.warn(`Cannot rotate non-existent secret: ${key}`);
       return false;
     }
 
     const newSecretValue = newValue || this.generateRandomSecret(32);
-    
+
     // Store old secret for grace period (if needed)
     const oldSecret = { ...currentSecret };
-    
+
     // Update with new secret
     this.setSecret(key, newSecretValue, this.DEFAULT_ROTATION_INTERVAL);
-    
+
     logger.info(`Secret rotated: ${key}`, {
       rotationTime: new Date().toISOString(),
-      oldRotationTime: oldSecret.rotatedAt.toISOString()
+      oldRotationTime: oldSecret.rotatedAt.toISOString(),
     });
 
     return true;
@@ -117,9 +122,10 @@ export class SecretManager {
    * Generate a cryptographically secure random secret
    */
   public generateRandomSecret(length: number = 32): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_-+=';
+    const chars =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_-+=';
     const randomValues = new Uint8Array(length);
-    
+
     if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
       crypto.getRandomValues(randomValues);
     } else {
@@ -142,7 +148,7 @@ export class SecretManager {
    */
   public needsRotation(key: string): boolean {
     const secret = this.secrets.get(key);
-    
+
     if (!secret || !secret.rotatedAt) {
       return false;
     }
@@ -156,7 +162,7 @@ export class SecretManager {
    */
   public getSecretsNeedingRotation(): string[] {
     const needsRotation: string[] = [];
-    
+
     for (const [key, _secret] of this.secrets.entries()) {
       if (this.needsRotation(key)) {
         needsRotation.push(key);
@@ -169,26 +175,30 @@ export class SecretManager {
   /**
    * Get secret metadata
    */
-  public getSecretMetadata(key: string): { 
-    rotatedAt: Date; 
-    expiresAt?: Date; 
-    needsRotation: boolean 
+  public getSecretMetadata(key: string): {
+    rotatedAt: Date;
+    expiresAt?: Date;
+    needsRotation: boolean;
   } | null {
     const secret = this.secrets.get(key);
-    
+
     if (!secret) {
       return null;
     }
 
-    const result: { rotatedAt: Date; expiresAt?: Date; needsRotation: boolean } = {
+    const result: {
+      rotatedAt: Date;
+      expiresAt?: Date;
+      needsRotation: boolean;
+    } = {
       rotatedAt: secret.rotatedAt,
       needsRotation: this.needsRotation(key),
     };
-    
+
     if (secret.expiresAt !== undefined) {
       result.expiresAt = secret.expiresAt;
     }
-    
+
     return result;
   }
 
@@ -197,7 +207,7 @@ export class SecretManager {
    */
   public removeSecret(key: string): boolean {
     const existed = this.secrets.delete(key);
-    
+
     if (existed) {
       logger.info(`Secret removed: ${key}`);
     } else {
@@ -217,7 +227,10 @@ export class SecretManager {
   /**
    * Validate secret strength
    */
-  public validateSecretStrength(secret: string, minLength: number = 16): {
+  public validateSecretStrength(
+    secret: string,
+    minLength: number = 16
+  ): {
     isValid: boolean;
     reasons: string[];
   } {
@@ -252,10 +265,12 @@ export class SecretManager {
   /**
    * Schedule automatic secret rotation
    */
-  public scheduleRotation(intervalMs: number = this.DEFAULT_ROTATION_INTERVAL): NodeJS.Timeout {
+  public scheduleRotation(
+    intervalMs: number = this.DEFAULT_ROTATION_INTERVAL
+  ): NodeJS.Timeout {
     return setInterval(() => {
       const secretsToRotate = this.getSecretsNeedingRotation();
-      
+
       if (secretsToRotate.length > 0) {
         logger.info('Scheduled secret rotation started', {
           secrets: secretsToRotate,
@@ -277,7 +292,7 @@ export class SecretManager {
   public exportSecrets(_encryptionKey: string): string {
     const secretsData = Object.fromEntries(this.secrets);
     const jsonData = JSON.stringify(secretsData);
-    
+
     // Simple base64 encoding for demonstration
     // In production, use proper encryption like AES-256-GCM
     return Buffer.from(jsonData).toString('base64');
@@ -292,15 +307,18 @@ export class SecretManager {
       // In production, use proper decryption
       const jsonData = Buffer.from(encryptedData, 'base64').toString('utf8');
       const secretsData = JSON.parse(jsonData);
-      
-      for (const [key, value] of Object.entries(secretsData) as [string, any][]) {
+
+      for (const [key, value] of Object.entries(secretsData) as [
+        string,
+        any,
+      ][]) {
         this.secrets.set(key, {
           value: value.value,
           expiresAt: value.expiresAt ? new Date(value.expiresAt) : undefined,
           rotatedAt: new Date(value.rotatedAt),
         });
       }
-      
+
       logger.info('Secrets imported successfully');
       return true;
     } catch (error) {

@@ -14,7 +14,7 @@ const prisma = new PrismaClient();
 export const resetTestDatabase = async (): Promise<void> => {
   try {
     logger.info('🧹 Resetting test database...');
-    
+
     // Clear all data in proper order to maintain foreign key constraints
     await prisma.vote.deleteMany();
     await prisma.solution.deleteMany();
@@ -37,7 +37,7 @@ export const resetTestDatabase = async (): Promise<void> => {
 export const seedTestDatabase = async (): Promise<void> => {
   try {
     logger.info('🌱 Seeding test database...');
-    
+
     // Create test users
     const adminPassword = await hashPassword('testadmin123');
     const userPassword = await hashPassword('testuser123');
@@ -109,7 +109,9 @@ export const seedTestDatabase = async (): Promise<void> => {
 
     logger.info('✅ Test database seeded successfully');
     logger.info('📋 Test data created:');
-    logger.info(`- Users: 2 (testadmin@errdb.com / testadmin123, testuser@errdb.com / testuser123)`);
+    logger.info(
+      `- Users: 2 (testadmin@errdb.com / testadmin123, testuser@errdb.com / testuser123)`
+    );
     logger.info(`- Categories: 1`);
     logger.info(`- Applications: 1`);
     logger.info(`- Error codes: 1`);
@@ -147,7 +149,7 @@ export const setupTestDatabase = async (): Promise<void> => {
 // CLI execution
 if (require.main === module) {
   const command = process.argv[2];
-  
+
   const run = async () => {
     try {
       switch (command) {
@@ -165,7 +167,9 @@ if (require.main === module) {
           console.log(ready ? '✅ Database ready' : '❌ Database not ready');
           break;
         default:
-          console.log('Usage: ts-node test-database.ts [reset|seed|setup|check]');
+          console.log(
+            'Usage: ts-node test-database.ts [reset|seed|setup|check]'
+          );
           process.exit(1);
       }
       await prisma.$disconnect();

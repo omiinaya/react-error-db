@@ -9,7 +9,12 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (data: { email: string; username: string; password: string; displayName: string }) => Promise<void>;
+  register: (data: {
+    email: string;
+    username: string;
+    password: string;
+    displayName: string;
+  }) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -21,7 +26,15 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const { user, isAuthenticated, isLoading, login: storeLogin, logout: storeLogout, setLoading, setUser } = useAuthStore();
+  const {
+    user,
+    isAuthenticated,
+    isLoading,
+    login: storeLogin,
+    logout: storeLogout,
+    setLoading,
+    setUser,
+  } = useAuthStore();
 
   useEffect(() => {
     // Check if user is already authenticated on app load
@@ -49,7 +62,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const register = async (data: { email: string; username: string; password: string; displayName: string }) => {
+  const register = async (data: {
+    email: string;
+    username: string;
+    password: string;
+    displayName: string;
+  }) => {
     try {
       setLoading(true);
       const response = await api.register(data);
@@ -70,9 +88,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(true);
       const response = await api.getCurrentUser();
       setUser(response.user);
-      
+
       // Log user admin status for debugging
-      console.log('User refreshed - Admin status:', response.user.isAdmin ? 'ADMIN' : 'NOT ADMIN');
+      console.log(
+        'User refreshed - Admin status:',
+        response.user.isAdmin ? 'ADMIN' : 'NOT ADMIN'
+      );
     } catch (error) {
       storeLogout();
     } finally {
@@ -90,11 +111,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     refreshUser,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {

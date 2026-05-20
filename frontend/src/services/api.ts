@@ -11,7 +11,7 @@ import {
   CreateErrorCodeRequest,
   CreateCategoryRequestInput,
   UpdateCategoryRequestStatusInput,
-  CategoryRequest
+  CategoryRequest,
 } from '@/types';
 import { useAuthStore } from '@/store/authStore';
 
@@ -33,14 +33,14 @@ class ApiClient {
   private setupInterceptors() {
     // Request interceptor to add auth token
     this.client.interceptors.request.use(
-      (config) => {
+      config => {
         const token = localStorage.getItem('token');
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
       },
-      (error) => {
+      error => {
         return Promise.reject(error);
       }
     );
@@ -56,9 +56,12 @@ class ApiClient {
       async (error: AxiosError<{ error?: ApiError }>) => {
         const responseData = error.response?.data;
         let message = 'An unexpected error occurred';
-        
+
         // Handle validation errors with detailed field messages
-        if (error.response?.status === 400 && responseData?.error?.code === 'VALIDATION_ERROR') {
+        if (
+          error.response?.status === 400 &&
+          responseData?.error?.code === 'VALIDATION_ERROR'
+        ) {
           const validationErrors = responseData.error.details;
           if (validationErrors && validationErrors.length > 0) {
             // Map backend validation errors to i18n translation keys
@@ -67,7 +70,9 @@ class ApiClient {
             message = this.mapValidationErrorToMessage(firstError);
             console.log('DEBUG: Mapped validation message:', message);
           } else {
-            message = i18n.t('errors:validation.genericValidationError', { defaultValue: 'Validation failed' });
+            message = i18n.t('errors:validation.genericValidationError', {
+              defaultValue: 'Validation failed',
+            });
           }
         }
         // Handle other error types
@@ -76,11 +81,14 @@ class ApiClient {
         } else if (error.message) {
           message = error.message;
         }
-        
+
         // Show error toast for non-401 errors with improved formatting
         if (error.response?.status !== 401) {
           // For validation errors, show a more user-friendly message
-          if (error.response?.status === 400 && responseData?.error?.code === 'VALIDATION_ERROR') {
+          if (
+            error.response?.status === 400 &&
+            responseData?.error?.code === 'VALIDATION_ERROR'
+          ) {
             toast.error(message, {
               duration: 5000, // Longer duration for validation errors
             });
@@ -92,41 +100,42 @@ class ApiClient {
         // Handle token expiration with automatic refresh
         if (error.response?.status === 401) {
           const originalRequest = error.config;
-          
+
           if (!originalRequest) {
             // Use auth store logout instead of hard redirect
             useAuthStore.getState().logout();
             return Promise.reject(error);
           }
-          
+
           // Check if this is a retry attempt to avoid infinite loops
           if ((originalRequest as any)._retry) {
             // Use auth store logout instead of hard redirect
             useAuthStore.getState().logout();
             return Promise.reject(error);
           }
-          
+
           // Try to refresh the token
           (originalRequest as any)._retry = true;
           const refreshToken = localStorage.getItem('refreshToken');
-          
+
           if (refreshToken) {
             try {
               const response = await axios.post(
                 `${(import.meta as any).env?.VITE_API_BASE_URL || '/api'}/auth/refresh`,
                 { refreshToken }
               );
-              
+
               if (response.data.success) {
-                const { token: newAccessToken, refreshToken: newRefreshToken } = response.data.data;
+                const { token: newAccessToken, refreshToken: newRefreshToken } =
+                  response.data.data;
                 localStorage.setItem('token', newAccessToken);
                 localStorage.setItem('refreshToken', newRefreshToken);
-                
+
                 // Update auth store state with new tokens
                 const authStore = useAuthStore.getState();
                 authStore.setToken(newAccessToken);
                 authStore.setRefreshToken(newRefreshToken);
-                
+
                 // Retry the original request with new token
                 originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
                 return this.client.request(originalRequest);
@@ -136,7 +145,7 @@ class ApiClient {
               console.error('Token refresh failed:', refreshError);
             }
           }
-          
+
           // If refresh fails or no refresh token, use auth store logout
           useAuthStore.getState().logout();
         }
@@ -147,70 +156,80 @@ class ApiClient {
   }
 
   // Map backend validation errors to i18n messages
-  private mapValidationErrorToMessage(error: { field?: string; message: string; code?: string }): string {
+  private mapValidationErrorToMessage(error: {
+    field?: string;
+    message: string;
+    code?: string;
+  }): string {
     const { field, message } = error;
-    
+
     // Map common validation error patterns to translation keys
-    if (message.includes('must be at least') && message.includes('characters')) {
+    if (
+      message.includes('must be at least') &&
+      message.includes('characters')
+    ) {
       const minMatch = message.match(/at least (\d+)/);
       const min = minMatch ? parseInt(minMatch[1]) : 10;
-      
+
       if (field) {
         // For solutionText field, use the specific translation key
         if (field === 'solutionText') {
           return i18n.t('errors:validation.solutionTextTooSmall', {
-            defaultValue: message
+            defaultValue: message,
           });
         }
-        
+
         return i18n.t('errors:validation.fieldTooShort', {
           field,
           min,
-          defaultValue: `${field}: ${message}`
+          defaultValue: `${field}: ${message}`,
         });
       }
       return i18n.t('errors:validation.genericTooShort', {
         min,
-        defaultValue: message
+        defaultValue: message,
       });
     }
-    
+
     if (message.includes('must be at most') && message.includes('characters')) {
       const maxMatch = message.match(/at most (\d+)/);
       const max = maxMatch ? parseInt(maxMatch[1]) : 10000;
-      
+
       if (field) {
         // For solutionText field, use the specific translation key
         if (field === 'solutionText') {
           return i18n.t('errors:validation.solutionTextTooBig', {
-            defaultValue: message
+            defaultValue: message,
           });
         }
-        
+
         return i18n.t('errors:validation.fieldTooLong', {
           field,
           max,
-          defaultValue: `${field}: ${message}`
+          defaultValue: `${field}: ${message}`,
         });
       }
       return i18n.t('errors:validation.genericTooLong', {
         max,
-        defaultValue: message
+        defaultValue: message,
       });
     }
-    
-    if (message.includes('is required') || message.includes('cannot be empty')) {
+
+    if (
+      message.includes('is required') ||
+      message.includes('cannot be empty')
+    ) {
       if (field) {
         return i18n.t('errors:validation.fieldRequired', {
           field,
-          defaultValue: `${field} is required`
+          defaultValue: `${field} is required`,
         });
       }
       return i18n.t('errors:validation.genericRequired', {
-        defaultValue: message
+        defaultValue: message,
       });
     }
-    
+
     // Default: use the field context if available
     return field ? `${field}: ${message}` : message;
   }
@@ -239,7 +258,12 @@ class ApiClient {
     });
   }
 
-  async register(data: { email: string; username: string; password: string; displayName: string }) {
+  async register(data: {
+    email: string;
+    username: string;
+    password: string;
+    displayName: string;
+  }) {
     return this.request<{ user: any; token: string; refreshToken: string }>({
       method: 'post',
       url: '/auth/register',
@@ -255,7 +279,10 @@ class ApiClient {
   }
 
   // Categories endpoints
-  async getCategories(params?: { parentId?: string; includeChildren?: boolean }) {
+  async getCategories(params?: {
+    parentId?: string;
+    includeChildren?: boolean;
+  }) {
     return this.request<{ categories: any[] }>({
       method: 'get',
       url: '/categories',
@@ -287,7 +314,12 @@ class ApiClient {
   }
 
   // Applications endpoints
-  async getApplications(params?: { categoryId?: string; search?: string; page?: number; limit?: number }) {
+  async getApplications(params?: {
+    categoryId?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }) {
     return this.request<{ applications: any[]; meta?: any }>({
       method: 'get',
       url: '/applications',
@@ -319,7 +351,14 @@ class ApiClient {
   }
 
   // Error codes endpoints
-  async searchErrors(params?: { applicationId?: string; search?: string; severity?: string; page?: number; limit?: number; sort?: string }) {
+  async searchErrors(params?: {
+    applicationId?: string;
+    search?: string;
+    severity?: string;
+    page?: number;
+    limit?: number;
+    sort?: string;
+  }) {
     return this.request<{ errors: any[]; meta?: any }>({
       method: 'get',
       url: '/errors',
@@ -351,7 +390,10 @@ class ApiClient {
     });
   }
 
-  async voteOnSolution(solutionId: string, data: { voteType: 'upvote' | 'downvote' }) {
+  async voteOnSolution(
+    solutionId: string,
+    data: { voteType: 'upvote' | 'downvote' }
+  ) {
     return this.request<{ solution: any }>({
       method: 'post',
       url: `/solutions/${solutionId}/vote`,
@@ -375,7 +417,12 @@ class ApiClient {
   }
 
   // Search endpoint
-  async globalSearch(params: { q: string; type?: string; page?: number; limit?: number }) {
+  async globalSearch(params: {
+    q: string;
+    type?: string;
+    page?: number;
+    limit?: number;
+  }) {
     return this.request<{ results: any[] }>({
       method: 'get',
       url: '/search',
@@ -385,7 +432,11 @@ class ApiClient {
 
   // User endpoints
   async getUserProfile(userId: string) {
-    return this.request<{ user: any; recentSolutions: any[]; topSolutions: any[] }>({
+    return this.request<{
+      user: any;
+      recentSolutions: any[];
+      topSolutions: any[];
+    }>({
       method: 'get',
       url: `/users/${userId}`,
     });
@@ -423,7 +474,12 @@ class ApiClient {
     });
   }
 
-  async getAdminUsers(params?: { page?: number; limit?: number; search?: string; role?: string }) {
+  async getAdminUsers(params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    role?: string;
+  }) {
     return this.request<{ users: any[]; pagination: any }>({
       method: 'get',
       url: '/admin/users',
@@ -431,7 +487,11 @@ class ApiClient {
     });
   }
 
-  async getAdminSolutions(params?: { page?: number; limit?: number; status?: string }) {
+  async getAdminSolutions(params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+  }) {
     return this.request<{ solutions: any[]; pagination: any }>({
       method: 'get',
       url: '/admin/solutions/moderation',
@@ -454,7 +514,12 @@ class ApiClient {
     });
   }
 
-  async getAdminLogs(params?: { page?: number; limit?: number; search?: string; level?: string }) {
+  async getAdminLogs(params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    level?: string;
+  }) {
     return this.request<{ logs: any[]; pagination: any }>({
       method: 'get',
       url: '/admin/system/logs',
@@ -479,7 +544,13 @@ class ApiClient {
     });
   }
 
-  async getCategoryRequests(params?: { status?: string; userId?: string; search?: string; page?: number; limit?: number }) {
+  async getCategoryRequests(params?: {
+    status?: string;
+    userId?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }) {
     return this.request<{ categoryRequests: CategoryRequest[]; meta?: any }>({
       method: 'get',
       url: '/category-requests',
@@ -501,8 +572,14 @@ class ApiClient {
     });
   }
 
-  async updateCategoryRequestStatus(id: string, data: UpdateCategoryRequestStatusInput) {
-    return this.request<{ categoryRequest: CategoryRequest; createdCategory?: any }>({
+  async updateCategoryRequestStatus(
+    id: string,
+    data: UpdateCategoryRequestStatusInput
+  ) {
+    return this.request<{
+      categoryRequest: CategoryRequest;
+      createdCategory?: any;
+    }>({
       method: 'put',
       url: `/category-requests/${id}/status`,
       data,
@@ -689,7 +766,10 @@ class ApiClient {
     });
   }
 
-  async updateWebhook(webhookId: string, data: { url?: string; events?: string[]; isActive?: boolean }) {
+  async updateWebhook(
+    webhookId: string,
+    data: { url?: string; events?: string[]; isActive?: boolean }
+  ) {
     return this.request<{ webhook: any }>({
       method: 'patch',
       url: `/webhooks/${webhookId}`,

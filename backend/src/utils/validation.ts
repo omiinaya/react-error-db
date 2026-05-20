@@ -12,7 +12,8 @@ const USERNAME_REGEX = /^[a-zA-Z0-9_-]{3,30}$/;
 const ERROR_CODE_REGEX = /^[a-zA-Z0-9_]{2,50}$/;
 
 // Password requirements: min 8 chars, at least one uppercase, one lowercase, one number, one special char
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const PASSWORD_REGEX =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 /**
  * Validate email address
@@ -76,7 +77,7 @@ export function sanitizeInput(input: string): string {
   if (!input || typeof input !== 'string') {
     return '';
   }
-  
+
   return input
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')

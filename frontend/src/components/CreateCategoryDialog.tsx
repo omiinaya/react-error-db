@@ -12,21 +12,26 @@ interface CreateCategoryDialogProps {
   onClose: () => void;
 }
 
-const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({ onCategoryCreated, onClose }) => {
+const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({
+  onCategoryCreated,
+  onClose,
+}) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<CreateCategoryRequest>({
     name: '',
     slug: '',
     description: '',
-    sortOrder: 0
+    sortOrder: 0,
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -35,18 +40,18 @@ const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({ onCategoryC
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
-    
+
     // Handle cases where slug becomes too short after processing
     if (slug.length < 2) {
       // For short names, use the full lowercase name with numbers if needed
       slug = name.toLowerCase().replace(/[^a-z0-9]/g, '');
-      
+
       // If still too short, append a number to make it valid
       if (slug.length < 2) {
         slug = slug + '1';
       }
     }
-    
+
     return slug;
   };
 
@@ -55,20 +60,20 @@ const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({ onCategoryC
     setFormData(prev => ({
       ...prev,
       name,
-      slug: prev.slug || generateSlug(name)
+      slug: prev.slug || generateSlug(name),
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation(); // Additional protection against event bubbling
-    
+
     // Manual validation instead of relying on browser validation
     if (!formData.name.trim()) {
       toast({
         title: 'Validation Error',
         description: 'Category name is required',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -77,7 +82,7 @@ const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({ onCategoryC
       toast({
         title: 'Validation Error',
         description: 'Category slug is required',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -86,7 +91,7 @@ const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({ onCategoryC
       toast({
         title: 'Validation Error',
         description: 'Slug must be at least 2 characters long',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -97,13 +102,14 @@ const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({ onCategoryC
       onCategoryCreated(response.category);
       toast({
         title: 'Success',
-        description: 'Category created successfully'
+        description: 'Category created successfully',
       });
     } catch (error: any) {
       toast({
         title: 'Error',
-        description: error.response?.data?.error?.message || 'Failed to create category',
-        variant: 'destructive'
+        description:
+          error.response?.data?.error?.message || 'Failed to create category',
+        variant: 'destructive',
       });
     } finally {
       setIsSubmitting(false);
@@ -153,7 +159,6 @@ const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({ onCategoryC
           rows={3}
         />
       </div>
-
 
       <div className="flex justify-end gap-3 pt-4">
         <Button type="button" variant="outline" onClick={onClose}>

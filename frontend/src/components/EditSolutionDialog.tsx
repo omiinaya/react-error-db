@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Solution } from '@/types';
@@ -18,7 +25,7 @@ const EditSolutionDialog: React.FC<EditSolutionDialogProps> = ({
   onOpenChange,
   solution,
   onSave,
-  isSaving
+  isSaving,
 }) => {
   const { t } = useTranslation();
   const [editText, setEditText] = useState('');
@@ -68,10 +75,18 @@ const EditSolutionDialog: React.FC<EditSolutionDialogProps> = ({
           </Button>
           <Button
             onClick={handleSave}
-            disabled={isSaving || !editText.trim() || editText.length > MAX_CHARACTERS}
-            className={editText.length > MAX_CHARACTERS ? 'opacity-50 cursor-not-allowed' : ''}
+            disabled={
+              isSaving || !editText.trim() || editText.length > MAX_CHARACTERS
+            }
+            className={
+              editText.length > MAX_CHARACTERS
+                ? 'opacity-50 cursor-not-allowed'
+                : ''
+            }
           >
-            {isSaving ? t('errors:detail.updating') : t('errors:detail.updateSolution')}
+            {isSaving
+              ? t('errors:detail.updating')
+              : t('errors:detail.updateSolution')}
           </Button>
         </DialogFooter>
       </DialogContent>

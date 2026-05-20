@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -39,34 +45,44 @@ const ApplicationManagement: React.FC = () => {
   const fetchApplications = async () => {
     try {
       setLoading(true);
-      const response = await api.request<{ applications: ApplicationWithStats[] }>({
+      const response = await api.request<{
+        applications: ApplicationWithStats[];
+      }>({
         method: 'get',
-        url: '/admin/applications/stats'
+        url: '/admin/applications/stats',
       });
 
       setApplications(response.applications);
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Failed to fetch applications');
+      setError(
+        err.response?.data?.error?.message || 'Failed to fetch applications'
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const deleteApplication = async (applicationId: string) => {
-    if (!confirm('Are you sure you want to delete this application? This will also delete all associated error codes and solutions.')) {
+    if (
+      !confirm(
+        'Are you sure you want to delete this application? This will also delete all associated error codes and solutions.'
+      )
+    ) {
       return;
     }
 
     try {
       await api.request({
         method: 'delete',
-        url: `/applications/${applicationId}`
+        url: `/applications/${applicationId}`,
       });
-      
+
       // Refresh the applications list
       fetchApplications();
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Failed to delete application');
+      setError(
+        err.response?.data?.error?.message || 'Failed to delete application'
+      );
     }
   };
 
@@ -88,7 +104,9 @@ const ApplicationManagement: React.FC = () => {
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Application Management</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Application Management
+        </h1>
         <p className="text-muted-foreground">
           Manage applications and their error codes
         </p>
@@ -139,7 +157,9 @@ const ApplicationManagement: React.FC = () => {
           <Card>
             <CardContent className="pt-6 text-center">
               <Database className="mx-auto h-12 w-12 text-muted-foreground" />
-              <h3 className="mt-4 text-lg font-semibold">No applications found</h3>
+              <h3 className="mt-4 text-lg font-semibold">
+                No applications found
+              </h3>
               <p className="text-muted-foreground">
                 Get started by adding your first application
               </p>
@@ -150,7 +170,7 @@ const ApplicationManagement: React.FC = () => {
             </CardContent>
           </Card>
         ) : (
-          applications.map((application) => (
+          applications.map(application => (
             <Card key={application.id}>
               <CardContent className="pt-6">
                 <div className="flex items-start gap-4">
@@ -165,13 +185,17 @@ const ApplicationManagement: React.FC = () => {
                       <Database className="h-6 w-6 text-muted-foreground" />
                     </div>
                   )}
-                  
+
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-lg font-semibold">{application.name}</h3>
-                      <Badge variant="secondary">{application.category.name}</Badge>
+                      <h3 className="text-lg font-semibold">
+                        {application.name}
+                      </h3>
+                      <Badge variant="secondary">
+                        {application.category.name}
+                      </Badge>
                     </div>
-                    
+
                     {application.description && (
                       <p className="text-muted-foreground text-sm mb-2">
                         {application.description}
@@ -181,10 +205,14 @@ const ApplicationManagement: React.FC = () => {
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span>{application.errorCount} error codes</span>
                       <span>•</span>
-                      <span>Created {new Date(application.createdAt).toLocaleDateString()}</span>
+                      <span>
+                        Created{' '}
+                        {new Date(application.createdAt).toLocaleDateString()}
+                      </span>
                     </div>
 
-                    {(application.websiteUrl || application.documentationUrl) && (
+                    {(application.websiteUrl ||
+                      application.documentationUrl) && (
                       <div className="flex gap-2 mt-2">
                         {application.websiteUrl && (
                           <a

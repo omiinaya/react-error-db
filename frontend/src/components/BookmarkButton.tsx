@@ -67,9 +67,7 @@ export function BookmarkButton({
         className="h-4 w-4"
         fill={isBookmarked ? 'currentColor' : 'none'}
       />
-      <span className="ml-1">
-        {isBookmarked ? 'Bookmarked' : 'Bookmark'}
-      </span>
+      <span className="ml-1">{isBookmarked ? 'Bookmarked' : 'Bookmark'}</span>
     </Button>
   );
 }

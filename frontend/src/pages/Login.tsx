@@ -2,7 +2,13 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +19,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,7 +29,7 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email || !password) {
       return;
     }
@@ -46,10 +52,14 @@ const Login: React.FC = () => {
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-center mb-4">
               <div className="h-12 w-12 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-2xl">E</span>
+                <span className="text-primary-foreground font-bold text-2xl">
+                  E
+                </span>
               </div>
             </div>
-            <CardTitle className="text-2xl text-center">{t('auth:login.title')}</CardTitle>
+            <CardTitle className="text-2xl text-center">
+              {t('auth:login.title')}
+            </CardTitle>
             <CardDescription className="text-center">
               {t('auth:login.description')}
             </CardDescription>
@@ -63,12 +73,12 @@ const Login: React.FC = () => {
                   type="email"
                   placeholder={t('auth:login.emailPlaceholder')}
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   required
                   disabled={isLoading}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="password">{t('auth:login.password')}</Label>
                 <div className="relative">
@@ -77,7 +87,7 @@ const Login: React.FC = () => {
                     type={showPassword ? 'text' : 'password'}
                     placeholder={t('auth:login.passwordPlaceholder')}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={e => setPassword(e.target.value)}
                     required
                     disabled={isLoading}
                     className="pr-10"
@@ -96,11 +106,7 @@ const Login: React.FC = () => {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={isLoading}
-              >
+              <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -131,7 +137,9 @@ const Login: React.FC = () => {
         {/* Demo Credentials */}
         <Card className="mt-6">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm">{t('auth:login.demoCredentials')}</CardTitle>
+            <CardTitle className="text-sm">
+              {t('auth:login.demoCredentials')}
+            </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
             <div className="text-xs text-muted-foreground space-y-1">

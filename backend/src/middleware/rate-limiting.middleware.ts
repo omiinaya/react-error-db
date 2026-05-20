@@ -16,7 +16,7 @@ export const initRedisRateLimiting = async (): Promise<void> => {
         url: config.redis.url,
       });
 
-      redisClient.on('error', (err) => {
+      redisClient.on('error', err => {
         logger.error('Redis rate limiting client error:', err);
       });
 
@@ -56,7 +56,7 @@ export const globalRateLimiter = rateLimit({
   standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: false, // Disable `X-RateLimit-*` headers
   store: getRateLimitStore(),
-  keyGenerator: (req) => {
+  keyGenerator: req => {
     // Use IP address + user agent for more precise rate limiting
     const ip = req.ip || req.connection.remoteAddress || 'unknown';
     const userAgent = req.get('user-agent') || 'unknown';
@@ -69,7 +69,7 @@ export const globalRateLimiter = rateLimit({
       userAgent: req.get('user-agent'),
       timestamp: new Date().toISOString(),
     });
-    
+
     res.status(429).json({
       success: false,
       error: {
@@ -98,14 +98,18 @@ export const authRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   store: getRateLimitStore(),
-  keyGenerator: (req) => {
+  keyGenerator: req => {
     // Use IP + endpoint for auth rate limiting
     const ip = req.ip || req.connection.remoteAddress || 'unknown';
     return `auth:${ip}:${req.path}`;
   },
   skip: (req, res) => {
     // Skip rate limiting for successful authentication
-    return req.method === 'POST' && req.path.includes('/auth/login') && res.statusCode === 200;
+    return (
+      req.method === 'POST' &&
+      req.path.includes('/auth/login') &&
+      res.statusCode === 200
+    );
   },
   handler: (req, res) => {
     logger.warn('Auth rate limit exceeded', {
@@ -113,7 +117,7 @@ export const authRateLimiter = rateLimit({
       path: req.path,
       timestamp: new Date().toISOString(),
     });
-    
+
     res.status(429).json({
       success: false,
       error: {
@@ -142,7 +146,7 @@ export const passwordResetRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   store: getRateLimitStore(),
-  keyGenerator: (req) => {
+  keyGenerator: req => {
     const ip = req.ip || req.connection.remoteAddress || 'unknown';
     return `password-reset:${ip}`;
   },
@@ -165,7 +169,7 @@ export const apiRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   store: getRateLimitStore(),
-  keyGenerator: (req) => {
+  keyGenerator: req => {
     const ip = req.ip || req.connection.remoteAddress || 'unknown';
     const userId = req.user?.id ? `:user:${req.user.id}` : '';
     return `api:${ip}${userId}:${req.path}`;
@@ -227,7 +231,7 @@ export const adminRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   store: getRateLimitStore(),
-  keyGenerator: (req) => {
+  keyGenerator: req => {
     const userId = req.user?.id ? `user:${req.user.id}` : 'anonymous';
     return `admin:${userId}:${req.path}`;
   },
@@ -250,7 +254,7 @@ export const healthCheckRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   store: getRateLimitStore(),
-  skip: (req) => {
+  skip: req => {
     // Skip rate limiting for internal health checks
     return req.ip === '127.0.0.1' || req.ip === '::1';
   },
@@ -278,7 +282,7 @@ export const dynamicRateLimiter = (options: {
         limit: options.max,
         window: options.windowMs,
       });
-      
+
       res.status(429).json({
         success: false,
         error: {
@@ -299,12 +303,12 @@ export const rateLimitExempt = (req: any, _res: any, next: any) => {
   if (req.path === '/health' || req.path.startsWith('/api/health')) {
     return next();
   }
-  
+
   // Exempt certain API endpoints if needed
   if (req.path === '/api/metrics' && req.method === 'GET') {
     return next();
   }
-  
+
   next();
 };
 
@@ -315,11 +319,11 @@ export const getRateLimitStats = async () => {
   if (!redisClient) {
     return { store: 'memory', stats: null };
   }
-  
+
   try {
     // Get keys pattern for rate limiting
     const keys = await redisClient.sendCommand(['KEYS', 'ratelimit:*']);
-    
+
     return {
       store: 'redis',
       keyCount: Array.isArray(keys) ? keys.length : 0,

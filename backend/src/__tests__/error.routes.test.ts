@@ -124,14 +124,12 @@ describe('Error Routes API', () => {
 
       (prisma.errorCode.create as jest.Mock).mockResolvedValue(mockError);
 
-      const response = await request(app)
-        .post('/api/errors')
-        .send({
-          code: 'ERR001',
-          message: 'Test error message',
-          description: 'Test error description',
-          applicationId: 1,
-        });
+      const response = await request(app).post('/api/errors').send({
+        code: 'ERR001',
+        message: 'Test error message',
+        description: 'Test error description',
+        applicationId: 1,
+      });
 
       expect(response.status).toBe(201);
       expect(response.body.success).toBe(true);
@@ -145,16 +143,16 @@ describe('Error Routes API', () => {
         message: 'Existing error',
       };
 
-      (prisma.errorCode.findUnique as jest.Mock).mockResolvedValue(existingError);
+      (prisma.errorCode.findUnique as jest.Mock).mockResolvedValue(
+        existingError
+      );
 
-      const response = await request(app)
-        .post('/api/errors')
-        .send({
-          code: 'ERR001',
-          message: 'Test error message',
-          description: 'Test error description',
-          applicationId: 1,
-        });
+      const response = await request(app).post('/api/errors').send({
+        code: 'ERR001',
+        message: 'Test error message',
+        description: 'Test error description',
+        applicationId: 1,
+      });
 
       expect(response.status).toBe(400);
       expect(response.body.success).toBe(false);
@@ -175,12 +173,10 @@ describe('Error Routes API', () => {
       (prisma.errorCode.findUnique as jest.Mock).mockResolvedValue(mockError);
       (prisma.errorCode.update as jest.Mock).mockResolvedValue(mockError);
 
-      const response = await request(app)
-        .put('/api/errors/1')
-        .send({
-          message: 'Updated error message',
-          description: 'Updated error description',
-        });
+      const response = await request(app).put('/api/errors/1').send({
+        message: 'Updated error message',
+        description: 'Updated error description',
+      });
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
@@ -190,11 +186,9 @@ describe('Error Routes API', () => {
     it('should return 404 for non-existent error', async () => {
       (prisma.errorCode.findUnique as jest.Mock).mockResolvedValue(null);
 
-      const response = await request(app)
-        .put('/api/errors/999')
-        .send({
-          message: 'Updated error message',
-        });
+      const response = await request(app).put('/api/errors/999').send({
+        message: 'Updated error message',
+      });
 
       expect(response.status).toBe(404);
       expect(response.body.success).toBe(false);

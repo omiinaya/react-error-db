@@ -12,7 +12,7 @@ export const validateRequest = (schema: AnyZodObject) => {
       return;
     } catch (error) {
       if (error instanceof ZodError) {
-        const errors = error.errors.map((err) => ({
+        const errors = error.errors.map(err => ({
           field: err.path.join('.'),
           message: err.message,
           code: err.code,
@@ -64,7 +64,7 @@ export const validateQuery = (schema: AnyZodObject) => {
       return;
     } catch (error) {
       if (error instanceof ZodError) {
-        const errors = error.errors.map((err) => ({
+        const errors = error.errors.map(err => ({
           field: err.path.join('.'),
           message: err.message,
           code: err.code,

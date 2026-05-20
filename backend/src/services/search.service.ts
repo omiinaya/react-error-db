@@ -5,7 +5,7 @@ export class SearchService {
   async search(query: string, filters: SearchFilters, userId?: string) {
     const startTime = Date.now();
     const normalizedQuery = this.normalizeQuery(query);
-    
+
     // Build where clause
     const where: any = {
       OR: [
@@ -65,10 +65,7 @@ export class SearchService {
             },
           },
         },
-        orderBy: [
-          { viewCount: 'desc' },
-          { createdAt: 'desc' },
-        ],
+        orderBy: [{ viewCount: 'desc' }, { createdAt: 'desc' }],
         skip,
         take: limit,
       }),
@@ -76,7 +73,7 @@ export class SearchService {
     ]);
 
     const searchDuration = Date.now() - startTime;
-    
+
     // Track search analytics
     const analyticsPayload = {
       query,
@@ -85,11 +82,11 @@ export class SearchService {
       resultCount: totalCount,
       searchDuration,
     } as any;
-    
+
     if (userId) {
       analyticsPayload.userId = userId;
     }
-    
+
     await this.trackSearchAnalytics(analyticsPayload);
 
     return {
@@ -101,7 +98,10 @@ export class SearchService {
     };
   }
 
-  async getSuggestions(query: string, limit: number = 5): Promise<SearchSuggestion[]> {
+  async getSuggestions(
+    query: string,
+    limit: number = 5
+  ): Promise<SearchSuggestion[]> {
     if (!query || query.length < 2) {
       return [];
     }
@@ -150,18 +150,18 @@ export class SearchService {
       take: 3,
     });
 
-const suggestions: SearchSuggestion[] = [
-    ...errorSuggestions.map((error: any) => ({
-      type: 'error' as const,
-      value: `${error.application.name}: ${error.code}`,
-      label: error.title,
-    })),
-    ...popularSearches.map((search: any) => ({
-      type: 'popular' as const,
-      value: search.normalizedQuery,
-      label: `Popular search: ${search.normalizedQuery}`,
-    })),
-  ];
+    const suggestions: SearchSuggestion[] = [
+      ...errorSuggestions.map((error: any) => ({
+        type: 'error' as const,
+        value: `${error.application.name}: ${error.code}`,
+        label: error.title,
+      })),
+      ...popularSearches.map((search: any) => ({
+        type: 'popular' as const,
+        value: search.normalizedQuery,
+        label: `Popular search: ${search.normalizedQuery}`,
+      })),
+    ];
 
     return suggestions.slice(0, limit);
   }
@@ -174,7 +174,12 @@ const suggestions: SearchSuggestion[] = [
     });
   }
 
-  async saveSearchHistory(userId: string, query: string, filters: SearchFilters, resultCount: number) {
+  async saveSearchHistory(
+    userId: string,
+    query: string,
+    filters: SearchFilters,
+    resultCount: number
+  ) {
     return await prisma.searchHistory.create({
       data: {
         userId,
@@ -220,11 +225,11 @@ const suggestions: SearchSuggestion[] = [
         resultCount: data.resultCount,
         searchDuration: data.searchDuration,
       };
-      
+
       if (data.userId !== undefined) {
         analyticsData.userId = data.userId;
       }
-      
+
       await prisma.searchAnalytics.create({
         data: analyticsData,
       });

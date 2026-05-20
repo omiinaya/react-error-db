@@ -35,7 +35,7 @@ i18n
     resources,
     fallbackLng: 'en',
     debug: process.env.NODE_ENV === 'development',
-    
+
     // Options for language detection
     detection: {
       order: ['localStorage', 'navigator'],

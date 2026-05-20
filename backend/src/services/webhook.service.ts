@@ -9,7 +9,12 @@ export interface WebhookEvent {
 }
 
 export class WebhookService {
-  async createWebhook(userId: string, url: string, events: string[], secret: string) {
+  async createWebhook(
+    userId: string,
+    url: string,
+    events: string[],
+    secret: string
+  ) {
     return await prisma.webhook.create({
       data: {
         userId,
@@ -29,7 +34,11 @@ export class WebhookService {
     });
   }
 
-  async updateWebhook(userId: string, webhookId: string, data: { url?: string; events?: string[]; isActive?: boolean }) {
+  async updateWebhook(
+    userId: string,
+    webhookId: string,
+    data: { url?: string; events?: string[]; isActive?: boolean }
+  ) {
     const webhook = await prisma.webhook.findFirst({
       where: { id: webhookId, userId },
     });
@@ -72,7 +81,7 @@ export class WebhookService {
         isActive: true,
       },
     });
-    
+
     const webhooks = allWebhooks.filter(webhook => {
       const events = webhook.events as string[];
       return Array.isArray(events) && events.includes(eventType);
@@ -89,14 +98,19 @@ export class WebhookService {
     }
   }
 
-  private async deliverWebhook(webhookId: string, url: string, secret: string, event: WebhookEvent) {
+  private async deliverWebhook(
+    webhookId: string,
+    url: string,
+    secret: string,
+    event: WebhookEvent
+  ) {
     const payload = JSON.stringify(event);
     const signature = this.generateSignature(payload, secret);
 
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000);
-      
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -108,13 +122,20 @@ export class WebhookService {
         body: payload,
         signal: controller.signal,
       });
-      
+
       clearTimeout(timeoutId);
 
       const success = response.ok;
       const responseBody = success ? await response.text() : null;
 
-      await this.logDelivery(webhookId, event.event, payload, response.status, responseBody, success);
+      await this.logDelivery(
+        webhookId,
+        event.event,
+        payload,
+        response.status,
+        responseBody,
+        success
+      );
 
       if (success) {
         await this.updateWebhookStatus(webhookId, new Date(), 'success', 0);
@@ -123,16 +144,21 @@ export class WebhookService {
       }
     } catch (error) {
       logger.error(`Webhook delivery failed for ${webhookId}:`, error);
-      await this.logDelivery(webhookId, event.event, payload, null, null, false, (error as Error).message);
+      await this.logDelivery(
+        webhookId,
+        event.event,
+        payload,
+        null,
+        null,
+        false,
+        (error as Error).message
+      );
       await this.handleDeliveryFailure(webhookId);
     }
   }
 
   private generateSignature(payload: string, secret: string): string {
-    return crypto
-      .createHmac('sha256', secret)
-      .update(payload)
-      .digest('hex');
+    return crypto.createHmac('sha256', secret).update(payload).digest('hex');
   }
 
   private async logDelivery(
@@ -161,7 +187,12 @@ export class WebhookService {
     }
   }
 
-  private async updateWebhookStatus(webhookId: string, deliveredAt: Date, status: string, failureCount: number) {
+  private async updateWebhookStatus(
+    webhookId: string,
+    deliveredAt: Date,
+    status: string,
+    failureCount: number
+  ) {
     await prisma.webhook.update({
       where: { id: webhookId },
       data: {
@@ -190,7 +221,9 @@ export class WebhookService {
           failureCount: newFailureCount,
         },
       });
-      logger.warn(`Webhook ${webhookId} disabled after ${newFailureCount} consecutive failures`);
+      logger.warn(
+        `Webhook ${webhookId} disabled after ${newFailureCount} consecutive failures`
+      );
     } else {
       await prisma.webhook.update({
         where: { id: webhookId },
@@ -201,7 +234,11 @@ export class WebhookService {
     }
   }
 
-  async getWebhookDeliveries(webhookId: string, userId: string, limit: number = 50) {
+  async getWebhookDeliveries(
+    webhookId: string,
+    userId: string,
+    limit: number = 50
+  ) {
     const webhook = await prisma.webhook.findFirst({
       where: { id: webhookId, userId },
     });

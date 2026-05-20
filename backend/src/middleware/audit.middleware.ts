@@ -14,16 +14,20 @@ export interface AuditLog {
   status: 'success' | 'failure';
 }
 
-export const auditMiddleware = (action: string, resource: string, getResourceId?: (req: Request) => string) => {
+export const auditMiddleware = (
+  action: string,
+  resource: string,
+  getResourceId?: (req: Request) => string
+) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const startTime = Date.now();
     const originalSend = res.send;
-    
+
     // Store response data for logging
     let responseBody: any;
-    
+
     // Override res.send to capture response
-    res.send = function(body: any): Response {
+    res.send = function (body: any): Response {
       responseBody = body;
       return originalSend.call(this, body);
     };
@@ -32,7 +36,7 @@ export const auditMiddleware = (action: string, resource: string, getResourceId?
       try {
         const authenticatedReq = req as AuthenticatedRequest;
         const userId = authenticatedReq.user?.id || 'anonymous';
-        
+
         const auditLog: AuditLog = {
           action,
           resource,
@@ -47,11 +51,18 @@ export const auditMiddleware = (action: string, resource: string, getResourceId?
             query: req.query,
             statusCode: res.statusCode,
             responseTime: Date.now() - startTime,
-            response: responseBody && typeof responseBody === 'object'
-              ? { success: responseBody.success, message: responseBody.message }
-              : undefined
+            response:
+              responseBody && typeof responseBody === 'object'
+                ? {
+                    success: responseBody.success,
+                    message: responseBody.message,
+                  }
+                : undefined,
           },
-          status: res.statusCode >= 200 && res.statusCode < 400 ? 'success' : 'failure'
+          status:
+            res.statusCode >= 200 && res.statusCode < 400
+              ? 'success'
+              : 'failure',
         };
 
         // Log to console
@@ -60,7 +71,7 @@ export const auditMiddleware = (action: string, resource: string, getResourceId?
           resource: auditLog.resource,
           userId: auditLog.userId,
           status: auditLog.status,
-          statusCode: res.statusCode
+          statusCode: res.statusCode,
         });
 
         // Store in database (optional - you might want to store only critical actions)
@@ -75,14 +86,13 @@ export const auditMiddleware = (action: string, resource: string, getResourceId?
                 userIp: auditLog.userIp,
                 userAgent: auditLog.userAgent,
                 details: auditLog.details,
-                status: auditLog.status
-              }
+                status: auditLog.status,
+              },
             });
           } catch (dbError) {
             logger.error('Failed to save audit log to database:', dbError);
           }
         }
-
       } catch (error) {
         logger.error('Error in audit middleware:', error);
       }
@@ -93,6 +103,10 @@ export const auditMiddleware = (action: string, resource: string, getResourceId?
 };
 
 // Helper function to create audit middleware for common admin actions
-export const adminAudit = (action: string, resource: string, getResourceId?: (req: Request) => string) => {
+export const adminAudit = (
+  action: string,
+  resource: string,
+  getResourceId?: (req: Request) => string
+) => {
   return auditMiddleware(`admin.${action}`, resource, getResourceId);
 };

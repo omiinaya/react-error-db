@@ -10,23 +10,23 @@ async function checkAllErrors() {
       include: {
         application: {
           include: {
-            category: true
-          }
+            category: true,
+          },
         },
         _count: {
           select: {
-            solutions: true
-          }
-        }
+            solutions: true,
+          },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: 'desc',
+      },
     });
 
     console.log(`Found ${errors.length} error records:`);
     console.log('='.repeat(80));
-    
+
     errors.forEach(error => {
       console.log(`ID: ${error.id}`);
       console.log(`Code: ${error.code}`);
@@ -39,7 +39,6 @@ async function checkAllErrors() {
       console.log(`Created: ${error.createdAt.toISOString()}`);
       console.log('='.repeat(80));
     });
-
   } catch (error) {
     console.error('Error checking database:', error);
   } finally {

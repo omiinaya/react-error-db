@@ -1,4 +1,11 @@
-import { validateEmail, validatePassword, validateUsername, validateErrorCode, validateSolutionText, sanitizeInput } from '../utils/validation';
+import {
+  validateEmail,
+  validatePassword,
+  validateUsername,
+  validateErrorCode,
+  validateSolutionText,
+  sanitizeInput,
+} from '../utils/validation';
 
 describe('Validation Utilities', () => {
   describe('validateEmail', () => {
@@ -63,7 +70,9 @@ describe('Validation Utilities', () => {
 
   describe('validateSolutionText', () => {
     it('should validate correct solution text', () => {
-      expect(validateSolutionText('This is a valid solution with enough characters.')).toBe(true);
+      expect(
+        validateSolutionText('This is a valid solution with enough characters.')
+      ).toBe(true);
       expect(validateSolutionText('x'.repeat(100))).toBe(true);
     });
 
@@ -75,9 +84,13 @@ describe('Validation Utilities', () => {
 
   describe('sanitizeInput', () => {
     it('should sanitize HTML special characters', () => {
-      expect(sanitizeInput('<script>alert("xss")</script>')).toBe('&lt;script&gt;alert(&quot;xss&quot;)&lt;&#x2F;script&gt;');
+      expect(sanitizeInput('<script>alert("xss")</script>')).toBe(
+        '&lt;script&gt;alert(&quot;xss&quot;)&lt;&#x2F;script&gt;'
+      );
       expect(sanitizeInput('Hello & World')).toBe('Hello &amp; World');
-      expect(sanitizeInput('A > B && C < D')).toBe('A &gt; B &amp;&amp; C &lt; D');
+      expect(sanitizeInput('A > B && C < D')).toBe(
+        'A &gt; B &amp;&amp; C &lt; D'
+      );
     });
 
     it('should handle empty or invalid input', () => {
@@ -88,7 +101,9 @@ describe('Validation Utilities', () => {
 
     it('should pass through normal text', () => {
       expect(sanitizeInput('Hello World')).toBe('Hello World');
-      expect(sanitizeInput('Simple text without special chars')).toBe('Simple text without special chars');
+      expect(sanitizeInput('Simple text without special chars')).toBe(
+        'Simple text without special chars'
+      );
     });
   });
 });

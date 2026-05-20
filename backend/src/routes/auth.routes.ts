@@ -1,8 +1,21 @@
 import { Router } from 'express';
-import { registerSchema, loginSchema, refreshTokenSchema } from '../schemas/auth.schemas';
+import {
+  registerSchema,
+  loginSchema,
+  refreshTokenSchema,
+} from '../schemas/auth.schemas';
 import { validateRequest } from '../middleware/validation.middleware';
-import { authenticateToken, AuthenticatedRequest } from '../middleware/auth.middleware';
-import { hashPassword, comparePassword, generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/auth.utils';
+import {
+  authenticateToken,
+  AuthenticatedRequest,
+} from '../middleware/auth.middleware';
+import {
+  hashPassword,
+  comparePassword,
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} from '../utils/auth.utils';
 import prisma from '../services/database.service';
 import { logger } from '../utils/logger';
 
@@ -16,11 +29,8 @@ router.post('/register', validateRequest(registerSchema), async (req, res) => {
     // Check if user already exists
     const existingUser = await prisma.user.findFirst({
       where: {
-        OR: [
-          { email },
-          { username }
-        ]
-      }
+        OR: [{ email }, { username }],
+      },
     });
 
     if (existingUser) {
@@ -28,8 +38,11 @@ router.post('/register', validateRequest(registerSchema), async (req, res) => {
         success: false,
         error: {
           code: 'USER_EXISTS',
-          message: existingUser.email === email ? 'Email already registered' : 'Username already taken'
-        }
+          message:
+            existingUser.email === email
+              ? 'Email already registered'
+              : 'Username already taken',
+        },
       });
     }
 
@@ -50,8 +63,8 @@ router.post('/register', validateRequest(registerSchema), async (req, res) => {
         username: true,
         displayName: true,
         isVerified: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
 
     // Generate tokens
@@ -66,7 +79,7 @@ router.post('/register', validateRequest(registerSchema), async (req, res) => {
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
         userAgent: req.get('User-Agent') || null,
         ipAddress: req.ip || null,
-      }
+      },
     });
 
     return res.status(201).json({
@@ -74,8 +87,8 @@ router.post('/register', validateRequest(registerSchema), async (req, res) => {
       data: {
         user,
         token: accessToken,
-        refreshToken
-      }
+        refreshToken,
+      },
     });
   } catch (error) {
     logger.error('Registration error:', error);
@@ -83,8 +96,8 @@ router.post('/register', validateRequest(registerSchema), async (req, res) => {
       success: false,
       error: {
         code: 'REGISTRATION_FAILED',
-        message: 'Failed to create user account'
-      }
+        message: 'Failed to create user account',
+      },
     });
   }
 });
@@ -104,8 +117,8 @@ router.post('/login', validateRequest(loginSchema), async (req, res) => {
         displayName: true,
         passwordHash: true,
         isVerified: true,
-        isAdmin: true
-      }
+        isAdmin: true,
+      },
     });
 
     if (!user) {
@@ -113,8 +126,8 @@ router.post('/login', validateRequest(loginSchema), async (req, res) => {
         success: false,
         error: {
           code: 'INVALID_CREDENTIALS',
-          message: 'Invalid email or password'
-        }
+          message: 'Invalid email or password',
+        },
       });
     }
 
@@ -125,8 +138,8 @@ router.post('/login', validateRequest(loginSchema), async (req, res) => {
         success: false,
         error: {
           code: 'INVALID_CREDENTIALS',
-          message: 'Invalid email or password'
-        }
+          message: 'Invalid email or password',
+        },
       });
     }
 
@@ -142,7 +155,7 @@ router.post('/login', validateRequest(loginSchema), async (req, res) => {
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
         userAgent: req.get('User-Agent') || null,
         ipAddress: req.ip || null,
-      }
+      },
     });
 
     // Remove password hash from response
@@ -153,8 +166,8 @@ router.post('/login', validateRequest(loginSchema), async (req, res) => {
       data: {
         user: userWithoutPassword,
         token: accessToken,
-        refreshToken
-      }
+        refreshToken,
+      },
     });
   } catch (error) {
     logger.error('Login error:', error);
@@ -162,70 +175,77 @@ router.post('/login', validateRequest(loginSchema), async (req, res) => {
       success: false,
       error: {
         code: 'LOGIN_FAILED',
-        message: 'Failed to login'
-      }
+        message: 'Failed to login',
+      },
     });
   }
 });
 
 // Refresh token
-router.post('/refresh', validateRequest(refreshTokenSchema), async (req, res) => {
-  try {
-    const { refreshToken } = req.body;
+router.post(
+  '/refresh',
+  validateRequest(refreshTokenSchema),
+  async (req, res) => {
+    try {
+      const { refreshToken } = req.body;
 
-    // Verify refresh token
-    const decoded = verifyRefreshToken(refreshToken);
+      // Verify refresh token
+      const decoded = verifyRefreshToken(refreshToken);
 
-    // Check if refresh token exists in database and is valid
-    const session = await prisma.userSession.findFirst({
-      where: {
-        token: refreshToken,
-        userId: decoded.userId,
-        expiresAt: { gt: new Date() }
+      // Check if refresh token exists in database and is valid
+      const session = await prisma.userSession.findFirst({
+        where: {
+          token: refreshToken,
+          userId: decoded.userId,
+          expiresAt: { gt: new Date() },
+        },
+      });
+
+      if (!session) {
+        return res.status(401).json({
+          success: false,
+          error: {
+            code: 'INVALID_REFRESH_TOKEN',
+            message: 'Invalid or expired refresh token',
+          },
+        });
       }
-    });
 
-    if (!session) {
+      // Generate new tokens
+      const newAccessToken = generateAccessToken(decoded.userId, decoded.email);
+      const newRefreshToken = generateRefreshToken(
+        decoded.userId,
+        decoded.email
+      );
+
+      // Update session with new refresh token
+      await prisma.userSession.update({
+        where: { id: session.id },
+        data: {
+          token: newRefreshToken,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        },
+      });
+
+      return res.json({
+        success: true,
+        data: {
+          token: newAccessToken,
+          refreshToken: newRefreshToken,
+        },
+      });
+    } catch (error) {
+      logger.error('Refresh token error:', error);
       return res.status(401).json({
         success: false,
         error: {
           code: 'INVALID_REFRESH_TOKEN',
-          message: 'Invalid or expired refresh token'
-        }
+          message: 'Invalid refresh token',
+        },
       });
     }
-
-    // Generate new tokens
-    const newAccessToken = generateAccessToken(decoded.userId, decoded.email);
-    const newRefreshToken = generateRefreshToken(decoded.userId, decoded.email);
-
-    // Update session with new refresh token
-    await prisma.userSession.update({
-      where: { id: session.id },
-      data: {
-        token: newRefreshToken,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      }
-    });
-
-    return res.json({
-      success: true,
-      data: {
-        token: newAccessToken,
-        refreshToken: newRefreshToken
-      }
-    });
-  } catch (error) {
-    logger.error('Refresh token error:', error);
-    return res.status(401).json({
-      success: false,
-      error: {
-        code: 'INVALID_REFRESH_TOKEN',
-        message: 'Invalid refresh token'
-      }
-    });
   }
-});
+);
 
 // Get current user
 router.get('/me', authenticateToken, async (req: AuthenticatedRequest, res) => {
@@ -241,13 +261,13 @@ router.get('/me', authenticateToken, async (req: AuthenticatedRequest, res) => {
         isVerified: true,
         isAdmin: true,
         createdAt: true,
-        updatedAt: true
-      }
+        updatedAt: true,
+      },
     });
 
     return res.json({
       success: true,
-      data: { user }
+      data: { user },
     });
   } catch (error) {
     logger.error('Get current user error:', error);
@@ -255,42 +275,46 @@ router.get('/me', authenticateToken, async (req: AuthenticatedRequest, res) => {
       success: false,
       error: {
         code: 'SERVER_ERROR',
-        message: 'Failed to get user information'
-      }
+        message: 'Failed to get user information',
+      },
     });
   }
 });
 
 // Logout user
-router.post('/logout', authenticateToken, async (req: AuthenticatedRequest, res) => {
-  try {
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(' ')[1];
+router.post(
+  '/logout',
+  authenticateToken,
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      const token = authHeader && authHeader.split(' ')[1];
 
-    if (token) {
-      // Invalidate the refresh token
-      await prisma.userSession.deleteMany({
-        where: {
-          userId: req.user!.id,
-          token: token
-        }
+      if (token) {
+        // Invalidate the refresh token
+        await prisma.userSession.deleteMany({
+          where: {
+            userId: req.user!.id,
+            token: token,
+          },
+        });
+      }
+
+      return res.json({
+        success: true,
+        message: 'Logged out successfully',
+      });
+    } catch (error) {
+      logger.error('Logout error:', error);
+      return res.status(500).json({
+        success: false,
+        error: {
+          code: 'LOGOUT_FAILED',
+          message: 'Failed to logout',
+        },
       });
     }
-
-    return res.json({
-      success: true,
-      message: 'Logged out successfully'
-    });
-  } catch (error) {
-    logger.error('Logout error:', error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'LOGOUT_FAILED',
-        message: 'Failed to logout'
-      }
-    });
   }
-});
+);
 
 export default router;

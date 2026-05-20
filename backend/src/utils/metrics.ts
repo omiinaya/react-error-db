@@ -97,22 +97,26 @@ register.registerMetric(cacheHitsTotal);
 register.registerMetric(cacheMissesTotal);
 
 // Middleware to track HTTP requests
-export const metricsMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const metricsMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const start = Date.now();
-  
+
   res.on('finish', () => {
     const duration = (Date.now() - start) / 1000;
     const route = req.route?.path || req.path;
-    
+
     httpRequestDuration
       .labels(req.method, route, res.statusCode.toString())
       .observe(duration);
-    
+
     httpRequestsTotal
       .labels(req.method, route, res.statusCode.toString())
       .inc();
   });
-  
+
   next();
 };
 
@@ -123,10 +127,8 @@ export const trackDatabaseQuery = (
   duration: number,
   success: boolean = true
 ) => {
-  databaseQueryDuration
-    .labels(operation, model)
-    .observe(duration);
-  
+  databaseQueryDuration.labels(operation, model).observe(duration);
+
   databaseQueriesTotal
     .labels(operation, model, success ? 'success' : 'error')
     .inc();

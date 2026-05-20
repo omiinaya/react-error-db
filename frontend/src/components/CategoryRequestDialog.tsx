@@ -12,20 +12,25 @@ interface CategoryRequestDialogProps {
   onClose: () => void;
 }
 
-const CategoryRequestDialog: React.FC<CategoryRequestDialogProps> = ({ onRequestCreated, onClose }) => {
+const CategoryRequestDialog: React.FC<CategoryRequestDialogProps> = ({
+  onRequestCreated,
+  onClose,
+}) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<CreateCategoryRequestInput>({
     name: '',
     slug: '',
-    description: ''
+    description: '',
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -41,19 +46,19 @@ const CategoryRequestDialog: React.FC<CategoryRequestDialogProps> = ({ onRequest
     setFormData(prev => ({
       ...prev,
       name,
-      slug: prev.slug || generateSlug(name)
+      slug: prev.slug || generateSlug(name),
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (!formData.name.trim()) {
       toast({
         title: 'Validation Error',
         description: 'Category name is required',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -62,7 +67,7 @@ const CategoryRequestDialog: React.FC<CategoryRequestDialogProps> = ({ onRequest
       toast({
         title: 'Validation Error',
         description: 'Category slug is required',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -73,13 +78,16 @@ const CategoryRequestDialog: React.FC<CategoryRequestDialogProps> = ({ onRequest
       onRequestCreated(response.categoryRequest);
       toast({
         title: 'Success',
-        description: 'Category request submitted successfully. It will be reviewed by an administrator.',
+        description:
+          'Category request submitted successfully. It will be reviewed by an administrator.',
       });
     } catch (error: any) {
       toast({
         title: 'Error',
-        description: error.response?.data?.error?.message || 'Failed to submit category request',
-        variant: 'destructive'
+        description:
+          error.response?.data?.error?.message ||
+          'Failed to submit category request',
+        variant: 'destructive',
       });
     } finally {
       setIsSubmitting(false);
@@ -129,7 +137,6 @@ const CategoryRequestDialog: React.FC<CategoryRequestDialogProps> = ({ onRequest
           rows={3}
         />
       </div>
-
 
       <div className="flex justify-end gap-3 pt-4">
         <Button type="button" variant="outline" onClick={onClose}>

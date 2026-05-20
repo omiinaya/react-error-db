@@ -2,16 +2,22 @@ import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  Users, 
-  FileText, 
-  Database, 
-  AlertTriangle, 
-  Activity, 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  Users,
+  FileText,
+  Database,
+  AlertTriangle,
+  Activity,
   Shield,
   Settings,
-  ChevronLeft
+  ChevronLeft,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -47,40 +53,39 @@ const AdminPanel: React.FC = () => {
       title: 'Dashboard',
       href: '/admin/dashboard',
       icon: Activity,
-      description: 'Overview of system statistics and metrics'
+      description: 'Overview of system statistics and metrics',
     },
     {
       title: 'User Management',
       href: '/admin/users',
       icon: Users,
-      description: 'Manage user accounts and permissions'
+      description: 'Manage user accounts and permissions',
     },
     {
       title: 'Content Moderation',
       href: '/admin/content',
       icon: FileText,
-      description: 'Review and moderate user-generated content'
+      description: 'Review and moderate user-generated content',
     },
     {
       title: 'Application Management',
       href: '/admin/applications',
       icon: Database,
-      description: 'Manage applications and categories'
+      description: 'Manage applications and categories',
     },
     {
       title: 'Category Management',
       href: '/admin/categories',
       icon: AlertTriangle,
-      description: 'Manage error categories and taxonomy'
+      description: 'Manage error categories and taxonomy',
     },
     {
       title: 'System Logs',
       href: '/admin/logs',
       icon: Shield,
-      description: 'View system logs and audit trails'
-    }
+      description: 'View system logs and audit trails',
+    },
   ];
-
 
   return (
     <div className="min-h-screen bg-muted/40">
@@ -89,7 +94,11 @@ const AdminPanel: React.FC = () => {
         <div className="mb-6">
           <div className="flex items-center gap-4 mb-2">
             <Link to="/">
-              <Button variant="ghost" size="sm" className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center gap-2"
+              >
                 <ChevronLeft className="h-4 w-4" />
                 Back to Main Site
               </Button>
@@ -112,10 +121,10 @@ const AdminPanel: React.FC = () => {
               <CardTitle className="text-lg">Admin Menu</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {adminMenuItems.map((item) => {
+              {adminMenuItems.map(item => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.href;
-                
+
                 return (
                   <Link
                     key={item.title}
@@ -141,12 +150,13 @@ const AdminPanel: React.FC = () => {
                 <CardHeader>
                   <CardTitle>Welcome to Admin Panel</CardTitle>
                   <CardDescription>
-                    Select a section from the menu to manage different aspects of the system
+                    Select a section from the menu to manage different aspects
+                    of the system
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-4 md:grid-cols-2">
-                    {adminMenuItems.map((item) => {
+                    {adminMenuItems.map(item => {
                       const Icon = item.icon;
                       return (
                         <Link
@@ -171,11 +181,17 @@ const AdminPanel: React.FC = () => {
               </Card>
             ) : (
               <Routes>
-                <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
+                <Route
+                  path="/"
+                  element={<Navigate to="/admin/dashboard" replace />}
+                />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/users" element={<UserManagement />} />
                 <Route path="/content" element={<ContentModeration />} />
-                <Route path="/applications" element={<ApplicationManagement />} />
+                <Route
+                  path="/applications"
+                  element={<ApplicationManagement />}
+                />
                 <Route path="/categories" element={<CategoryManagement />} />
                 <Route path="/logs" element={<SystemLogs />} />
               </Routes>

@@ -1,12 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { CheckCircle, XCircle, Trash2, FileText, User, AlertTriangle } from 'lucide-react';
+import {
+  CheckCircle,
+  XCircle,
+  Trash2,
+  FileText,
+  User,
+  AlertTriangle,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface SolutionForModeration {
@@ -62,7 +81,7 @@ const ContentModeration: React.FC = () => {
     page: 1,
     limit: 20,
     total: 0,
-    pages: 0
+    pages: 0,
   });
   const { t } = useTranslation();
 
@@ -77,20 +96,25 @@ const ContentModeration: React.FC = () => {
       const params: any = {
         page: pagination.page,
         limit: pagination.limit,
-        status
+        status,
       };
 
-      const response = await api.request<{ solutions: SolutionForModeration[]; pagination: PaginationMeta }>({
+      const response = await api.request<{
+        solutions: SolutionForModeration[];
+        pagination: PaginationMeta;
+      }>({
         method: 'get',
         url: '/admin/solutions/moderation',
-        params
+        params,
       });
 
       setSolutions(response.solutions);
       setPagination(response.pagination);
       setSelectedSolutions([]);
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Failed to fetch solutions');
+      setError(
+        err.response?.data?.error?.message || 'Failed to fetch solutions'
+      );
     } finally {
       setLoading(false);
     }
@@ -105,14 +129,16 @@ const ContentModeration: React.FC = () => {
         url: '/admin/solutions/bulk-moderation',
         data: {
           solutionIds: selectedSolutions,
-          action
-        }
+          action,
+        },
       });
 
       // Refresh the solutions list
       fetchSolutions();
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || `Failed to ${action} solutions`);
+      setError(
+        err.response?.data?.error?.message || `Failed to ${action} solutions`
+      );
     }
   };
 
@@ -123,7 +149,6 @@ const ContentModeration: React.FC = () => {
         : [...prev, solutionId]
     );
   };
-
 
   if (!user?.isAdmin) {
     return (
@@ -143,7 +168,9 @@ const ContentModeration: React.FC = () => {
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Content Moderation</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Content Moderation
+        </h1>
         <p className="text-muted-foreground">
           Review and manage user-submitted solutions
         </p>
@@ -233,16 +260,22 @@ const ContentModeration: React.FC = () => {
               <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
               <h3 className="mt-4 text-lg font-semibold">No solutions found</h3>
               <p className="text-muted-foreground">
-                {status === 'pending' 
-                  ? 'No solutions pending review' 
-                  : `No ${status} solutions found`
-                }
+                {status === 'pending'
+                  ? 'No solutions pending review'
+                  : `No ${status} solutions found`}
               </p>
             </div>
           ) : (
             <div className="space-y-4">
-              {solutions.map((solution) => (
-                <Card key={solution.id} className={selectedSolutions.includes(solution.id) ? 'border-primary' : ''}>
+              {solutions.map(solution => (
+                <Card
+                  key={solution.id}
+                  className={
+                    selectedSolutions.includes(solution.id)
+                      ? 'border-primary'
+                      : ''
+                  }
+                >
                   <CardContent className="pt-6">
                     <div className="flex items-start gap-4">
                       <input
@@ -262,13 +295,22 @@ const ContentModeration: React.FC = () => {
                           ) : (
                             <User className="h-6 w-6 text-muted-foreground" />
                           )}
-                          <span className="font-medium">{solution.author.displayName}</span>
-                          <span className="text-muted-foreground">•</span>
-                          <span className="text-sm text-muted-foreground">
-                            {t('errors:detail.lastEdited')}: {new Date(solution.lastEditedAt || solution.createdAt).toLocaleDateString()}
+                          <span className="font-medium">
+                            {solution.author.displayName}
                           </span>
                           <span className="text-muted-foreground">•</span>
-                          <Badge variant={solution.isVerified ? "default" : "secondary"}>
+                          <span className="text-sm text-muted-foreground">
+                            {t('errors:detail.lastEdited')}:{' '}
+                            {new Date(
+                              solution.lastEditedAt || solution.createdAt
+                            ).toLocaleDateString()}
+                          </span>
+                          <span className="text-muted-foreground">•</span>
+                          <Badge
+                            variant={
+                              solution.isVerified ? 'default' : 'secondary'
+                            }
+                          >
                             {solution.isVerified ? 'Verified' : 'Pending'}
                           </Badge>
                         </div>
@@ -277,14 +319,21 @@ const ContentModeration: React.FC = () => {
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <AlertTriangle className="h-4 w-4" />
                             <span>
-                              {solution.error.application.name} - {solution.error.code}: {solution.error.title}
+                              {solution.error.application.name} -{' '}
+                              {solution.error.code}: {solution.error.title}
                             </span>
                             {solution.error.application.category ? (
-                              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                              <Badge
+                                variant="outline"
+                                className="bg-blue-50 text-blue-700 border-blue-200 text-xs"
+                              >
                                 {solution.error.application.category.name}
                               </Badge>
                             ) : (
-                              <Badge variant="outline" className="bg-gray-50 text-gray-500 border-gray-200 text-xs">
+                              <Badge
+                                variant="outline"
+                                className="bg-gray-50 text-gray-500 border-gray-200 text-xs"
+                              >
                                 No Category
                               </Badge>
                             )}
@@ -334,15 +383,17 @@ const ContentModeration: React.FC = () => {
           {pagination.pages > 1 && (
             <div className="flex items-center justify-between mt-6">
               <div className="text-sm text-muted-foreground">
-                Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
-                {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
-                {pagination.total} solutions
+                Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
+                {Math.min(pagination.page * pagination.limit, pagination.total)}{' '}
+                of {pagination.total} solutions
               </div>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                  onClick={() =>
+                    setPagination(prev => ({ ...prev, page: prev.page - 1 }))
+                  }
                   disabled={pagination.page === 1}
                 >
                   Previous
@@ -350,7 +401,9 @@ const ContentModeration: React.FC = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                  onClick={() =>
+                    setPagination(prev => ({ ...prev, page: prev.page + 1 }))
+                  }
                   disabled={pagination.page === pagination.pages}
                 >
                   Next

@@ -12,7 +12,10 @@ const searchSchema = z.object({
   applicationId: z.string().uuid().optional(),
   categoryId: z.string().uuid().optional(),
   severity: z.enum(['low', 'medium', 'high', 'critical']).optional(),
-  hasSolutions: z.enum(['true', 'false']).transform(val => val === 'true').optional(),
+  hasSolutions: z
+    .enum(['true', 'false'])
+    .transform(val => val === 'true')
+    .optional(),
   sortBy: z.enum(['relevance', 'newest', 'popular', 'solutions']).optional(),
   page: z.string().transform(Number).optional(),
   limit: z.string().transform(Number).optional(),
@@ -23,15 +26,19 @@ router.get('/', validateQuery(searchSchema), async (req, res, next) => {
     const { query, ...filters } = req.query as any;
     const userId = req.user?.id;
 
-    const results = await searchService.search(query, {
-      applicationId: filters.applicationId,
-      categoryId: filters.categoryId,
-      severity: filters.severity,
-      hasSolutions: filters.hasSolutions,
-      sortBy: filters.sortBy,
-      page: filters.page || 1,
-      limit: filters.limit || 20,
-    }, userId);
+    const results = await searchService.search(
+      query,
+      {
+        applicationId: filters.applicationId,
+        categoryId: filters.categoryId,
+        severity: filters.severity,
+        hasSolutions: filters.hasSolutions,
+        sortBy: filters.sortBy,
+        page: filters.page || 1,
+        limit: filters.limit || 20,
+      },
+      userId
+    );
 
     res.json({
       success: true,
@@ -46,7 +53,7 @@ router.get('/', validateQuery(searchSchema), async (req, res, next) => {
 router.get('/suggestions', async (req, res, next) => {
   try {
     const { query, limit } = req.query;
-    
+
     if (!query || typeof query !== 'string' || query.length < 2) {
       return res.json({
         success: true,
@@ -73,7 +80,7 @@ router.get('/history', authenticateToken, async (req, res, next) => {
   try {
     const userId = req.user!.id;
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
-    
+
     const history = await searchService.getSearchHistory(userId, limit);
 
     res.json({
@@ -90,14 +97,14 @@ router.delete('/history/:id', authenticateToken, async (req, res, next) => {
   try {
     const userId = req.user!.id;
     const searchId = req.params.id;
-    
+
     if (!searchId) {
       return res.status(400).json({
         success: false,
         message: 'Search history ID is required',
       });
     }
-    
+
     await searchService.deleteSearchHistory(userId, searchId);
 
     return res.json({
@@ -113,7 +120,7 @@ router.delete('/history/:id', authenticateToken, async (req, res, next) => {
 router.delete('/history', authenticateToken, async (req, res, next) => {
   try {
     const userId = req.user!.id;
-    
+
     await searchService.clearSearchHistory(userId);
 
     res.json({

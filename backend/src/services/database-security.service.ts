@@ -22,7 +22,7 @@ export class DatabaseSecurityService {
     await this.enableRowLevelSecurity();
     await this.configureAuditLogging();
     await this.setupAutomaticMaintenance();
-    
+
     logger.info('Database security monitoring initialized');
   }
 
@@ -56,10 +56,10 @@ export class DatabaseSecurityService {
     const tablesWithRLS = [
       'users',
       'applications',
-      'error_codes', 
+      'error_codes',
       'solutions',
       'votes',
-      'user_sessions'
+      'user_sessions',
     ];
 
     try {
@@ -68,7 +68,7 @@ export class DatabaseSecurityService {
           ALTER TABLE ${table} ENABLE ROW LEVEL SECURITY;
         `;
       }
-      
+
       logger.debug('Row Level Security enabled on sensitive tables');
     } catch (error) {
       logger.warn('Failed to enable Row Level Security:', error);
@@ -204,8 +204,11 @@ export class DatabaseSecurityService {
       `;
 
       if (Array.isArray(suspiciousActivity) && suspiciousActivity.length > 0) {
-        logger.warn('Suspicious database activity detected:', suspiciousActivity);
-        
+        logger.warn(
+          'Suspicious database activity detected:',
+          suspiciousActivity
+        );
+
         // TODO: Send alert to security team
         // await this.sendSecurityAlert(suspiciousActivity);
       }
@@ -238,7 +241,8 @@ export class DatabaseSecurityService {
         AND tablename IN ('users', 'applications', 'error_codes', 'solutions')
       `;
 
-      checks.rls_enabled = Array.isArray(rlsStatus) && 
+      checks.rls_enabled =
+        Array.isArray(rlsStatus) &&
         rlsStatus.every((table: any) => table.rowsecurity);
 
       // Check audit table exists
@@ -249,19 +253,22 @@ export class DatabaseSecurityService {
           AND table_name = 'audit_logs'
         );
       `;
-      checks.audit_logging = Array.isArray(auditTableExists) && 
-        auditTableExists[0]?.exists === true;
+      checks.audit_logging =
+        Array.isArray(auditTableExists) && auditTableExists[0]?.exists === true;
 
       // Check connection limits
       const connectionStats = await this.getDatabaseStats();
-      checks.connection_limits = connectionStats && 
-        parseInt(connectionStats.active_connections) < parseInt(connectionStats.max_connections) * 0.8;
+      checks.connection_limits =
+        connectionStats &&
+        parseInt(connectionStats.active_connections) <
+          parseInt(connectionStats.max_connections) * 0.8;
 
       // Check SSL connection
       const sslStatus = await this.prisma.$queryRaw`
         SELECT ssl FROM pg_stat_ssl WHERE pid = pg_backend_pid();
       `;
-      checks.ssl_enabled = Array.isArray(sslStatus) && sslStatus.length > 0 && sslStatus[0]?.ssl;
+      checks.ssl_enabled =
+        Array.isArray(sslStatus) && sslStatus.length > 0 && sslStatus[0]?.ssl;
 
       // Check for common vulnerabilities
       await this.checkCommonVulnerabilities(checks.vulnerabilities);
@@ -276,7 +283,9 @@ export class DatabaseSecurityService {
   /**
    * Check for common database vulnerabilities
    */
-  private async checkCommonVulnerabilities(vulnerabilities: string[]): Promise<void> {
+  private async checkCommonVulnerabilities(
+    vulnerabilities: string[]
+  ): Promise<void> {
     try {
       // Check for default passwords
       const defaultUsers = await this.prisma.$queryRaw`
@@ -302,7 +311,6 @@ export class DatabaseSecurityService {
       if (Array.isArray(weakPasswords) && weakPasswords.length > 0) {
         vulnerabilities.push('Weak password encryption detected');
       }
-
     } catch (error) {
       logger.warn('Failed to check for vulnerabilities:', error);
     }
@@ -336,7 +344,9 @@ export class DatabaseSecurityService {
 // Singleton instance
 let databaseSecurityService: DatabaseSecurityService;
 
-export const getDatabaseSecurityService = (prisma: PrismaClient): DatabaseSecurityService => {
+export const getDatabaseSecurityService = (
+  prisma: PrismaClient
+): DatabaseSecurityService => {
   if (!databaseSecurityService) {
     databaseSecurityService = new DatabaseSecurityService(prisma);
   }

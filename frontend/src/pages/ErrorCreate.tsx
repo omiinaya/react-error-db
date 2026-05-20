@@ -2,9 +2,21 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuthStore } from '@/store/authStore';
 import { api } from '@/services/api';
@@ -23,39 +35,41 @@ const ErrorCreate: React.FC = () => {
     title: '',
     description: '',
     severity: 'medium',
-    metadata: {}
+    metadata: {},
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSeverityChange = (value: string) => {
     setFormData(prev => ({
       ...prev,
-      severity: value as 'low' | 'medium' | 'high' | 'critical'
+      severity: value as 'low' | 'medium' | 'high' | 'critical',
     }));
   };
 
   const handleApplicationSelect = (applicationId: string) => {
     setFormData(prev => ({
       ...prev,
-      applicationId
+      applicationId,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) {
       toast({
         title: 'Authentication required',
         description: 'Please log in to create error codes',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       navigate('/login');
       return;
@@ -65,7 +79,7 @@ const ErrorCreate: React.FC = () => {
       toast({
         title: 'Application required',
         description: 'Please select an application',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -75,14 +89,15 @@ const ErrorCreate: React.FC = () => {
       await api.createErrorCode(formData);
       toast({
         title: 'Success',
-        description: 'Error code created successfully'
+        description: 'Error code created successfully',
       });
       navigate('/');
     } catch (error: any) {
       toast({
         title: 'Error',
-        description: error.response?.data?.error?.message || 'Failed to create error code',
-        variant: 'destructive'
+        description:
+          error.response?.data?.error?.message || 'Failed to create error code',
+        variant: 'destructive',
       });
     } finally {
       setIsSubmitting(false);
@@ -165,7 +180,9 @@ const ErrorCreate: React.FC = () => {
               <Label htmlFor="description">Description</Label>
               <MarkdownEditor
                 value={formData.description || ''}
-                onChange={(value) => setFormData(prev => ({ ...prev, description: value }))}
+                onChange={value =>
+                  setFormData(prev => ({ ...prev, description: value }))
+                }
                 placeholder="Describe the error, common causes, and any additional context..."
                 height={300}
                 maxLength={5000}
@@ -177,7 +194,10 @@ const ErrorCreate: React.FC = () => {
             {/* Severity */}
             <div className="space-y-2">
               <Label htmlFor="severity">Severity</Label>
-              <Select value={formData.severity} onValueChange={handleSeverityChange}>
+              <Select
+                value={formData.severity}
+                onValueChange={handleSeverityChange}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select severity" />
                 </SelectTrigger>
@@ -194,7 +214,11 @@ const ErrorCreate: React.FC = () => {
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? 'Creating...' : 'Create Error Code'}
               </Button>
-              <Button type="button" variant="outline" onClick={() => navigate(-1)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate(-1)}
+              >
                 Cancel
               </Button>
             </div>

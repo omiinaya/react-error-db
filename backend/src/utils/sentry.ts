@@ -18,7 +18,7 @@ export const initSentry = () => {
     dsn: config.sentry.dsn,
     environment: config.sentry.environment,
     release: `error-database@${process.env.npm_package_version || '1.0.0'}`,
-    
+
     // Performance monitoring
     integrations: [
       nodeProfilingIntegration(),
@@ -45,7 +45,10 @@ export const initSentry = () => {
 };
 
 // Capture exceptions
-export const captureException = (error: Error, context?: Record<string, any>) => {
+export const captureException = (
+  error: Error,
+  context?: Record<string, any>
+) => {
   if (context) {
     Sentry.withScope((scope: any) => {
       Object.entries(context).forEach(([key, value]) => {
@@ -59,7 +62,10 @@ export const captureException = (error: Error, context?: Record<string, any>) =>
 };
 
 // Capture messages
-export const captureMessage = (message: string, level: Sentry.SeverityLevel = 'info') => {
+export const captureMessage = (
+  message: string,
+  level: Sentry.SeverityLevel = 'info'
+) => {
   Sentry.captureMessage(message, level);
 };
 
@@ -154,11 +160,11 @@ export const monitorFunction = <T extends (...args: any[]) => any>(
       const result = fn(...args);
       if (result instanceof Promise) {
         return result
-          .then((res) => {
+          .then(res => {
             transaction.finish();
             return res;
           })
-          .catch((error) => {
+          .catch(error => {
             transaction.setStatus('internal_error');
             transaction.finish();
             captureException(error, { function: name });

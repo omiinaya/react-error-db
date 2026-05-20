@@ -1,7 +1,18 @@
 import { Router } from 'express';
-import { categoryQuerySchema, createCategorySchema, updateCategorySchema } from '../schemas/category.schemas';
-import { validateRequest, validateQuery } from '../middleware/validation.middleware';
-import { authenticateToken, AuthenticatedRequest, requireAdmin } from '../middleware/auth.middleware';
+import {
+  categoryQuerySchema,
+  createCategorySchema,
+  updateCategorySchema,
+} from '../schemas/category.schemas';
+import {
+  validateRequest,
+  validateQuery,
+} from '../middleware/validation.middleware';
+import {
+  authenticateToken,
+  AuthenticatedRequest,
+  requireAdmin,
+} from '../middleware/auth.middleware';
 import prisma from '../services/database.service';
 import { logger } from '../utils/logger';
 
@@ -35,10 +46,7 @@ router.get('/', validateQuery(categoryQuerySchema), async (req, res) => {
     // Get categories with optional children inclusion
     const findManyOptions: any = {
       where,
-      orderBy: [
-        { sortOrder: 'asc' },
-        { name: 'asc' }
-      ],
+      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
       skip: (page - 1) * limit,
       take: limit,
     };
@@ -54,8 +62,8 @@ router.get('/', validateQuery(categoryQuerySchema), async (req, res) => {
             icon: true,
             sortOrder: true,
           },
-          orderBy: { sortOrder: 'asc' }
-        }
+          orderBy: { sortOrder: 'asc' },
+        },
       };
     }
 
@@ -71,9 +79,9 @@ router.get('/', validateQuery(categoryQuerySchema), async (req, res) => {
       },
       where: {
         categoryId: {
-          in: categories.map((cat: any) => cat.id)
-        }
-      }
+          in: categories.map((cat: any) => cat.id),
+        },
+      },
     });
 
     // Create a map of categoryId to application count
@@ -86,7 +94,7 @@ router.get('/', validateQuery(categoryQuerySchema), async (req, res) => {
     const categoriesWithCounts = categories.map((category: any) => {
       const baseCategory = {
         ...category,
-        applicationCount: applicationCountMap.get(category.id) || 0
+        applicationCount: applicationCountMap.get(category.id) || 0,
       };
 
       if (includeChildren && category.children) {
@@ -94,8 +102,8 @@ router.get('/', validateQuery(categoryQuerySchema), async (req, res) => {
           ...baseCategory,
           children: category.children.map((child: any) => ({
             ...child,
-            applicationCount: applicationCountMap.get(child.id) || 0
-          }))
+            applicationCount: applicationCountMap.get(child.id) || 0,
+          })),
         };
       }
 
@@ -115,8 +123,8 @@ router.get('/', validateQuery(categoryQuerySchema), async (req, res) => {
           limit,
           total,
           pages: totalPages,
-        }
-      }
+        },
+      },
     });
   } catch (error) {
     logger.error('Get categories error:', error);
@@ -124,8 +132,8 @@ router.get('/', validateQuery(categoryQuerySchema), async (req, res) => {
       success: false,
       error: {
         code: 'SERVER_ERROR',
-        message: 'Failed to fetch categories'
-      }
+        message: 'Failed to fetch categories',
+      },
     });
   }
 });
@@ -143,7 +151,7 @@ router.get('/:id', async (req, res) => {
             id: true,
             name: true,
             slug: true,
-          }
+          },
         },
         children: {
           select: {
@@ -154,9 +162,9 @@ router.get('/:id', async (req, res) => {
             icon: true,
             sortOrder: true,
           },
-          orderBy: { sortOrder: 'asc' }
-        }
-      }
+          orderBy: { sortOrder: 'asc' },
+        },
+      },
     });
 
     if (!category) {
@@ -164,26 +172,26 @@ router.get('/:id', async (req, res) => {
         success: false,
         error: {
           code: 'NOT_FOUND',
-          message: 'Category not found'
-        }
+          message: 'Category not found',
+        },
       });
     }
 
     // Get application count
     const applicationCount = await prisma.application.count({
-      where: { categoryId: category.id }
+      where: { categoryId: category.id },
     });
 
     const categoryWithCount = {
       ...category,
-      applicationCount
+      applicationCount,
     };
 
     return res.json({
       success: true,
       data: {
-        category: categoryWithCount
-      }
+        category: categoryWithCount,
+      },
     });
   } catch (error) {
     logger.error('Get category by ID error:', error);
@@ -191,149 +199,46 @@ router.get('/:id', async (req, res) => {
       success: false,
       error: {
         code: 'SERVER_ERROR',
-        message: 'Failed to fetch category'
-      }
+        message: 'Failed to fetch category',
+      },
     });
   }
 });
 
 // Create category (Admin only)
-router.post('/', authenticateToken, requireAdmin, validateRequest(createCategorySchema), async (req: AuthenticatedRequest, res) => {
-  try {
-    const categoryData = req.body;
+router.post(
+  '/',
+  authenticateToken,
+  requireAdmin,
+  validateRequest(createCategorySchema),
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const categoryData = req.body;
 
-    // Check if category with same name or slug already exists
-    const existingCategory = await prisma.category.findFirst({
-      where: {
-        OR: [
-          { name: categoryData.name },
-          { slug: categoryData.slug }
-        ]
-      }
-    });
-
-    if (existingCategory) {
-      return res.status(409).json({
-        success: false,
-        error: {
-          code: 'CATEGORY_EXISTS',
-          message: existingCategory.name === categoryData.name 
-            ? 'Category with this name already exists' 
-            : 'Category with this slug already exists'
-        }
-      });
-    }
-
-    // Validate parent category exists if provided
-    if (categoryData.parentId) {
-      const parentCategory = await prisma.category.findUnique({
-        where: { id: categoryData.parentId }
-      });
-
-      if (!parentCategory) {
-        return res.status(400).json({
-          success: false,
-          error: {
-            code: 'INVALID_PARENT',
-            message: 'Parent category does not exist'
-          }
-        });
-      }
-    }
-
-    const category = await prisma.category.create({
-      data: categoryData,
-      include: {
-        parent: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-          }
-        }
-      }
-    });
-
-    return res.status(201).json({
-      success: true,
-      data: {
-        category: {
-          ...category,
-          applicationCount: 0
-        }
-      }
-    });
-  } catch (error) {
-    logger.error('Create category error:', error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'SERVER_ERROR',
-        message: 'Failed to create category'
-      }
-    });
-  }
-});
-
-// Update category (Admin only)
-router.put('/:id', authenticateToken, requireAdmin, validateRequest(updateCategorySchema), async (req: AuthenticatedRequest, res) => {
-  try {
-    const { id } = req.params;
-    const updateData = req.body;
-
-    // Check if category exists
-    const existingCategory = await prisma.category.findUnique({
-      where: { id: id as string }
-    });
-
-    if (!existingCategory) {
-      return res.status(404).json({
-        success: false,
-        error: {
-          code: 'NOT_FOUND',
-          message: 'Category not found'
-        }
-      });
-    }
-
-    // Check for conflicts with other categories
-    if (updateData.name || updateData.slug) {
-      const conflictingCategory = await prisma.category.findFirst({
+      // Check if category with same name or slug already exists
+      const existingCategory = await prisma.category.findFirst({
         where: {
-          id: { not: id as string },
-          OR: [
-            ...(updateData.name ? [{ name: updateData.name }] : []),
-            ...(updateData.slug ? [{ slug: updateData.slug }] : [])
-          ]
-        }
+          OR: [{ name: categoryData.name }, { slug: categoryData.slug }],
+        },
       });
 
-      if (conflictingCategory) {
+      if (existingCategory) {
         return res.status(409).json({
           success: false,
           error: {
             code: 'CATEGORY_EXISTS',
-            message: 'Another category with this name or slug already exists'
-          }
-        });
-      }
-    }
-
-    // Validate parent category exists if provided
-    if (updateData.parentId !== undefined) {
-      if (updateData.parentId === id) {
-        return res.status(400).json({
-          success: false,
-          error: {
-            code: 'INVALID_PARENT',
-            message: 'Category cannot be its own parent'
-          }
+            message:
+              existingCategory.name === categoryData.name
+                ? 'Category with this name already exists'
+                : 'Category with this slug already exists',
+          },
         });
       }
 
-      if (updateData.parentId) {
+      // Validate parent category exists if provided
+      if (categoryData.parentId) {
         const parentCategory = await prisma.category.findUnique({
-          where: { id: updateData.parentId }
+          where: { id: categoryData.parentId },
         });
 
         if (!parentCategory) {
@@ -341,126 +246,245 @@ router.put('/:id', authenticateToken, requireAdmin, validateRequest(updateCatego
             success: false,
             error: {
               code: 'INVALID_PARENT',
-              message: 'Parent category does not exist'
-            }
+              message: 'Parent category does not exist',
+            },
           });
         }
       }
-    }
 
-    const category = await prisma.category.update({
-      where: { id: id as string },
-      data: updateData,
-      include: {
-        parent: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-          }
-        },
-        children: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-            description: true,
-            icon: true,
-            sortOrder: true,
+      const category = await prisma.category.create({
+        data: categoryData,
+        include: {
+          parent: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
           },
-          orderBy: { sortOrder: 'asc' }
+        },
+      });
+
+      return res.status(201).json({
+        success: true,
+        data: {
+          category: {
+            ...category,
+            applicationCount: 0,
+          },
+        },
+      });
+    } catch (error) {
+      logger.error('Create category error:', error);
+      return res.status(500).json({
+        success: false,
+        error: {
+          code: 'SERVER_ERROR',
+          message: 'Failed to create category',
+        },
+      });
+    }
+  }
+);
+
+// Update category (Admin only)
+router.put(
+  '/:id',
+  authenticateToken,
+  requireAdmin,
+  validateRequest(updateCategorySchema),
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+
+      // Check if category exists
+      const existingCategory = await prisma.category.findUnique({
+        where: { id: id as string },
+      });
+
+      if (!existingCategory) {
+        return res.status(404).json({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Category not found',
+          },
+        });
+      }
+
+      // Check for conflicts with other categories
+      if (updateData.name || updateData.slug) {
+        const conflictingCategory = await prisma.category.findFirst({
+          where: {
+            id: { not: id as string },
+            OR: [
+              ...(updateData.name ? [{ name: updateData.name }] : []),
+              ...(updateData.slug ? [{ slug: updateData.slug }] : []),
+            ],
+          },
+        });
+
+        if (conflictingCategory) {
+          return res.status(409).json({
+            success: false,
+            error: {
+              code: 'CATEGORY_EXISTS',
+              message: 'Another category with this name or slug already exists',
+            },
+          });
         }
       }
-    });
 
-    // Get application count
-    const applicationCount = await prisma.application.count({
-      where: { categoryId: category.id }
-    });
+      // Validate parent category exists if provided
+      if (updateData.parentId !== undefined) {
+        if (updateData.parentId === id) {
+          return res.status(400).json({
+            success: false,
+            error: {
+              code: 'INVALID_PARENT',
+              message: 'Category cannot be its own parent',
+            },
+          });
+        }
 
-    const categoryWithCount = {
-      ...category,
-      applicationCount
-    };
+        if (updateData.parentId) {
+          const parentCategory = await prisma.category.findUnique({
+            where: { id: updateData.parentId },
+          });
 
-    return res.json({
-      success: true,
-      data: {
-        category: categoryWithCount
+          if (!parentCategory) {
+            return res.status(400).json({
+              success: false,
+              error: {
+                code: 'INVALID_PARENT',
+                message: 'Parent category does not exist',
+              },
+            });
+          }
+        }
       }
-    });
-  } catch (error) {
-    logger.error('Update category error:', error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'SERVER_ERROR',
-        message: 'Failed to update category'
-      }
-    });
+
+      const category = await prisma.category.update({
+        where: { id: id as string },
+        data: updateData,
+        include: {
+          parent: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+          children: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              description: true,
+              icon: true,
+              sortOrder: true,
+            },
+            orderBy: { sortOrder: 'asc' },
+          },
+        },
+      });
+
+      // Get application count
+      const applicationCount = await prisma.application.count({
+        where: { categoryId: category.id },
+      });
+
+      const categoryWithCount = {
+        ...category,
+        applicationCount,
+      };
+
+      return res.json({
+        success: true,
+        data: {
+          category: categoryWithCount,
+        },
+      });
+    } catch (error) {
+      logger.error('Update category error:', error);
+      return res.status(500).json({
+        success: false,
+        error: {
+          code: 'SERVER_ERROR',
+          message: 'Failed to update category',
+        },
+      });
+    }
   }
-});
+);
 
 // Delete category (Admin only)
-router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res) => {
-  try {
-    const { id } = req.params;
+router.delete(
+  '/:id',
+  authenticateToken,
+  requireAdmin,
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const { id } = req.params;
 
-    // Check if category exists
-    const category = await prisma.category.findUnique({
-      where: { id: id as string },
-      include: {
-        _count: {
-          select: {
-            applications: true,
-            children: true
-          }
-        }
+      // Check if category exists
+      const category = await prisma.category.findUnique({
+        where: { id: id as string },
+        include: {
+          _count: {
+            select: {
+              applications: true,
+              children: true,
+            },
+          },
+        },
+      });
+
+      if (!category) {
+        return res.status(404).json({
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Category not found',
+          },
+        });
       }
-    });
 
-    if (!category) {
-      return res.status(404).json({
+      // Check if category has applications or children
+      if (category._count.applications > 0 || category._count.children > 0) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'CATEGORY_IN_USE',
+            message:
+              'Cannot delete category that has applications or subcategories',
+          },
+        });
+      }
+
+      await prisma.category.delete({
+        where: { id: id as string },
+      });
+
+      return res.json({
+        success: true,
+        data: {
+          message: 'Category deleted successfully',
+        },
+      });
+    } catch (error) {
+      logger.error('Delete category error:', error);
+      return res.status(500).json({
         success: false,
         error: {
-          code: 'NOT_FOUND',
-          message: 'Category not found'
-        }
+          code: 'SERVER_ERROR',
+          message: 'Failed to delete category',
+        },
       });
     }
-
-    // Check if category has applications or children
-    if (category._count.applications > 0 || category._count.children > 0) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 'CATEGORY_IN_USE',
-          message: 'Cannot delete category that has applications or subcategories'
-        }
-      });
-    }
-
-    await prisma.category.delete({
-      where: { id: id as string }
-    });
-
-    return res.json({
-      success: true,
-      data: {
-        message: 'Category deleted successfully'
-      }
-    });
-  } catch (error) {
-    logger.error('Delete category error:', error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'SERVER_ERROR',
-        message: 'Failed to delete category'
-      }
-    });
   }
-});
+);
 
 // Get applications for a specific category
 router.get('/:id/applications', async (req, res) => {
@@ -469,7 +493,7 @@ router.get('/:id/applications', async (req, res) => {
 
     // Check if category exists
     const category = await prisma.category.findUnique({
-      where: { id: id as string }
+      where: { id: id as string },
     });
 
     if (!category) {
@@ -477,8 +501,8 @@ router.get('/:id/applications', async (req, res) => {
         success: false,
         error: {
           code: 'NOT_FOUND',
-          message: 'Category not found'
-        }
+          message: 'Category not found',
+        },
       });
     }
 
@@ -490,10 +514,10 @@ router.get('/:id/applications', async (req, res) => {
             id: true,
             name: true,
             slug: true,
-          }
+          },
         },
       },
-      orderBy: { name: 'asc' }
+      orderBy: { name: 'asc' },
     });
 
     // Get error counts for each application
@@ -504,9 +528,9 @@ router.get('/:id/applications', async (req, res) => {
       },
       where: {
         applicationId: {
-          in: applications.map((app: any) => app.id)
-        }
-      }
+          in: applications.map((app: any) => app.id),
+        },
+      },
     });
 
     // Create a map of applicationId to error count
@@ -518,7 +542,7 @@ router.get('/:id/applications', async (req, res) => {
     // Transform data to include errorCount
     const applicationsWithCount = applications.map((app: any) => ({
       ...app,
-      errorCount: errorCountMap.get(app.id) || 0
+      errorCount: errorCountMap.get(app.id) || 0,
     }));
 
     return res.json({
@@ -529,8 +553,8 @@ router.get('/:id/applications', async (req, res) => {
           name: category.name,
           slug: category.slug,
         },
-        applications: applicationsWithCount
-      }
+        applications: applicationsWithCount,
+      },
     });
   } catch (error) {
     logger.error('Get category applications error:', error);
@@ -538,8 +562,8 @@ router.get('/:id/applications', async (req, res) => {
       success: false,
       error: {
         code: 'SERVER_ERROR',
-        message: 'Failed to fetch category applications'
-      }
+        message: 'Failed to fetch category applications',
+      },
     });
   }
 });

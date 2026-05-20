@@ -22,7 +22,7 @@ const dbSecurityService = getDatabaseSecurityService(databaseService);
 router.get('/stats', async (_req, res) => {
   try {
     const stats = await dbSecurityService.getDatabaseStats();
-    
+
     res.status(200).json({
       success: true,
       data: stats,
@@ -43,7 +43,7 @@ router.get('/stats', async (_req, res) => {
 router.get('/health', async (_req, res) => {
   try {
     const healthCheck = await dbSecurityService.securityHealthCheck();
-    
+
     res.status(200).json({
       success: true,
       data: healthCheck,
@@ -63,8 +63,9 @@ router.get('/health', async (_req, res) => {
  */
 router.get('/monitor', async (_req, res) => {
   try {
-    const suspiciousActivity = await dbSecurityService.monitorSuspiciousActivity();
-    
+    const suspiciousActivity =
+      await dbSecurityService.monitorSuspiciousActivity();
+
     res.status(200).json({
       success: true,
       data: suspiciousActivity,
@@ -85,7 +86,7 @@ router.get('/monitor', async (_req, res) => {
 router.post('/cleanup', async (_req, res) => {
   try {
     await dbSecurityService.cleanup();
-    
+
     res.status(200).json({
       success: true,
       message: 'Database cleanup completed successfully',
@@ -103,20 +104,24 @@ router.post('/cleanup', async (_req, res) => {
  * @description Get audit logs with pagination
  * @access Admin only
  */
-router.get('/audit-logs', 
-  validateRequest(z.object({
-    query: z.object({
-      page: z.string().transform(Number).default('1'),
-      limit: z.string().transform(Number).default('50'),
-      table_name: z.string().optional(),
-      operation: z.string().optional(),
-      start_date: z.string().datetime().optional(),
-      end_date: z.string().datetime().optional(),
-    }),
-  })),
+router.get(
+  '/audit-logs',
+  validateRequest(
+    z.object({
+      query: z.object({
+        page: z.string().transform(Number).default('1'),
+        limit: z.string().transform(Number).default('50'),
+        table_name: z.string().optional(),
+        operation: z.string().optional(),
+        start_date: z.string().datetime().optional(),
+        end_date: z.string().datetime().optional(),
+      }),
+    })
+  ),
   async (req, res) => {
     try {
-      const { page, limit, table_name, operation, start_date, end_date } = req.query;
+      const { page, limit, table_name, operation, start_date, end_date } =
+        req.query;
       const offset = (Number(page) - 1) * Number(limit);
 
       let query = `
@@ -188,8 +193,14 @@ router.get('/audit-logs',
         countParams.push(new Date(end_date as string));
       }
 
-      const totalResult = await databaseService.$queryRawUnsafe(countQuery, ...countParams);
-      const total = Array.isArray(totalResult) && totalResult[0] ? Number(totalResult[0].count) : 0;
+      const totalResult = await databaseService.$queryRawUnsafe(
+        countQuery,
+        ...countParams
+      );
+      const total =
+        Array.isArray(totalResult) && totalResult[0]
+          ? Number(totalResult[0].count)
+          : 0;
 
       res.status(200).json({
         success: true,
@@ -220,7 +231,7 @@ router.get('/audit-logs',
 router.post('/initialize', async (_req, res) => {
   try {
     await dbSecurityService.initializeSecurityMonitoring();
-    
+
     res.status(200).json({
       success: true,
       message: 'Database security features initialized successfully',
@@ -242,7 +253,7 @@ router.get('/vulnerabilities', async (_req, res) => {
   try {
     const vulnerabilities: string[] = [];
     await dbSecurityService['checkCommonVulnerabilities'](vulnerabilities);
-    
+
     res.status(200).json({
       success: true,
       data: {

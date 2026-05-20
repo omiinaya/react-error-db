@@ -10,8 +10,12 @@ router.get('/', authenticateToken, async (req, res, next) => {
     const userId = req.user!.id;
     const page = req.query.page ? parseInt(req.query.page as string) : 1;
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
-    
-    const bookmarks = await bookmarkService.getUserBookmarks(userId, page, limit);
+
+    const bookmarks = await bookmarkService.getUserBookmarks(
+      userId,
+      page,
+      limit
+    );
 
     res.json({
       success: true,
@@ -27,8 +31,12 @@ router.post('/', authenticateToken, async (req, res, next) => {
   try {
     const userId = req.user!.id;
     const { solutionId, note } = req.body;
-    
-    const bookmark = await bookmarkService.createBookmark(userId, solutionId, note);
+
+    const bookmark = await bookmarkService.createBookmark(
+      userId,
+      solutionId,
+      note
+    );
 
     res.status(201).json({
       success: true,
@@ -44,14 +52,14 @@ router.delete('/:id', authenticateToken, async (req, res, next) => {
   try {
     const userId = req.user!.id;
     const bookmarkId = req.params.id;
-    
+
     if (!bookmarkId) {
       return res.status(400).json({
         success: false,
         message: 'Bookmark ID is required',
       });
     }
-    
+
     await bookmarkService.deleteBookmark(userId, bookmarkId);
 
     return res.json({
@@ -69,15 +77,19 @@ router.patch('/:id', authenticateToken, async (req, res, next) => {
     const userId = req.user!.id;
     const bookmarkId = req.params.id;
     const { note } = req.body;
-    
+
     if (!bookmarkId) {
       return res.status(400).json({
         success: false,
         message: 'Bookmark ID is required',
       });
     }
-    
-    const bookmark = await bookmarkService.updateBookmarkNote(userId, bookmarkId, note);
+
+    const bookmark = await bookmarkService.updateBookmarkNote(
+      userId,
+      bookmarkId,
+      note
+    );
 
     return res.json({
       success: true,
@@ -93,14 +105,14 @@ router.get('/check/:solutionId', authenticateToken, async (req, res, next) => {
   try {
     const userId = req.user!.id;
     const solutionId = req.params.solutionId;
-    
+
     if (!solutionId) {
       return res.status(400).json({
         success: false,
         message: 'Solution ID is required',
       });
     }
-    
+
     const isBookmarked = await bookmarkService.isBookmarked(userId, solutionId);
 
     return res.json({

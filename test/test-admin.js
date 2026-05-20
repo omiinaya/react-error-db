@@ -13,7 +13,7 @@ const BASE_URL = 'http://localhost:3001/api';
 // Test admin user credentials (you'll need to create this user first)
 const ADMIN_USER = {
   email: 'admin@example.com',
-  password: 'admin123'
+  password: 'admin123',
 };
 
 let authToken = '';
@@ -25,8 +25,8 @@ async function makeRequest(method, url, data = null, headers = {}) {
     url: `${BASE_URL}${url}`,
     headers: {
       'Content-Type': 'application/json',
-      ...headers
-    }
+      ...headers,
+    },
   };
 
   if (authToken) {
@@ -41,7 +41,13 @@ async function makeRequest(method, url, data = null, headers = {}) {
     const response = await axios(config);
     return response.data;
   } catch (error) {
-    console.error('Error', method, url, ':', error.response?.data || error.message);
+    console.error(
+      'Error',
+      method,
+      url,
+      ':',
+      error.response?.data || error.message
+    );
     throw error;
   }
 }
@@ -51,13 +57,15 @@ async function testAdminLogin() {
   console.log('Testing admin login...');
   const response = await makeRequest('post', '/auth/login', {
     email: ADMIN_USER.email,
-    password: ADMIN_USER.password
+    password: ADMIN_USER.password,
   });
 
   if (response.success && response.token) {
     authToken = response.token;
     console.log('✅ Admin login successful');
-    console.log(`User: ${response.user.email}, Admin: ${response.user.isAdmin}`);
+    console.log(
+      `User: ${response.user.email}, Admin: ${response.user.isAdmin}`
+    );
     return true;
   } else {
     console.log('❌ Admin login failed');
@@ -139,7 +147,7 @@ async function runAllTests() {
     testUserManagement,
     testContentModeration,
     testApplicationManagement,
-    testSystemLogs
+    testSystemLogs,
   ];
 
   let passed = 0;
@@ -159,7 +167,9 @@ async function runAllTests() {
   console.log('\n📊 Test Results:');
   console.log(`✅ Passed: ${passed}`);
   console.log(`❌ Failed: ${failed}`);
-  console.log(`📈 Success rate: ${((passed / tests.length) * 100).toFixed(1)}%`);
+  console.log(
+    `📈 Success rate: ${((passed / tests.length) * 100).toFixed(1)}%`
+  );
 
   if (failed === 0) {
     console.log('\n🎉 All admin functionality tests passed!');
@@ -175,7 +185,7 @@ program
   .description('Test script for admin functionality')
   .option('-e, --email <email>', 'Admin email', ADMIN_USER.email)
   .option('-p, --password <password>', 'Admin password', ADMIN_USER.password)
-  .action(async (options) => {
+  .action(async options => {
     ADMIN_USER.email = options.email;
     ADMIN_USER.password = options.password;
     await runAllTests();

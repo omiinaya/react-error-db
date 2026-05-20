@@ -14,8 +14,8 @@ jest.mock('../utils/logger', () => ({
     verbose: jest.fn(),
   },
   stream: {
-    write: jest.fn()
-  }
+    write: jest.fn(),
+  },
 }));
 
 // Mock secrets to prevent module initialization
@@ -34,7 +34,7 @@ jest.mock('../utils/secrets', () => ({
     getJwtRefreshSecret: jest.fn().mockReturnValue('test-refresh-secret'),
     getDatabasePassword: jest.fn().mockReturnValue('test-db-password'),
     getRedisPassword: jest.fn().mockReturnValue('test-redis-password'),
-  }
+  },
 }));
 
 // Mock uptime-monitor to prevent it from starting intervals
@@ -51,49 +51,66 @@ jest.mock('../utils/uptime-monitor', () => ({
       requestCount: 0,
       errorCount: 0,
       averageResponseTime: 0,
-      memoryUsage: { heapUsed: 0, heapTotal: 0, external: 0, rss: 0 }
-    })
-  }))
+      memoryUsage: { heapUsed: 0, heapTotal: 0, external: 0, rss: 0 },
+    }),
+  })),
 }));
 
 // Mock metrics - proper mock that simulates Prometheus metrics
 jest.mock('../utils/metrics', () => {
   const mockMetrics: Map<string, number> = new Map();
-  const httpRequests: Array<{ method: string; route: string; status: number; duration: number }> = [];
-  
+  const httpRequests: Array<{
+    method: string;
+    route: string;
+    status: number;
+    duration: number;
+  }> = [];
+
   return {
     metricsMiddleware: jest.fn((req, res, next) => {
       // Capture request info for metrics
       const start = Date.now();
       res.on('finish', () => {
         const route = req.route?.path || req.path || 'unknown';
-        httpRequests.push({ method: req.method, route, status: res.statusCode, duration: Date.now() - start });
+        httpRequests.push({
+          method: req.method,
+          route,
+          status: res.statusCode,
+          duration: Date.now() - start,
+        });
       });
       next();
     }),
     metricsHandler: jest.fn(async (_req, res) => {
       // Generate proper Prometheus-formatted metrics
-      let output = '# HELP user_registrations_total Total number of user registrations\n';
+      let output =
+        '# HELP user_registrations_total Total number of user registrations\n';
       output += '# TYPE user_registrations_total counter\n';
       output += `user_registrations_total ${mockMetrics.get('user_registrations_total') || 0}\n`;
       output += '# HELP user_logins_total Total number of user logins\n';
       output += '# TYPE user_logins_total counter\n';
       output += `user_logins_total ${mockMetrics.get('user_logins_total') || 0}\n`;
-      output += '# HELP error_submissions_total Total number of error code submissions\n';
+      output +=
+        '# HELP error_submissions_total Total number of error code submissions\n';
       output += '# TYPE error_submissions_total counter\n';
       output += `error_submissions_total ${mockMetrics.get('error_submissions_total') || 0}\n`;
-      output += '# HELP solutions_submitted_total Total number of solutions submitted\n';
+      output +=
+        '# HELP solutions_submitted_total Total number of solutions submitted\n';
       output += '# TYPE solutions_submitted_total counter\n';
       output += `solutions_submitted_total ${mockMetrics.get('solutions_submitted_total') || 0}\n`;
-      output += '# HELP solutions_accepted_total Total number of solutions accepted\n';
+      output +=
+        '# HELP solutions_accepted_total Total number of solutions accepted\n';
       output += '# TYPE solutions_accepted_total counter\n';
       output += `solutions_accepted_total ${mockMetrics.get('solutions_accepted_total') || 0}\n`;
-      output += '# HELP database_queries_total Total number of database queries\n';
+      output +=
+        '# HELP database_queries_total Total number of database queries\n';
       output += '# TYPE database_queries_total counter\n';
       output += `database_queries_total ${mockMetrics.get('database_queries_total') || 0}\n`;
-      output += '# HELP database_query_duration_seconds Duration of database queries in seconds\n';
+      output +=
+        '# HELP database_query_duration_seconds Duration of database queries in seconds\n';
       output += '# TYPE database_query_duration_seconds histogram\n';
-      output += '# HELP database_connection_errors_total Total number of database connection errors\n';
+      output +=
+        '# HELP database_connection_errors_total Total number of database connection errors\n';
       output += '# TYPE database_connection_errors_total counter\n';
       output += `database_connection_errors_total ${mockMetrics.get('database_connection_errors_total') || 0}\n`;
       output += '# HELP cache_hits_total Total number of cache hits\n';
@@ -102,7 +119,7 @@ jest.mock('../utils/metrics', () => {
       output += '# HELP cache_misses_total Total number of cache misses\n';
       output += '# TYPE cache_misses_total counter\n';
       output += `cache_misses_total ${mockMetrics.get('cache_misses_total') || 0}\n`;
-      
+
       // Add HTTP request metrics with labels
       output += '# HELP http_requests_total Total number of HTTP requests\n';
       output += '# TYPE http_requests_total counter\n';
@@ -120,18 +137,19 @@ jest.mock('../utils/metrics', () => {
       } else {
         output += `http_requests_total{method="GET",route="/health",status="200"} 1\n`;
       }
-      
-      output += '# HELP http_request_duration_seconds Duration of HTTP requests in seconds\n';
+
+      output +=
+        '# HELP http_request_duration_seconds Duration of HTTP requests in seconds\n';
       output += '# TYPE http_request_duration_seconds histogram\n';
-      
+
       res.set('Content-Type', 'text/plain; version=0.0.4; charset=utf-8');
       res.send(output);
     }),
-    httpRequestDuration: { 
-      labels: () => ({ observe: jest.fn() }) 
+    httpRequestDuration: {
+      labels: () => ({ observe: jest.fn() }),
     },
     httpRequestsTotal: {
-      labels: () => ({ inc: jest.fn() })
+      labels: () => ({ inc: jest.fn() }),
     },
     activeConnections: { inc: jest.fn(), dec: jest.fn() },
     resetMetrics: jest.fn(() => {
@@ -139,45 +157,103 @@ jest.mock('../utils/metrics', () => {
       httpRequests.length = 0;
     }),
     trackUserRegistration: jest.fn(() => {
-      mockMetrics.set('user_registrations_total', (mockMetrics.get('user_registrations_total') || 0) + 1);
+      mockMetrics.set(
+        'user_registrations_total',
+        (mockMetrics.get('user_registrations_total') || 0) + 1
+      );
     }),
     trackUserLogin: jest.fn(() => {
-      mockMetrics.set('user_logins_total', (mockMetrics.get('user_logins_total') || 0) + 1);
+      mockMetrics.set(
+        'user_logins_total',
+        (mockMetrics.get('user_logins_total') || 0) + 1
+      );
     }),
     trackErrorSubmission: jest.fn(() => {
-      mockMetrics.set('error_submissions_total', (mockMetrics.get('error_submissions_total') || 0) + 1);
+      mockMetrics.set(
+        'error_submissions_total',
+        (mockMetrics.get('error_submissions_total') || 0) + 1
+      );
     }),
     trackSolutionSubmission: jest.fn(() => {
-      mockMetrics.set('solutions_submitted_total', (mockMetrics.get('solutions_submitted_total') || 0) + 1);
+      mockMetrics.set(
+        'solutions_submitted_total',
+        (mockMetrics.get('solutions_submitted_total') || 0) + 1
+      );
     }),
     trackSolutionAcceptance: jest.fn(() => {
-      mockMetrics.set('solutions_accepted_total', (mockMetrics.get('solutions_accepted_total') || 0) + 1);
+      mockMetrics.set(
+        'solutions_accepted_total',
+        (mockMetrics.get('solutions_accepted_total') || 0) + 1
+      );
     }),
     trackCacheHit: jest.fn(() => {
-      mockMetrics.set('cache_hits_total', (mockMetrics.get('cache_hits_total') || 0) + 1);
+      mockMetrics.set(
+        'cache_hits_total',
+        (mockMetrics.get('cache_hits_total') || 0) + 1
+      );
     }),
     trackCacheMiss: jest.fn(() => {
-      mockMetrics.set('cache_misses_total', (mockMetrics.get('cache_misses_total') || 0) + 1);
+      mockMetrics.set(
+        'cache_misses_total',
+        (mockMetrics.get('cache_misses_total') || 0) + 1
+      );
     }),
     trackDatabaseQuery: jest.fn(() => {
-      mockMetrics.set('database_queries_total', (mockMetrics.get('database_queries_total') || 0) + 1);
+      mockMetrics.set(
+        'database_queries_total',
+        (mockMetrics.get('database_queries_total') || 0) + 1
+      );
     }),
     trackDatabaseConnectionError: jest.fn(() => {
-      mockMetrics.set('database_connection_errors_total', (mockMetrics.get('database_connection_errors_total') || 0) + 1);
+      mockMetrics.set(
+        'database_connection_errors_total',
+        (mockMetrics.get('database_connection_errors_total') || 0) + 1
+      );
     }),
     getMetrics: jest.fn().mockImplementation(() => {
       // Return metrics in the format expected by tests
       return Promise.resolve([
-        { name: 'user_registrations_total', values: [{ value: mockMetrics.get('user_registrations_total') || 0 }] },
-        { name: 'user_logins_total', values: [{ value: mockMetrics.get('user_logins_total') || 0 }] },
-        { name: 'error_submissions_total', values: [{ value: mockMetrics.get('error_submissions_total') || 0 }] },
-        { name: 'solutions_submitted_total', values: [{ value: mockMetrics.get('solutions_submitted_total') || 0 }] },
-        { name: 'solutions_accepted_total', values: [{ value: mockMetrics.get('solutions_accepted_total') || 0 }] },
-        { name: 'database_queries_total', values: [{ value: mockMetrics.get('database_queries_total') || 0 }] },
+        {
+          name: 'user_registrations_total',
+          values: [{ value: mockMetrics.get('user_registrations_total') || 0 }],
+        },
+        {
+          name: 'user_logins_total',
+          values: [{ value: mockMetrics.get('user_logins_total') || 0 }],
+        },
+        {
+          name: 'error_submissions_total',
+          values: [{ value: mockMetrics.get('error_submissions_total') || 0 }],
+        },
+        {
+          name: 'solutions_submitted_total',
+          values: [
+            { value: mockMetrics.get('solutions_submitted_total') || 0 },
+          ],
+        },
+        {
+          name: 'solutions_accepted_total',
+          values: [{ value: mockMetrics.get('solutions_accepted_total') || 0 }],
+        },
+        {
+          name: 'database_queries_total',
+          values: [{ value: mockMetrics.get('database_queries_total') || 0 }],
+        },
         { name: 'database_query_duration_seconds', values: [{ value: 0 }] },
-        { name: 'database_connection_errors_total', values: [{ value: mockMetrics.get('database_connection_errors_total') || 0 }] },
-        { name: 'cache_hits_total', values: [{ value: mockMetrics.get('cache_hits_total') || 0 }] },
-        { name: 'cache_misses_total', values: [{ value: mockMetrics.get('cache_misses_total') || 0 }] },
+        {
+          name: 'database_connection_errors_total',
+          values: [
+            { value: mockMetrics.get('database_connection_errors_total') || 0 },
+          ],
+        },
+        {
+          name: 'cache_hits_total',
+          values: [{ value: mockMetrics.get('cache_hits_total') || 0 }],
+        },
+        {
+          name: 'cache_misses_total',
+          values: [{ value: mockMetrics.get('cache_misses_total') || 0 }],
+        },
       ]);
     }),
   };
@@ -186,7 +262,7 @@ jest.mock('../utils/metrics', () => {
 // Mock Prisma client for tests - with in-memory storage for lookups
 jest.mock('../services/database.service', () => {
   const mockDate = new Date();
-  
+
   // In-memory stores to track created entities
   const users = new Map();
   const applications = new Map();
@@ -194,13 +270,13 @@ jest.mock('../services/database.service', () => {
   const solutions = new Map();
   const categories = new Map();
   // Note: votes map not needed since we mock vote operations directly
-  
+
   let userIdCounter = 0;
   let appIdCounter = 0;
   let errorIdCounter = 0;
   let solutionIdCounter = 0;
   let categoryIdCounter = 0;
-  
+
   return {
     __esModule: true,
     default: {
@@ -223,7 +299,7 @@ jest.mock('../services/database.service', () => {
           return Promise.resolve(user);
         }),
         findMany: jest.fn().mockResolvedValue([]),
-        create: jest.fn().mockImplementation((data) => {
+        create: jest.fn().mockImplementation(data => {
           const id = `user-${++userIdCounter}`;
           const user = {
             id,
@@ -238,7 +314,7 @@ jest.mock('../services/database.service', () => {
             failedLoginAttempts: 0,
             lockedUntil: null,
             emailVerified: false,
-            themePreference: 'light'
+            themePreference: 'light',
           };
           users.set(id, user);
           return Promise.resolve(user);
@@ -267,7 +343,7 @@ jest.mock('../services/database.service', () => {
           return Promise.resolve(applications.get(where.id) || null);
         }),
         findMany: jest.fn().mockResolvedValue([]),
-        create: jest.fn().mockImplementation((data) => {
+        create: jest.fn().mockImplementation(data => {
           const id = `app-${++appIdCounter}`;
           const app = {
             id,
@@ -275,7 +351,7 @@ jest.mock('../services/database.service', () => {
             description: data.description || '',
             ownerId: data.ownerId,
             createdAt: mockDate,
-            updatedAt: mockDate
+            updatedAt: mockDate,
           };
           applications.set(id, app);
           return Promise.resolve(app);
@@ -296,7 +372,7 @@ jest.mock('../services/database.service', () => {
           return Promise.resolve(errorCodes.get(where.id) || null);
         }),
         findMany: jest.fn().mockResolvedValue([]),
-        create: jest.fn().mockImplementation((data) => {
+        create: jest.fn().mockImplementation(data => {
           const id = `error-${++errorIdCounter}`;
           const errorCode = {
             id,
@@ -310,7 +386,7 @@ jest.mock('../services/database.service', () => {
             updatedAt: mockDate,
             createdById: data.createdById,
             viewCount: 0,
-            lastViewedAt: null
+            lastViewedAt: null,
           };
           errorCodes.set(id, errorCode);
           return Promise.resolve(errorCode);
@@ -338,7 +414,7 @@ jest.mock('../services/database.service', () => {
           return Promise.resolve(solution);
         }),
         findMany: jest.fn().mockResolvedValue([]),
-        create: jest.fn().mockImplementation((data) => {
+        create: jest.fn().mockImplementation(data => {
           const id = `solution-${++solutionIdCounter}`;
           const solution = {
             id,
@@ -354,7 +430,7 @@ jest.mock('../services/database.service', () => {
             createdAt: mockDate,
             updatedAt: mockDate,
             upvotes: 0,
-            downvotes: 0
+            downvotes: 0,
           };
           solutions.set(id, solution);
           return Promise.resolve(solution);
@@ -385,7 +461,9 @@ jest.mock('../services/database.service', () => {
       },
       vote: {
         findUnique: jest.fn().mockResolvedValue(null),
-        create: jest.fn().mockResolvedValue({ id: 'vote-1', voteType: 'upvote' }),
+        create: jest
+          .fn()
+          .mockResolvedValue({ id: 'vote-1', voteType: 'upvote' }),
         update: jest.fn(),
         delete: jest.fn().mockResolvedValue({ success: true }),
         deleteMany: jest.fn().mockResolvedValue({ count: 0 }),
@@ -401,14 +479,14 @@ jest.mock('../services/database.service', () => {
           return Promise.resolve(categories.get(where.id) || null);
         }),
         findMany: jest.fn().mockResolvedValue([]),
-        create: jest.fn().mockImplementation((data) => {
+        create: jest.fn().mockImplementation(data => {
           const id = `category-${++categoryIdCounter}`;
           const category = {
             id,
             name: data.name,
             description: data.description || '',
             createdAt: mockDate,
-            updatedAt: mockDate
+            updatedAt: mockDate,
           };
           categories.set(id, category);
           return Promise.resolve(category);
@@ -424,7 +502,7 @@ jest.mock('../services/database.service', () => {
         }),
         count: jest.fn().mockResolvedValue(0),
       },
-      $transaction: jest.fn((callback) => callback(prisma)),
+      $transaction: jest.fn(callback => callback(prisma)),
       $disconnect: jest.fn(),
     },
   };
@@ -433,7 +511,12 @@ jest.mock('../services/database.service', () => {
 // Helper to generate JWT tokens for testing
 const JWT_SECRET = process.env.JWT_SECRET || 'test-secret';
 
-export function getAuthToken(user: { id: string; email: string; username: string; isAdmin: boolean }): string {
+export function getAuthToken(user: {
+  id: string;
+  email: string;
+  username: string;
+  isAdmin: boolean;
+}): string {
   return jwt.sign(
     {
       userId: user.id,
@@ -455,7 +538,7 @@ export async function createTestUser(
   const prisma = require('../services/database.service').default;
   const bcrypt = require('bcrypt');
   const passwordHash = await bcrypt.hash('testpassword123', 10);
-  
+
   const user = await prisma.user.create({
     data: {
       email,
@@ -463,17 +546,20 @@ export async function createTestUser(
       passwordHash,
       isAdmin,
       role: isAdmin ? 'admin' : 'user',
-      themePreference: 'light'
+      themePreference: 'light',
     },
   });
-  
+
   return user;
 }
 
 // Helper to create a test error
-export async function createTestError(applicationId?: string, categoryId?: string) {
+export async function createTestError(
+  applicationId?: string,
+  categoryId?: string
+) {
   const prisma = require('../services/database.service').default;
-  
+
   // Create an application if not provided
   let appId = applicationId;
   if (!appId) {
@@ -481,23 +567,23 @@ export async function createTestError(applicationId?: string, categoryId?: strin
       data: {
         name: 'Test Application',
         description: 'Test app for error creation',
-        ownerId: 'test-user-id'
-      }
+        ownerId: 'test-user-id',
+      },
     });
     appId = appId || app.id;
   }
-  
+
   let catId = categoryId;
   if (!catId) {
     const cat = await prisma.category.create({
       data: {
         name: 'Test Category',
-        description: 'Test category'
-      }
+        description: 'Test category',
+      },
     });
     catId = catId || cat.id;
   }
-  
+
   const error = await prisma.errorCode.create({
     data: {
       code: `ERR_${Date.now()}`,
@@ -506,25 +592,26 @@ export async function createTestError(applicationId?: string, categoryId?: strin
       applicationId: appId,
       categoryId: catId,
       severity: 'medium',
-      createdById: 'test-user-id'
-    }
+      createdById: 'test-user-id',
+    },
   });
-  
+
   return error;
 }
 
 // Helper to create a test solution
 export async function createTestSolution(errorCodeId: string, userId: string) {
   const prisma = require('../services/database.service').default;
-  
+
   const solution = await prisma.solution.create({
     data: {
-      solutionText: 'This is a test solution with sufficient length for validation',
+      solutionText:
+        'This is a test solution with sufficient length for validation',
       errorCodeId,
-      createdById: userId
-    }
+      createdById: userId,
+    },
   });
-  
+
   return solution;
 }
 

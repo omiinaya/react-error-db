@@ -8,7 +8,7 @@ interface AuthState {
   refreshToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  
+
   // Actions
   setUser: (user: User | null) => void;
   setToken: (token: string | null) => void;
@@ -20,17 +20,17 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    set => ({
       user: null,
       token: null,
       refreshToken: null,
       isAuthenticated: false,
       isLoading: false,
 
-      setUser: (user) => set({ user, isAuthenticated: !!user }),
-      setToken: (token) => set({ token }),
-      setRefreshToken: (refreshToken) => set({ refreshToken }),
-      setLoading: (loading) => set({ isLoading: loading }),
+      setUser: user => set({ user, isAuthenticated: !!user }),
+      setToken: token => set({ token }),
+      setRefreshToken: refreshToken => set({ refreshToken }),
+      setLoading: loading => set({ isLoading: loading }),
 
       login: (user, token, refreshToken) => {
         localStorage.setItem('token', token);
@@ -40,7 +40,7 @@ export const useAuthStore = create<AuthState>()(
           token,
           refreshToken,
           isAuthenticated: true,
-          isLoading: false
+          isLoading: false,
         });
       },
 
@@ -52,13 +52,13 @@ export const useAuthStore = create<AuthState>()(
           token: null,
           refreshToken: null,
           isAuthenticated: false,
-          isLoading: false
+          isLoading: false,
         });
       },
     }),
     {
       name: 'auth-storage',
-      partialize: (state) => ({
+      partialize: state => ({
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,

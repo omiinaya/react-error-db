@@ -86,7 +86,8 @@ async function main() {
         logoUrl: '/logos/javascript.png',
         categoryId: categories[0].id,
         websiteUrl: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
-        documentationUrl: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference',
+        documentationUrl:
+          'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference',
       },
     }),
     prisma.application.create({
@@ -116,7 +117,8 @@ async function main() {
       data: {
         name: 'Express.js',
         slug: 'expressjs',
-        description: 'Fast, unopinionated, minimalist web framework for Node.js',
+        description:
+          'Fast, unopinionated, minimalist web framework for Node.js',
         logoUrl: '/logos/express.png',
         categoryId: categories[1].id,
         websiteUrl: 'https://expressjs.com',
@@ -158,15 +160,17 @@ async function main() {
         code: 'TypeError',
         applicationId: applications[0].id,
         title: 'Cannot read property of undefined',
-        description: 'This error occurs when trying to access a property on an undefined or null value.',
+        description:
+          'This error occurs when trying to access a property on an undefined or null value.',
         severity: 'medium',
         metadata: {
           commonCauses: [
             'Accessing object properties before initialization',
             'Misspelled property names',
-            'Async operations not completed'
+            'Async operations not completed',
           ],
-          relatedDocs: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError'
+          relatedDocs:
+            'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError',
         },
       },
     }),
@@ -175,15 +179,17 @@ async function main() {
         code: 'ReferenceError',
         applicationId: applications[0].id,
         title: 'Variable is not defined',
-        description: 'This error occurs when trying to access a variable that has not been declared.',
+        description:
+          'This error occurs when trying to access a variable that has not been declared.',
         severity: 'medium',
         metadata: {
           commonCauses: [
             'Misspelled variable names',
             'Variables declared in different scope',
-            'Using variables before declaration'
+            'Using variables before declaration',
           ],
-          relatedDocs: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError'
+          relatedDocs:
+            'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError',
         },
       },
     }),
@@ -193,15 +199,17 @@ async function main() {
         code: 'E0435',
         applicationId: applications[2].id,
         title: 'Invalid hook call',
-        description: 'Hooks can only be called inside the body of a function component.',
+        description:
+          'Hooks can only be called inside the body of a function component.',
         severity: 'high',
         metadata: {
           commonCauses: [
             'Calling hooks in class components',
             'Calling hooks conditionally',
-            'Calling hooks in regular JavaScript functions'
+            'Calling hooks in regular JavaScript functions',
           ],
-          relatedDocs: 'https://reactjs.org/warnings/invalid-hook-call-warning.html'
+          relatedDocs:
+            'https://reactjs.org/warnings/invalid-hook-call-warning.html',
         },
       },
     }),
@@ -210,15 +218,16 @@ async function main() {
         code: 'E2946',
         applicationId: applications[2].id,
         title: 'Maximum update depth exceeded',
-        description: 'This error occurs when a component repeatedly calls setState inside componentWillUpdate or componentDidUpdate.',
+        description:
+          'This error occurs when a component repeatedly calls setState inside componentWillUpdate or componentDidUpdate.',
         severity: 'high',
         metadata: {
           commonCauses: [
             'Infinite render loops',
             'Setting state in render method',
-            'Incorrect useEffect dependencies'
+            'Incorrect useEffect dependencies',
           ],
-          relatedDocs: 'https://reactjs.org/docs/error-boundaries.html'
+          relatedDocs: 'https://reactjs.org/docs/error-boundaries.html',
         },
       },
     }),
@@ -234,9 +243,10 @@ async function main() {
           commonCauses: [
             'Inserting duplicate primary keys',
             'Violating unique constraints',
-            'Race conditions in concurrent inserts'
+            'Race conditions in concurrent inserts',
           ],
-          relatedDocs: 'https://www.postgresql.org/docs/current/errcodes-appendix.html'
+          relatedDocs:
+            'https://www.postgresql.org/docs/current/errcodes-appendix.html',
         },
       },
     }),
@@ -352,7 +362,9 @@ async function main() {
   console.log('✅ Database seeding completed successfully!');
   console.log('');
   console.log('📋 Sample data created:');
-  console.log(`- Users: 2 (admin@errdb.com / admin123, user@errdb.com / user123)`);
+  console.log(
+    `- Users: 2 (admin@errdb.com / admin123, user@errdb.com / user123)`
+  );
   console.log(`- Categories: ${categories.length}`);
   console.log(`- Applications: ${applications.length}`);
   console.log(`- Error codes: ${errorCodes.length}`);
@@ -360,7 +372,7 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
+  .catch(e => {
     console.error('❌ Seeding failed:', e);
     process.exit(1);
   })

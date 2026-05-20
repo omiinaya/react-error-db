@@ -22,22 +22,24 @@ const example = "code block";
     `;
 
     render(<MarkdownRenderer content={markdownContent} />);
-    
+
     // Check for headings
     expect(screen.getByText('Heading 1')).toBeInTheDocument();
     expect(screen.getByText('Heading 2')).toBeInTheDocument();
-    
+
     // Check for formatted text
     expect(screen.getByText('bold')).toBeInTheDocument();
     expect(screen.getByText('italic')).toBeInTheDocument();
-    
+
     // Check for list items
     expect(screen.getByText('List item 1')).toBeInTheDocument();
     expect(screen.getByText('List item 2')).toBeInTheDocument();
-    
+
     // Check for code block
-    expect(screen.getByText('const example = "code block";')).toBeInTheDocument();
-    
+    expect(
+      screen.getByText('const example = "code block";')
+    ).toBeInTheDocument();
+
     // Check for link
     const link = screen.getByText('Link text');
     expect(link).toBeInTheDocument();
@@ -64,10 +66,10 @@ const example = "code block";
     `;
 
     render(<MarkdownRenderer content={maliciousContent} />);
-    
+
     // Safe content should be rendered
     expect(screen.getByText('Safe Heading')).toBeInTheDocument();
-    
+
     // Malicious content should be sanitized and not rendered as executable code
     expect(screen.queryByText("alert('XSS')")).not.toBeInTheDocument();
   });
@@ -81,7 +83,7 @@ const example = "code block";
     `;
 
     render(<MarkdownRenderer content={tableContent} />);
-    
+
     expect(screen.getByText('Header 1')).toBeInTheDocument();
     expect(screen.getByText('Header 2')).toBeInTheDocument();
     expect(screen.getByText('Cell 1')).toBeInTheDocument();
@@ -98,7 +100,7 @@ const example = "code block";
     `;
 
     render(<MarkdownRenderer content={quoteContent} />);
-    
+
     // Check that the blockquote element exists
     const blockquote = document.querySelector('blockquote');
     expect(blockquote).toBeInTheDocument();

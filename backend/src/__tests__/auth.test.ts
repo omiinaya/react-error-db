@@ -22,14 +22,12 @@ describe('Auth API', () => {
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
       (prisma.user.create as jest.Mock).mockResolvedValue(mockUser);
 
-      const response = await request(app)
-        .post('/api/auth/register')
-        .send({
-          email: 'test@example.com',
-          username: 'testuser',
-          password: 'password123',
-          confirmPassword: 'password123',
-        });
+      const response = await request(app).post('/api/auth/register').send({
+        email: 'test@example.com',
+        username: 'testuser',
+        password: 'password123',
+        confirmPassword: 'password123',
+      });
 
       expect(response.status).toBe(201);
       expect(response.body.success).toBe(true);
@@ -47,14 +45,12 @@ describe('Auth API', () => {
 
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(existingUser);
 
-      const response = await request(app)
-        .post('/api/auth/register')
-        .send({
-          email: 'test@example.com',
-          username: 'testuser',
-          password: 'password123',
-          confirmPassword: 'password123',
-        });
+      const response = await request(app).post('/api/auth/register').send({
+        email: 'test@example.com',
+        username: 'testuser',
+        password: 'password123',
+        confirmPassword: 'password123',
+      });
 
       expect(response.status).toBe(400);
       expect(response.body.success).toBe(false);
@@ -75,12 +71,10 @@ describe('Auth API', () => {
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
       (prisma.userSession.create as jest.Mock).mockResolvedValue({});
 
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send({
-          email: 'test@example.com',
-          password: 'password123',
-        });
+      const response = await request(app).post('/api/auth/login').send({
+        email: 'test@example.com',
+        password: 'password123',
+      });
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
@@ -100,12 +94,10 @@ describe('Auth API', () => {
 
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send({
-          email: 'test@example.com',
-          password: 'wrongpassword',
-        });
+      const response = await request(app).post('/api/auth/login').send({
+        email: 'test@example.com',
+        password: 'wrongpassword',
+      });
 
       expect(response.status).toBe(401);
       expect(response.body.success).toBe(false);
@@ -129,7 +121,9 @@ describe('Auth API', () => {
         isActive: true,
       };
 
-      (prisma.userSession.findFirst as jest.Mock).mockResolvedValue(mockSession);
+      (prisma.userSession.findFirst as jest.Mock).mockResolvedValue(
+        mockSession
+      );
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
       (prisma.userSession.update as jest.Mock).mockResolvedValue({});
 
@@ -163,8 +157,12 @@ describe('Auth API', () => {
         userId: 1,
       };
 
-      (prisma.userSession.findFirst as jest.Mock).mockResolvedValue(mockSession);
-      (prisma.userSession.deleteMany as jest.Mock).mockResolvedValue({ count: 1 });
+      (prisma.userSession.findFirst as jest.Mock).mockResolvedValue(
+        mockSession
+      );
+      (prisma.userSession.deleteMany as jest.Mock).mockResolvedValue({
+        count: 1,
+      });
 
       const response = await request(app)
         .post('/api/auth/logout')

@@ -43,13 +43,13 @@ export class UptimeMonitor {
   private startMonitoring(): void {
     // Monitor memory usage every 30 seconds
     setInterval(() => this.checkMemoryUsage(), 30000);
-    
+
     // Monitor error rates every minute
     setInterval(() => this.checkErrorRate(), 60000);
-    
+
     // Monitor restarts every hour
     setInterval(() => this.checkRestarts(), 3600000);
-    
+
     logger.info('Uptime monitoring started');
   }
 
@@ -59,7 +59,7 @@ export class UptimeMonitor {
   recordRequest(responseTime: number): void {
     this.requestCount++;
     this.responseTimes.push(responseTime);
-    
+
     // Keep only the last 1000 response times for average calculation
     if (this.responseTimes.length > 1000) {
       this.responseTimes.shift();
@@ -87,16 +87,16 @@ export class UptimeMonitor {
   private checkMemoryUsage(): void {
     const memoryUsage = process.memoryUsage();
     const usedMemory = memoryUsage.heapUsed / memoryUsage.heapTotal;
-    
+
     if (usedMemory > this.memoryThreshold) {
       const alert: UptimeAlert = {
         type: 'high_memory',
         message: `High memory usage detected: ${(usedMemory * 100).toFixed(2)}%`,
         severity: usedMemory > 0.9 ? 'critical' : 'warning',
         timestamp: new Date(),
-        data: { memoryUsage, usedMemory: usedMemory * 100 }
+        data: { memoryUsage, usedMemory: usedMemory * 100 },
       };
-      
+
       this.addAlert(alert);
     }
   }
@@ -106,21 +106,25 @@ export class UptimeMonitor {
    */
   private checkErrorRate(): void {
     if (this.requestCount === 0) return;
-    
+
     const errorRate = this.errorCount / this.requestCount;
-    
+
     if (errorRate > this.errorRateThreshold) {
       const alert: UptimeAlert = {
         type: 'high_error_rate',
         message: `High error rate detected: ${(errorRate * 100).toFixed(2)}%`,
         severity: errorRate > 0.2 ? 'critical' : 'warning',
         timestamp: new Date(),
-        data: { errorRate: errorRate * 100, requestCount: this.requestCount, errorCount: this.errorCount }
+        data: {
+          errorRate: errorRate * 100,
+          requestCount: this.requestCount,
+          errorCount: this.errorCount,
+        },
       };
-      
+
       this.addAlert(alert);
     }
-    
+
     // Reset counters for next period
     this.requestCount = 0;
     this.errorCount = 0;
@@ -136,12 +140,12 @@ export class UptimeMonitor {
         message: `Frequent restarts detected: ${this.restarts} restarts in the last hour`,
         severity: 'critical',
         timestamp: new Date(),
-        data: { restarts: this.restarts, threshold: this.restartThreshold }
+        data: { restarts: this.restarts, threshold: this.restartThreshold },
       };
-      
+
       this.addAlert(alert);
     }
-    
+
     // Reset restart counter for next period
     this.restarts = 0;
   }
@@ -151,12 +155,12 @@ export class UptimeMonitor {
    */
   private addAlert(alert: UptimeAlert): void {
     this.alerts.push(alert);
-    
+
     // Keep only the last 100 alerts
     if (this.alerts.length > 100) {
       this.alerts.shift();
     }
-    
+
     logger.warn(`Uptime alert: ${alert.message}`, alert.data);
   }
 
@@ -165,9 +169,11 @@ export class UptimeMonitor {
    */
   getMetrics(): UptimeMetrics {
     const memoryUsage = process.memoryUsage();
-    const averageResponseTime = this.responseTimes.length > 0 
-      ? this.responseTimes.reduce((a, b) => a + b, 0) / this.responseTimes.length 
-      : 0;
+    const averageResponseTime =
+      this.responseTimes.length > 0
+        ? this.responseTimes.reduce((a, b) => a + b, 0) /
+          this.responseTimes.length
+        : 0;
 
     return {
       startTime: this.startTime,
@@ -197,10 +203,16 @@ export class UptimeMonitor {
     metrics: UptimeMetrics;
   } {
     const metrics = this.getMetrics();
-    const memoryUsage = metrics.memoryUsage.heapUsed / metrics.memoryUsage.heapTotal;
-    const errorRate = metrics.requestCount > 0 ? metrics.errorCount / metrics.requestCount : 0;
+    const memoryUsage =
+      metrics.memoryUsage.heapUsed / metrics.memoryUsage.heapTotal;
+    const errorRate =
+      metrics.requestCount > 0 ? metrics.errorCount / metrics.requestCount : 0;
 
-    if (memoryUsage > 0.9 || errorRate > 0.2 || this.restarts > this.restartThreshold) {
+    if (
+      memoryUsage > 0.9 ||
+      errorRate > 0.2 ||
+      this.restarts > this.restartThreshold
+    ) {
       return {
         status: 'unhealthy',
         message: 'System is unhealthy - critical issues detected',
@@ -241,16 +253,16 @@ export const uptimeMonitor = new UptimeMonitor();
 // Middleware to track request metrics
 export const uptimeMiddleware = (_req: any, res: any, next: any) => {
   const startTime = Date.now();
-  
+
   res.on('finish', () => {
     const responseTime = Date.now() - startTime;
     uptimeMonitor.recordRequest(responseTime);
-    
+
     if (res.statusCode >= 400) {
       uptimeMonitor.recordError();
     }
   });
-  
+
   next();
 };
 

@@ -1,11 +1,8 @@
 module.exports = {
   root: true,
-  // This tells ESLint to load the config from the package's `eslint-config` 
+  // This tells ESLint to load the config from the package's `eslint-config`
   // or look for eslint config in each package
-  extends: [
-    'eslint:recommended',
-    '@typescript-eslint/recommended',
-  ],
+  extends: ['eslint:recommended', '@typescript-eslint/recommended'],
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
   parserOptions: {
@@ -18,10 +15,13 @@ module.exports = {
   },
   rules: {
     // Add any global rules here
-    '@typescript-eslint/no-unused-vars': ['error', { 
-      argsIgnorePattern: '^_',
-      varsIgnorePattern: '^_',
-    }],
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+      },
+    ],
     '@typescript-eslint/no-explicit-any': 'warn',
   },
   overrides: [

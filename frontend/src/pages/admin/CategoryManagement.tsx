@@ -1,13 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Folder, Plus, Edit, Trash2, Calendar, Layers } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Search,
+  Folder,
+  Plus,
+  Edit,
+  Trash2,
+  Calendar,
+  Layers,
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import CreateCategoryDialog from '@/components/CreateCategoryDialog';
 
@@ -50,7 +70,7 @@ const CategoryManagement: React.FC = () => {
     page: 1,
     limit: 20,
     total: 0,
-    pages: 0
+    pages: 0,
   });
 
   useEffect(() => {
@@ -64,7 +84,7 @@ const CategoryManagement: React.FC = () => {
       const params: any = {
         page: pagination.page,
         limit: pagination.limit,
-        includeChildren: true
+        includeChildren: true,
       };
 
       if (search) params.search = search;
@@ -74,16 +94,21 @@ const CategoryManagement: React.FC = () => {
         params.includeChildren = false;
       }
 
-      const response = await api.request<{ categories: CategoryWithStats[]; meta: { pagination: PaginationMeta } }>({
+      const response = await api.request<{
+        categories: CategoryWithStats[];
+        meta: { pagination: PaginationMeta };
+      }>({
         method: 'get',
         url: '/categories',
-        params
+        params,
       });
 
       setCategories(response.categories);
       setPagination(response.meta.pagination);
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Failed to fetch categories');
+      setError(
+        err.response?.data?.error?.message || 'Failed to fetch categories'
+      );
     } finally {
       setLoading(false);
     }
@@ -94,31 +119,36 @@ const CategoryManagement: React.FC = () => {
     fetchCategories();
     toast({
       title: 'Success',
-      description: 'Category created successfully'
+      description: 'Category created successfully',
     });
   };
 
   const deleteCategory = async (categoryId: string) => {
-    if (!confirm('Are you sure you want to delete this category? This action cannot be undone.')) {
+    if (
+      !confirm(
+        'Are you sure you want to delete this category? This action cannot be undone.'
+      )
+    ) {
       return;
     }
 
     try {
       await api.request({
         method: 'delete',
-        url: `/categories/${categoryId}`
+        url: `/categories/${categoryId}`,
       });
-      
+
       toast({
         title: 'Success',
-        description: 'Category deleted successfully'
+        description: 'Category deleted successfully',
       });
       fetchCategories();
     } catch (err: any) {
       toast({
         title: 'Error',
-        description: err.response?.data?.error?.message || 'Failed to delete category',
-        variant: 'destructive'
+        description:
+          err.response?.data?.error?.message || 'Failed to delete category',
+        variant: 'destructive',
       });
     }
   };
@@ -128,7 +158,7 @@ const CategoryManagement: React.FC = () => {
     return [
       { id: 'all', name: 'All categories' },
       { id: 'root', name: 'Root categories only' },
-      ...rootCategories.map(cat => ({ id: cat.id, name: cat.name }))
+      ...rootCategories.map(cat => ({ id: cat.id, name: cat.name })),
     ];
   };
 
@@ -150,7 +180,9 @@ const CategoryManagement: React.FC = () => {
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Category Management</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Category Management
+        </h1>
         <p className="text-muted-foreground">
           Manage categories and their organization
         </p>
@@ -174,7 +206,7 @@ const CategoryManagement: React.FC = () => {
                   placeholder="Search categories..."
                   className="pl-10"
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={e => setSearch(e.target.value)}
                 />
               </div>
             </div>
@@ -183,7 +215,7 @@ const CategoryManagement: React.FC = () => {
                 <SelectValue placeholder="Filter by parent" />
               </SelectTrigger>
               <SelectContent>
-                {getParentOptions().map((option) => (
+                {getParentOptions().map(option => (
                   <SelectItem key={option.id} value={option.id}>
                     {option.name}
                   </SelectItem>
@@ -201,15 +233,16 @@ const CategoryManagement: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle>Categories</CardTitle>
-          <CardDescription>
-            {pagination.total} categories found
-          </CardDescription>
+          <CardDescription>{pagination.total} categories found</CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
             <div className="space-y-4">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="flex items-center gap-4 p-4 border rounded-lg">
+                <div
+                  key={i}
+                  className="flex items-center gap-4 p-4 border rounded-lg"
+                >
                   <Skeleton className="h-12 w-12 rounded-lg" />
                   <div className="flex-1 space-y-2">
                     <Skeleton className="h-4 w-3/4" />
@@ -222,18 +255,25 @@ const CategoryManagement: React.FC = () => {
           ) : categories.length === 0 ? (
             <div className="text-center py-8">
               <Folder className="mx-auto h-12 w-12 text-muted-foreground" />
-              <h3 className="mt-4 text-lg font-semibold">No categories found</h3>
+              <h3 className="mt-4 text-lg font-semibold">
+                No categories found
+              </h3>
               <p className="text-muted-foreground">
-                {search || parentFilter !== 'all' ? 'Try adjusting your search criteria' : 'Get started by creating your first category'}
+                {search || parentFilter !== 'all'
+                  ? 'Try adjusting your search criteria'
+                  : 'Get started by creating your first category'}
               </p>
-              <Button className="mt-4" onClick={() => setShowCreateDialog(true)}>
+              <Button
+                className="mt-4"
+                onClick={() => setShowCreateDialog(true)}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Create Category
               </Button>
             </div>
           ) : (
             <div className="space-y-4">
-              {categories.map((category) => (
+              {categories.map(category => (
                 <Card key={category.id}>
                   <CardContent className="pt-6">
                     <div className="flex items-start justify-between">
@@ -247,10 +287,12 @@ const CategoryManagement: React.FC = () => {
                             <Folder className="h-6 w-6 text-muted-foreground" />
                           </div>
                         )}
-                        
+
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-lg font-semibold">{category.name}</h3>
+                            <h3 className="text-lg font-semibold">
+                              {category.name}
+                            </h3>
                             <Badge variant="secondary">{category.slug}</Badge>
                             {category.applicationCount > 0 && (
                               <Badge variant="outline">
@@ -259,7 +301,7 @@ const CategoryManagement: React.FC = () => {
                               </Badge>
                             )}
                           </div>
-                          
+
                           {category.description && (
                             <p className="text-muted-foreground text-sm mb-2">
                               {category.description}
@@ -271,7 +313,10 @@ const CategoryManagement: React.FC = () => {
                             <span>•</span>
                             <span className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
-                              Created {new Date(category.createdAt).toLocaleDateString()}
+                              Created{' '}
+                              {new Date(
+                                category.createdAt
+                              ).toLocaleDateString()}
                             </span>
                             {category.parent && (
                               <>
@@ -281,18 +326,25 @@ const CategoryManagement: React.FC = () => {
                             )}
                           </div>
 
-                          {category.children && category.children.length > 0 && (
-                            <div className="mt-3">
-                              <h4 className="text-sm font-medium mb-2">Subcategories:</h4>
-                              <div className="flex flex-wrap gap-2">
-                                {category.children.map((child) => (
-                                  <Badge key={child.id} variant="outline" className="text-xs">
-                                    {child.name}
-                                  </Badge>
-                                ))}
+                          {category.children &&
+                            category.children.length > 0 && (
+                              <div className="mt-3">
+                                <h4 className="text-sm font-medium mb-2">
+                                  Subcategories:
+                                </h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {category.children.map(child => (
+                                    <Badge
+                                      key={child.id}
+                                      variant="outline"
+                                      className="text-xs"
+                                    >
+                                      {child.name}
+                                    </Badge>
+                                  ))}
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            )}
                         </div>
                       </div>
 
@@ -305,7 +357,10 @@ const CategoryManagement: React.FC = () => {
                           variant="destructive"
                           size="sm"
                           onClick={() => deleteCategory(category.id)}
-                          disabled={category.applicationCount > 0 || (category.children && category.children.length > 0)}
+                          disabled={
+                            category.applicationCount > 0 ||
+                            (category.children && category.children.length > 0)
+                          }
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
                           Delete
@@ -321,15 +376,17 @@ const CategoryManagement: React.FC = () => {
           {pagination.pages > 1 && (
             <div className="flex items-center justify-between mt-6">
               <div className="text-sm text-muted-foreground">
-                Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
-                {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
-                {pagination.total} categories
+                Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
+                {Math.min(pagination.page * pagination.limit, pagination.total)}{' '}
+                of {pagination.total} categories
               </div>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                  onClick={() =>
+                    setPagination(prev => ({ ...prev, page: prev.page - 1 }))
+                  }
                   disabled={pagination.page === 1}
                 >
                   Previous
@@ -337,7 +394,9 @@ const CategoryManagement: React.FC = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                  onClick={() =>
+                    setPagination(prev => ({ ...prev, page: prev.page + 1 }))
+                  }
                   disabled={pagination.page === pagination.pages}
                 >
                   Next

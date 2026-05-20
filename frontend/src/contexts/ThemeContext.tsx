@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react';
 import { useAuth } from './AuthContext';
 import { api } from '../services/api';
 
@@ -31,17 +37,22 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
           try {
             const response = await api.getThemePreference();
             const backendTheme = response.themePreference;
-            
+
             // Only update theme if backend has a valid preference
             // Don't overwrite localStorage if backend returns null/undefined
-            if (backendTheme && (backendTheme === 'light' || backendTheme === 'dark')) {
+            if (
+              backendTheme &&
+              (backendTheme === 'light' || backendTheme === 'dark')
+            ) {
               setTheme(backendTheme);
               localStorage.setItem('theme', backendTheme);
             } else {
               // If backend has no preference, use existing localStorage value
               const savedTheme = localStorage.getItem('theme') as Theme;
-              const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-              
+              const systemPrefersDark = window.matchMedia(
+                '(prefers-color-scheme: dark)'
+              ).matches;
+
               if (savedTheme) {
                 setTheme(savedTheme);
               } else if (systemPrefersDark) {
@@ -52,8 +63,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
             console.error('Failed to fetch theme preference:', error);
             // Fallback to localStorage if backend fetch fails
             const savedTheme = localStorage.getItem('theme') as Theme;
-            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
+            const systemPrefersDark = window.matchMedia(
+              '(prefers-color-scheme: dark)'
+            ).matches;
+
             if (savedTheme) {
               setTheme(savedTheme);
             } else if (systemPrefersDark) {
@@ -63,8 +76,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         } else {
           // For unauthenticated users, use localStorage or system preference
           const savedTheme = localStorage.getItem('theme') as Theme;
-          const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          
+          const systemPrefersDark = window.matchMedia(
+            '(prefers-color-scheme: dark)'
+          ).matches;
+
           if (savedTheme) {
             setTheme(savedTheme);
           } else if (systemPrefersDark) {
@@ -75,8 +90,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         console.error('Failed to fetch theme preference:', error);
         // Fallback to localStorage if backend fetch fails
         const savedTheme = localStorage.getItem('theme') as Theme;
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
+        const systemPrefersDark = window.matchMedia(
+          '(prefers-color-scheme: dark)'
+        ).matches;
+
         if (savedTheme) {
           setTheme(savedTheme);
         } else if (systemPrefersDark) {
@@ -110,7 +127,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   }, [theme, isAuthenticated, user]);
 
   const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+    setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
   };
 
   return (

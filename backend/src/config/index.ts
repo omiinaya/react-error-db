@@ -8,21 +8,23 @@ dotenv.config();
 const envSchema = z.object({
   // Database
   DATABASE_URL: z.string().url(),
-  
+
   // Redis
   REDIS_URL: z.string().url().optional(),
-  
+
   // JWT
   JWT_SECRET: z.string().min(32),
   JWT_REFRESH_SECRET: z.string().min(32),
-  
+
   // Server
   PORT: z.string().transform(Number).default('3010'),
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  
+  NODE_ENV: z
+    .enum(['development', 'production', 'test'])
+    .default('development'),
+
   // CORS
   FRONTEND_URL: z.string().url().default('http://localhost:3000'),
-  
+
   // Rate limiting
   RATE_LIMIT_MAX: z.string().transform(Number).default('1000'),
 

@@ -19,7 +19,7 @@ export const isTokenExpired = (token: string | null): boolean => {
 
     // Parse the payload (second part)
     const payload = JSON.parse(atob(parts[1]));
-    
+
     // Check if token has expiration
     if (!payload.exp) {
       return true; // No expiration date, assume expired
@@ -49,14 +49,14 @@ export const getTokenExpirationTime = (token: string | null): number | null => {
     }
 
     const payload = JSON.parse(atob(parts[1]));
-    
+
     if (!payload.exp) {
       return null;
     }
 
     const currentTime = Math.floor(Date.now() / 1000);
     const timeUntilExpiration = payload.exp - currentTime;
-    
+
     return timeUntilExpiration > 0 ? timeUntilExpiration : null;
   } catch (error) {
     console.error('Error getting token expiration time:', error);
@@ -90,7 +90,9 @@ export const getTokenPayload = (token: string | null): any => {
  * @param token The JWT token to validate
  * @returns Object with validation information
  */
-export const validateToken = (token: string | null): {
+export const validateToken = (
+  token: string | null
+): {
   isValid: boolean;
   isExpired: boolean;
   expiresIn: number | null;
@@ -101,7 +103,7 @@ export const validateToken = (token: string | null): {
       isValid: false,
       isExpired: true,
       expiresIn: null,
-      payload: null
+      payload: null,
     };
   }
 
@@ -113,6 +115,6 @@ export const validateToken = (token: string | null): {
     isValid: payload !== null,
     isExpired,
     expiresIn,
-    payload
+    payload,
   };
 };

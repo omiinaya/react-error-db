@@ -10,7 +10,12 @@ export enum BadgeTier {
 }
 
 export interface BadgeCriteria {
-  type: 'solution_count' | 'verified_count' | 'upvote_count' | 'contribution_days' | 'first_solution';
+  type:
+    | 'solution_count'
+    | 'verified_count'
+    | 'upvote_count'
+    | 'contribution_days'
+    | 'first_solution';
   threshold: number;
 }
 
@@ -84,16 +89,16 @@ export class AchievementService {
       },
     ];
 
-for (const badge of defaultBadges) {
-    await prisma.badge.upsert({
-      where: { name: badge.name },
-      update: {},
-      create: {
-        ...badge,
-        criteria: badge.criteria as any,
-      },
-    });
-  }
+    for (const badge of defaultBadges) {
+      await prisma.badge.upsert({
+        where: { name: badge.name },
+        update: {},
+        create: {
+          ...badge,
+          criteria: badge.criteria as any,
+        },
+      });
+    }
   }
 
   // Check and award badges for a user
@@ -121,13 +126,13 @@ for (const badge of defaultBadges) {
     const earnedBadgeIds = new Set(user.achievements.map(a => a.badgeId));
     const allBadges = await prisma.badge.findMany();
 
-for (const badge of allBadges) {
-    if (earnedBadgeIds.has(badge.id)) continue;
+    for (const badge of allBadges) {
+      if (earnedBadgeIds.has(badge.id)) continue;
 
-    const criteria = (badge.criteria as unknown) as BadgeCriteria;
-    if (!criteria || !criteria.type) continue;
-    
-    let shouldAward = false;
+      const criteria = badge.criteria as unknown as BadgeCriteria;
+      if (!criteria || !criteria.type) continue;
+
+      let shouldAward = false;
 
       switch (criteria.type) {
         case 'solution_count':
@@ -207,7 +212,10 @@ for (const badge of allBadges) {
       },
     });
 
-    const totalPoints = achievements.reduce((sum: number, a: typeof achievements[0]) => sum + a.badge.points, 0);
+    const totalPoints = achievements.reduce(
+      (sum: number, a: (typeof achievements)[0]) => sum + a.badge.points,
+      0
+    );
 
     return {
       achievements,
@@ -219,10 +227,7 @@ for (const badge of allBadges) {
   // Get all available badges
   async getAllBadges() {
     return await prisma.badge.findMany({
-      orderBy: [
-        { tier: 'asc' },
-        { points: 'desc' },
-      ],
+      orderBy: [{ tier: 'asc' }, { points: 'desc' }],
     });
   }
 

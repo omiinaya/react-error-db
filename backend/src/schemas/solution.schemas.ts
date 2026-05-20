@@ -1,13 +1,15 @@
 import { z } from 'zod';
 
 export const createSolutionSchema = z.object({
-  solutionText: z.string()
+  solutionText: z
+    .string()
     .min(10, 'Solution text must be at least 10 characters')
     .max(10000, 'Solution text must be at most 10000 characters'),
 });
 
 export const updateSolutionSchema = z.object({
-  solutionText: z.string()
+  solutionText: z
+    .string()
     .min(10, 'Solution text must be at least 10 characters')
     .max(10000, 'Solution text must be at most 10000 characters'),
 });
@@ -17,10 +19,12 @@ export const voteSchema = z.object({
 });
 
 export const solutionEditSchema = z.object({
-  solutionText: z.string()
+  solutionText: z
+    .string()
     .min(10, 'Solution text must be at least 10 characters')
     .max(10000, 'Solution text must be at most 10000 characters'),
-  editReason: z.string()
+  editReason: z
+    .string()
     .min(1, 'Edit reason is required')
     .max(500, 'Edit reason must be at most 500 characters')
     .optional(),

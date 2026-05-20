@@ -12,9 +12,9 @@ interface CreateApplicationDialogProps {
   onApplicationCreated: (application: any) => void;
 }
 
-const CreateApplicationDialog: React.FC<CreateApplicationDialogProps> = ({ 
-  categoryId, 
-  onApplicationCreated 
+const CreateApplicationDialog: React.FC<CreateApplicationDialogProps> = ({
+  categoryId,
+  onApplicationCreated,
 }) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,14 +24,16 @@ const CreateApplicationDialog: React.FC<CreateApplicationDialogProps> = ({
     description: '',
     logoUrl: '',
     websiteUrl: '',
-    categoryId
+    categoryId,
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -47,18 +49,18 @@ const CreateApplicationDialog: React.FC<CreateApplicationDialogProps> = ({
     setFormData(prev => ({
       ...prev,
       name,
-      slug: prev.slug || generateSlug(name)
+      slug: prev.slug || generateSlug(name),
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim()) {
       toast({
         title: 'Validation Error',
         description: 'Application name is required',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -69,13 +71,15 @@ const CreateApplicationDialog: React.FC<CreateApplicationDialogProps> = ({
       onApplicationCreated(response.application);
       toast({
         title: 'Success',
-        description: 'Application created successfully'
+        description: 'Application created successfully',
       });
     } catch (error: any) {
       toast({
         title: 'Error',
-        description: error.response?.data?.error?.message || 'Failed to create application',
-        variant: 'destructive'
+        description:
+          error.response?.data?.error?.message ||
+          'Failed to create application',
+        variant: 'destructive',
       });
     } finally {
       setIsSubmitting(false);
@@ -153,7 +157,11 @@ const CreateApplicationDialog: React.FC<CreateApplicationDialogProps> = ({
       </div>
 
       <div className="flex justify-end gap-3 pt-4">
-        <Button type="button" variant="outline" onClick={() => onApplicationCreated(null)}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => onApplicationCreated(null)}
+        >
           Cancel
         </Button>
         <Button type="submit" disabled={isSubmitting}>

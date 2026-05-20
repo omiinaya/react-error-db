@@ -15,7 +15,7 @@ describe('useToast', () => {
 
   it('should call toast with success variant', () => {
     const { result } = renderHook(() => useToast());
-    
+
     act(() => {
       result.current.toast({
         title: 'Success',
@@ -33,7 +33,7 @@ describe('useToast', () => {
 
   it('should call toast with default variant', () => {
     const { result } = renderHook(() => useToast());
-    
+
     act(() => {
       result.current.toast({
         title: 'Info',
@@ -50,7 +50,7 @@ describe('useToast', () => {
 
   it('should call toast with destructive variant', () => {
     const { result } = renderHook(() => useToast());
-    
+
     act(() => {
       result.current.toast({
         title: 'Error',
@@ -68,7 +68,7 @@ describe('useToast', () => {
 
   it('should call toast with custom duration', () => {
     const { result } = renderHook(() => useToast());
-    
+
     act(() => {
       result.current.toast({
         title: 'Custom',
@@ -90,7 +90,7 @@ describe('useToast', () => {
     (toast as any).mockReturnValue({ id: '123', dismiss: mockDismiss });
 
     const { result } = renderHook(() => useToast());
-    
+
     let toastResult: any;
     act(() => {
       toastResult = result.current.toast({
@@ -111,7 +111,7 @@ describe('useToast', () => {
     (toast as any).mockReturnValue({ id: '123', dismiss: mockDismiss });
 
     const { result } = renderHook(() => useToast());
-    
+
     let toastResult: any;
     act(() => {
       toastResult = result.current.toast({

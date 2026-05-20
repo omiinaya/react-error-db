@@ -2,11 +2,28 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
-import { Search, User, LogOut, Menu, X, Plus, Settings, Sun, Moon, Languages, Check } from 'lucide-react';
+import {
+  Search,
+  User,
+  LogOut,
+  Menu,
+  X,
+  Plus,
+  Settings,
+  Sun,
+  Moon,
+  Languages,
+  Check,
+} from 'lucide-react';
 import { useState } from 'react';
 
 interface LayoutProps {
@@ -24,7 +41,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Debug logging for authentication state
   console.log('Layout - Authentication state:', {
     isAuthenticated,
-    user: user ? { id: user.id, username: user.username, isAdmin: user.isAdmin } : null
+    user: user
+      ? { id: user.id, username: user.username, isAdmin: user.isAdmin }
+      : null,
   });
 
   const languages = [
@@ -49,10 +68,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const navigation = [
-    { name: t('common:navigation.home'), href: '/', current: location.pathname === '/' },
-    { name: t('common:navigation.browse'), href: '/search', current: location.pathname === '/search' },
+    {
+      name: t('common:navigation.home'),
+      href: '/',
+      current: location.pathname === '/',
+    },
+    {
+      name: t('common:navigation.browse'),
+      href: '/search',
+      current: location.pathname === '/search',
+    },
   ];
-
 
   return (
     <div className="min-h-screen bg-background">
@@ -63,14 +89,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="flex items-center gap-6">
             <Link to="/" className="flex items-center space-x-2">
               <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">E</span>
+                <span className="text-primary-foreground font-bold text-lg">
+                  E
+                </span>
               </div>
               <span className="font-bold text-xl">{t('common:app.name')}</span>
             </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-6">
-              {navigation.map((item) => (
+              {navigation.map(item => (
                 <Link
                   key={item.name}
                   to={item.href}
@@ -81,14 +109,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   {item.name}
                 </Link>
               ))}
-              
+
               {/* Admin Settings Button */}
               {isAuthenticated && user?.isAdmin && (
                 <Link
                   to="/admin"
                   className="text-sm font-medium transition-colors hover:text-primary text-muted-foreground"
                 >
-                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
                     <Settings className="h-4 w-4" />
                     {t('common:navigation.adminSettings')}
                   </Button>
@@ -99,7 +131,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
           {/* Search Bar - Centered */}
           <div className="hidden md:flex flex-1 justify-center mx-8">
-            <form onSubmit={handleSearch} className="flex items-center gap-2 max-w-lg">
+            <form
+              onSubmit={handleSearch}
+              className="flex items-center gap-2 max-w-lg"
+            >
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -107,14 +142,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   placeholder={t('common:search.placeholder')}
                   className="pl-10 pr-4 w-full"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                 />
               </div>
-              
+
               {/* Add Error Button positioned to the right of search bar */}
               {/* Temporarily showing button for testing */}
               <Link to="/error/create">
-                <Button size="sm" className="flex items-center gap-2 whitespace-nowrap h-8 shrink-0">
+                <Button
+                  size="sm"
+                  className="flex items-center gap-2 whitespace-nowrap h-8 shrink-0"
+                >
                   <Plus className="h-4 w-4" />
                   {t('common:navigation.addError')}
                 </Button>
@@ -139,7 +177,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    {languages.map((lang) => (
+                    {languages.map(lang => (
                       <DropdownMenuItem
                         key={lang.code}
                         onClick={() => changeLanguage(lang.code)}
@@ -156,7 +194,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
-    
+
                 {/* Theme Toggle Button */}
                 <Button
                   variant="ghost"
@@ -173,11 +211,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </Button>
 
                 <Link to="/profile">
-                  <Button variant="ghost" size="icon" className="hidden md:flex">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="hidden md:flex"
+                  >
                     <User className="h-4 w-4" />
                   </Button>
                 </Link>
-                <Button variant="ghost" size="icon" onClick={handleLogout} className="hidden md:flex">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleLogout}
+                  className="hidden md:flex"
+                >
                   <LogOut className="h-4 w-4" />
                 </Button>
               </>
@@ -196,61 +243,65 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </>
             )}
 
-              {/* Mobile Language Selector Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="md:hidden"
-                    aria-label="Select language"
+            {/* Mobile Language Selector Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="md:hidden"
+                  aria-label="Select language"
+                >
+                  <Languages className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {languages.map(lang => (
+                  <DropdownMenuItem
+                    key={lang.code}
+                    onClick={() => changeLanguage(lang.code)}
+                    className="flex items-center justify-between"
                   >
-                    <Languages className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {languages.map((lang) => (
-                    <DropdownMenuItem
-                      key={lang.code}
-                      onClick={() => changeLanguage(lang.code)}
-                      className="flex items-center justify-between"
-                    >
-                      <span className="flex items-center gap-2">
-                        <span className="text-lg">{lang.flag}</span>
-                        {lang.name}
-                      </span>
-                      {i18n.language === lang.code && (
-                        <Check className="h-4 w-4 text-primary" />
-                      )}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    <span className="flex items-center gap-2">
+                      <span className="text-lg">{lang.flag}</span>
+                      {lang.name}
+                    </span>
+                    {i18n.language === lang.code && (
+                      <Check className="h-4 w-4 text-primary" />
+                    )}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-              {/* Mobile Theme Toggle Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleTheme}
-                className="md:hidden"
-                aria-label="Toggle theme"
-              >
-                {theme === 'light' ? (
-                  <Moon className="h-5 w-5" />
-                ) : (
-                  <Sun className="h-5 w-5" />
-                )}
-              </Button>
+            {/* Mobile Theme Toggle Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="md:hidden"
+              aria-label="Toggle theme"
+            >
+              {theme === 'light' ? (
+                <Moon className="h-5 w-5" />
+              ) : (
+                <Sun className="h-5 w-5" />
+              )}
+            </Button>
 
-              {/* Mobile menu button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="md:hidden"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              >
-                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
+            {/* Mobile menu button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+            </Button>
           </div>
         </div>
 
@@ -264,7 +315,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 placeholder={t('common:search.placeholder')}
                 className="pl-10 pr-4"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
               />
             </div>
           </form>
@@ -274,7 +325,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {isMobileMenuOpen && (
           <div className="md:hidden border-t">
             <nav className="px-4 py-2 space-y-1">
-              {navigation.map((item) => (
+              {navigation.map(item => (
                 <Link
                   key={item.name}
                   to={item.href}
@@ -288,7 +339,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   {item.name}
                 </Link>
               ))}
-              
+
               {/* Admin Mobile Navigation */}
               {isAuthenticated && user?.isAdmin && (
                 <>
@@ -304,13 +355,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   </Link>
                 </>
               )}
-              
+
               {/* Mobile Theme Toggle */}
               <button
                 onClick={toggleTheme}
                 className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent"
               >
-                {theme === 'light' ? t('common:theme.switchToDark') : t('common:theme.switchToLight')}
+                {theme === 'light'
+                  ? t('common:theme.switchToDark')
+                  : t('common:theme.switchToLight')}
               </button>
 
               {isAuthenticated ? (
@@ -360,9 +413,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1">
-        {children}
-      </main>
+      <main className="flex-1">{children}</main>
 
       {/* Footer */}
       <footer className="border-t bg-muted/50">
@@ -375,19 +426,47 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </p>
             </div>
             <div>
-              <h3 className="font-semibold mb-4">{t('common:footer.resources')}</h3>
+              <h3 className="font-semibold mb-4">
+                {t('common:footer.resources')}
+              </h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary">{t('common:footer.documentation')}</a></li>
-                <li><a href="#" className="hover:text-primary">{t('common:footer.apiReference')}</a></li>
-                <li><a href="#" className="hover:text-primary">{t('common:footer.contribute')}</a></li>
+                <li>
+                  <a href="#" className="hover:text-primary">
+                    {t('common:footer.documentation')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-primary">
+                    {t('common:footer.apiReference')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-primary">
+                    {t('common:footer.contribute')}
+                  </a>
+                </li>
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold mb-4">{t('common:footer.community')}</h3>
+              <h3 className="font-semibold mb-4">
+                {t('common:footer.community')}
+              </h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary">GitHub</a></li>
-                <li><a href="#" className="hover:text-primary">Discord</a></li>
-                <li><a href="#" className="hover:text-primary">Twitter</a></li>
+                <li>
+                  <a href="#" className="hover:text-primary">
+                    GitHub
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-primary">
+                    Discord
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-primary">
+                    Twitter
+                  </a>
+                </li>
               </ul>
             </div>
           </div>

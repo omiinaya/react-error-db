@@ -5,6 +5,7 @@ Thank you for your interest in contributing to the Error Database project! This 
 ## 🎯 Code of Conduct
 
 By participating in this project, you are expected to uphold our Code of Conduct:
+
 - Be respectful and inclusive
 - Use welcoming and inclusive language
 - Be respectful of differing viewpoints and experiences
@@ -15,6 +16,7 @@ By participating in this project, you are expected to uphold our Code of Conduct
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js 18+
 - PostgreSQL database
 - Redis (for caching)
@@ -23,6 +25,7 @@ By participating in this project, you are expected to uphold our Code of Conduct
 ### Development Setup
 
 1. **Fork the repository**
+
    ```bash
    # Click the 'Fork' button on GitHub
    # Clone your fork
@@ -31,34 +34,37 @@ By participating in this project, you are expected to uphold our Code of Conduct
    ```
 
 2. **Set up development environment**
+
    ```bash
    # Backend setup
    cd backend
    npm install
-   
+
    # Frontend setup
    cd ../frontend
    npm install
    ```
 
 3. **Environment configuration**
+
    ```bash
    # Copy environment files
    cp .env.example .env
-   
+
    # Update with your local database credentials
    DATABASE_URL="postgresql://user:password@localhost:5432/errdb"
    REDIS_URL="redis://localhost:6379"
    ```
 
 4. **Database setup**
+
    ```bash
    # Run migrations
    npx prisma migrate dev
-   
+
    # Generate Prisma client
    npx prisma generate
-   
+
    # Seed data
    npx prisma db seed
    ```
@@ -66,6 +72,7 @@ By participating in this project, you are expected to uphold our Code of Conduct
 ## 📝 Development Workflow
 
 ### Branch Naming Convention
+
 Use the following prefix conventions for branches:
 
 - `feature/` - New features
@@ -76,6 +83,7 @@ Use the following prefix conventions for branches:
 - `chore/` - Maintenance tasks
 
 Examples:
+
 - `feature/user-authentication`
 - `fix/search-performance`
 - `docs/api-documentation`
@@ -83,6 +91,7 @@ Examples:
 ### Commit Message Guidelines
 
 Use conventional commit messages:
+
 ```
 <type>(<scope>): <description>
 
@@ -92,6 +101,7 @@ Use conventional commit messages:
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -101,6 +111,7 @@ Use conventional commit messages:
 - `chore`: Maintenance tasks
 
 **Examples:**
+
 ```
 feat(auth): add Google OAuth authentication
 
@@ -119,14 +130,18 @@ docs(api): update endpoint documentation
 6. **Submit a pull request** to the `main` branch
 
 ### PR Description Template
+
 ```markdown
 ## Description
+
 <!-- Describe your changes in detail -->
 
 ## Related Issues
+
 <!-- Link to any related issues (e.g., Fixes #123) -->
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Documentation update
@@ -134,11 +149,13 @@ docs(api): update endpoint documentation
 - [ ] Other (please describe)
 
 ## Testing
+
 - [ ] Added unit tests
 - [ ] Added integration tests
 - [ ] Manual testing performed
 
 ## Screenshots (if applicable)
+
 <!-- Add screenshots for UI changes -->
 ```
 
@@ -147,6 +164,7 @@ docs(api): update endpoint documentation
 ### Running Tests
 
 **Backend tests:**
+
 ```bash
 cd backend
 npm test          # Run all tests
@@ -155,6 +173,7 @@ npm test:integration # Run integration tests
 ```
 
 **Frontend tests:**
+
 ```bash
 cd frontend
 npm test          # Run all tests
@@ -163,6 +182,7 @@ npm test:e2e     # Run end-to-end tests
 ```
 
 ### Test Coverage
+
 - Aim for 80%+ test coverage
 - Write tests for new features
 - Ensure edge cases are covered
@@ -171,12 +191,13 @@ npm test:e2e     # Run end-to-end tests
 ### Writing Tests
 
 **Backend example:**
+
 ```typescript
 describe('AuthService', () => {
   it('should register a new user', async () => {
     const user = await authService.register({
       email: 'test@example.com',
-      password: 'password123'
+      password: 'password123',
     });
     expect(user).toHaveProperty('id');
   });
@@ -184,6 +205,7 @@ describe('AuthService', () => {
 ```
 
 **Frontend example:**
+
 ```typescript
 describe('LoginForm', () => {
   it('should validate email format', () => {
@@ -198,18 +220,21 @@ describe('LoginForm', () => {
 ## 🎨 Code Style
 
 ### TypeScript/JavaScript
+
 - Use TypeScript strict mode
 - Prefer functional components with hooks
 - Use async/await over promises
 - Avoid `any` type - use proper type definitions
 
 ### Naming Conventions
+
 - **Variables**: camelCase (`userData`, `isLoading`)
 - **Components**: PascalCase (`UserProfile`, `ErrorCard`)
 - **Constants**: UPPER_SNAKE_CASE (`API_BASE_URL`)
 - **Files**: kebab-case (`user-service.ts`, `error-card.tsx`)
 
 ### Import Order
+
 ```typescript
 // 1. External dependencies
 import React from 'react';
@@ -227,11 +252,13 @@ import styles from './UserList.module.css';
 ## 📚 Documentation
 
 ### Code Documentation
+
 - Use JSDoc for functions and components
 - Document complex algorithms
 - Explain non-obvious code decisions
 
 **Example:**
+
 ```typescript
 /**
  * Calculates the score for a solution based on votes
@@ -245,7 +272,9 @@ function calculateScore(upvotes: number, downvotes: number): number {
 ```
 
 ### Update Documentation
+
 When making changes that affect:
+
 - API endpoints → Update `docs/api-endpoints.md`
 - Database schema → Update `docs/database-schema.md`
 - Architecture → Update relevant architecture docs
@@ -274,6 +303,7 @@ When suggesting new features:
 ## 🔧 Development Tips
 
 ### Debugging
+
 ```bash
 # Backend debugging
 npm run dev        # Development with auto-reload
@@ -285,6 +315,7 @@ npm run dev        # Development server
 ```
 
 ### Database Operations
+
 ```bash
 # View database schema
 npx prisma studio
@@ -297,6 +328,7 @@ npx prisma migrate reset
 ```
 
 ### Code Quality
+
 ```bash
 # Run linter
 npm run lint

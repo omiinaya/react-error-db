@@ -9,9 +9,11 @@ The application now supports rich text markdown formatting for both error descri
 ## Components
 
 ### MarkdownRenderer Component
+
 **Location:** [`frontend/src/components/MarkdownRenderer.tsx`](frontend/src/components/MarkdownRenderer.tsx)
 
 A reusable component that safely renders markdown content with:
+
 - XSS protection through content sanitization
 - Support for GitHub Flavored Markdown (GFM)
 - Tables, blockquotes, code blocks, and inline code
@@ -19,16 +21,19 @@ A reusable component that safely renders markdown content with:
 - Lists (ordered and unordered)
 
 **Usage:**
+
 ```tsx
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 
-<MarkdownRenderer content={markdownContent} isPreview={false} />
+<MarkdownRenderer content={markdownContent} isPreview={false} />;
 ```
 
 ### MarkdownEditor Component
+
 **Location:** [`frontend/src/components/MarkdownEditor.tsx`](frontend/src/components/MarkdownEditor.tsx)
 
 A rich text editor with:
+
 - Live preview functionality (Write/Preview tabs)
 - Comprehensive toolbar with formatting options
 - Character counting with visual indicators
@@ -36,6 +41,7 @@ A rich text editor with:
 - Responsive design for mobile devices
 
 **Features:**
+
 - Headers (H1-H6)
 - Bold, italic, strikethrough, underline
 - Lists (ordered/unordered)
@@ -46,6 +52,7 @@ A rich text editor with:
 - Full-screen editing mode
 
 **Usage:**
+
 ```tsx
 import MarkdownEditor from '@/components/MarkdownEditor';
 
@@ -56,15 +63,17 @@ import MarkdownEditor from '@/components/MarkdownEditor';
   maxLength={5000}
   showCharacterCount={true}
   height={400}
-/>
+/>;
 ```
 
 ## Styling
 
 ### Markdown Content Styling
+
 **Location:** [`frontend/src/styles/markdown-content.css`](frontend/src/styles/markdown-content.css)
 
 Comprehensive styling for rendered markdown including:
+
 - Typography (headings, paragraphs, lists)
 - Code blocks with syntax highlighting support
 - Tables with borders and alternating rows
@@ -73,9 +82,11 @@ Comprehensive styling for rendered markdown including:
 - Dark mode support
 
 ### Markdown Editor Styling
+
 **Location:** [`frontend/src/styles/markdown-editor.css`](frontend/src/styles/markdown-editor.css)
 
 Custom styling for the rich text editor:
+
 - Toolbar button styling and hover effects
 - Responsive design for mobile devices
 - Dark mode support
@@ -85,16 +96,19 @@ Custom styling for the rich text editor:
 ## Integration Points
 
 ### Error Creation
+
 **Location:** [`frontend/src/pages/ErrorCreate.tsx`](frontend/src/pages/ErrorCreate.tsx)
 
 The error creation form now uses the MarkdownEditor for the description field, replacing the previous textarea.
 
 ### Error Detail View
+
 **Location:** [`frontend/src/pages/ErrorDetail.tsx`](frontend/src/pages/ErrorDetail.tsx)
 
 Error descriptions and solution content are now rendered using the MarkdownRenderer component.
 
 ### Solution Editing
+
 **Location:** [`frontend/src/components/EditSolutionDialog.tsx`](frontend/src/components/EditSolutionDialog.tsx)
 
 Solution editing now uses the MarkdownEditor for rich text formatting.
@@ -102,11 +116,13 @@ Solution editing now uses the MarkdownEditor for rich text formatting.
 ## Security Features
 
 ### XSS Protection
+
 - All markdown content is sanitized using `rehype-sanitize`
 - Dangerous HTML elements and attributes are removed
 - JavaScript execution is prevented
 
 ### Content Validation
+
 - Backend validation schemas updated to handle markdown content
 - Character limits enforced on both frontend and backend
 - Input sanitization on API endpoints
@@ -114,6 +130,7 @@ Solution editing now uses the MarkdownEditor for rich text formatting.
 ## Dependencies
 
 ### Frontend Dependencies
+
 ```json
 {
   "react-markdown": "^9.0.1",
@@ -127,9 +144,11 @@ Solution editing now uses the MarkdownEditor for rich text formatting.
 ## Testing
 
 ### Test Coverage
+
 **Location:** [`frontend/src/components/__tests__/MarkdownRenderer.test.tsx`](frontend/src/components/__tests__/MarkdownRenderer.test.tsx)
 
 Comprehensive test suite covering:
+
 - Basic markdown rendering
 - Empty content handling
 - Preview mode functionality
@@ -138,6 +157,7 @@ Comprehensive test suite covering:
 - Blockquote rendering
 
 **Run tests:**
+
 ```bash
 cd frontend
 npm test -- src/components/__tests__/MarkdownRenderer.test.tsx
@@ -146,7 +166,9 @@ npm test -- src/components/__tests__/MarkdownRenderer.test.tsx
 ## Configuration
 
 ### Editor Configuration
+
 The MarkdownEditor component accepts the following props:
+
 - `value`: string - The markdown content
 - `onChange`: function - Callback when content changes
 - `placeholder`: string - Placeholder text
@@ -157,7 +179,9 @@ The MarkdownEditor component accepts the following props:
 - `showToolbar`: boolean - Show formatting toolbar (default: true)
 
 ### Renderer Configuration
+
 The MarkdownRenderer component accepts:
+
 - `content`: string - The markdown content to render
 - `className`: string - Additional CSS classes
 - `isPreview`: boolean - Apply preview styling (default: false)
@@ -165,13 +189,16 @@ The MarkdownRenderer component accepts:
 ## Usage Examples
 
 ### Basic Usage
+
 ```tsx
 import { useState } from 'react';
 import MarkdownEditor from '@/components/MarkdownEditor';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 
 function MyComponent() {
-  const [content, setContent] = useState('# Hello World\n\nThis is **bold** text.');
+  const [content, setContent] = useState(
+    '# Hello World\n\nThis is **bold** text.'
+  );
 
   return (
     <div>
@@ -190,6 +217,7 @@ function MyComponent() {
 ```
 
 ### With Validation
+
 ```tsx
 <MarkdownEditor
   value={description}
@@ -203,6 +231,7 @@ function MyComponent() {
 ## Browser Compatibility
 
 The implementation is compatible with:
+
 - Chrome 80+
 - Firefox 75+
 - Safari 13+
@@ -238,6 +267,7 @@ The implementation is compatible with:
 ### Debug Mode
 
 Enable debug logging by setting:
+
 ```typescript
 window.DEBUG_MARKDOWN = true;
 ```
@@ -245,6 +275,7 @@ window.DEBUG_MARKDOWN = true;
 ## Future Enhancements
 
 Potential improvements for future versions:
+
 - Image upload functionality
 - Custom toolbar buttons
 - Collaborative editing
@@ -256,6 +287,7 @@ Potential improvements for future versions:
 ## Support
 
 For issues or questions regarding the markdown implementation:
+
 1. Check existing tests for usage examples
 2. Review component source code
 3. Check browser console for errors

@@ -3,11 +3,13 @@
 ## Frontend Technologies
 
 ### Core Framework
+
 - **React 18+**: Modern React with hooks and functional components
 - **TypeScript**: Type safety and better developer experience
 - **Vite**: Fast build tool and development server
 
 ### UI Components & Styling
+
 - **shadcn/ui**: Modern, accessible component library
 - **Tailwind CSS**: Utility-first CSS framework
 - **Lucide React**: Beautiful & consistent icon library
@@ -15,12 +17,14 @@
 - **Zod**: Schema validation for forms and API responses
 
 ### State Management & Routing
+
 - **React Router**: Declarative routing for single-page apps
 - **TanStack Query (React Query)**: Server state management
 - **Zustand**: Lightweight client state management
 - **React Hot Toast**: Beautiful notifications
 
 ### Development Tools
+
 - **ESLint**: Code linting and quality
 - **Prettier**: Code formatting
 - **Husky**: Git hooks for pre-commit checks
@@ -30,16 +34,19 @@
 ## Backend Technologies
 
 ### Runtime & Framework
+
 - **Node.js**: JavaScript runtime
 - **Express.js**: Web application framework
 - **TypeScript**: Type safety on backend
 
 ### Database & ORM
+
 - **PostgreSQL**: Relational database
 - **Prisma**: Modern database ORM and migrations
 - **Redis**: In-memory data store for caching and sessions
 
 ### Authentication & Security
+
 - **JWT**: JSON Web Tokens for authentication
 - **bcrypt**: Password hashing
 - **Helmet**: Security headers
@@ -47,12 +54,14 @@
 - **Rate limiting**: Request rate limiting middleware
 
 ### API & Validation
+
 - **Zod**: Runtime validation for API endpoints
 - **Swagger/OpenAPI**: API documentation
 - **Jest**: Testing framework
 - **SuperTest**: HTTP assertion testing
 
 ### Development & Deployment
+
 - **Docker**: Containerization
 - **Docker Compose**: Local development environment
 - **PM2**: Production process manager
@@ -61,6 +70,7 @@
 ## Development Environment
 
 ### Local Setup
+
 ```bash
 # Frontend
 npm create vite@latest frontend -- --template react-ts
@@ -75,6 +85,7 @@ npm install express typescript @types/node ts-node-dev prisma
 ```
 
 ### Recommended IDE Extensions
+
 - **VS Code**: Preferred code editor
 - **ES7+ React/Redux/React-Native snippets**
 - **Prettier - Code formatter**
@@ -85,18 +96,21 @@ npm install express typescript @types/node ts-node-dev prisma
 ## Build & Deployment
 
 ### Frontend Build
+
 ```bash
 npm run build  # Creates optimized production build
 npm run preview  # Preview production build locally
 ```
 
 ### Backend Build
+
 ```bash
 npm run build  # Compiles TypeScript to JavaScript
 npm start  # Starts production server
 ```
 
 ### Deployment Options
+
 1. **Vercel**: Frontend deployment (free tier available)
 2. **Railway**: Backend deployment (free tier available)
 3. **DigitalOcean**: Full-stack deployment with droplets
@@ -106,12 +120,14 @@ npm start  # Starts production server
 ## Performance Considerations
 
 ### Frontend Optimization
+
 - **Code splitting** with React.lazy()
 - **Bundle analysis** with rollup-plugin-visualizer
 - **Image optimization** with next/image or similar
 - **CDN** for static assets
 
 ### Backend Optimization
+
 - **Database indexing** for frequent queries
 - **Query optimization** with Prisma
 - **Response compression** with compression middleware
@@ -120,11 +136,13 @@ npm start  # Starts production server
 ## Monitoring & Analytics
 
 ### Frontend Monitoring
+
 - **Sentry**: Error tracking and monitoring
 - **Google Analytics**: User behavior tracking
 - **Web Vitals**: Core web vitals monitoring
 
 ### Backend Monitoring
+
 - **Winston**: Logging library
 - **Morgan**: HTTP request logging
 - **Health checks**: Endpoint monitoring

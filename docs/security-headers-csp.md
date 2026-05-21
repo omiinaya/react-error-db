@@ -1,6 +1,7 @@
 # Security Headers and CSP Configuration Guide
 
 ## Overview
+
 The Error Database application implements comprehensive security headers and Content Security Policy (CSP) to protect against common web vulnerabilities including XSS, clickjacking, and other attacks.
 
 ## Security Headers Configuration
@@ -8,8 +9,9 @@ The Error Database application implements comprehensive security headers and Con
 ### Implemented Headers
 
 #### 1. Content Security Policy (CSP)
+
 ```http
-Content-Security-Policy: 
+Content-Security-Policy:
   default-src 'self';
   script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://unpkg.com;
@@ -25,37 +27,43 @@ Content-Security-Policy:
 ```
 
 #### 2. Strict Transport Security (HSTS)
+
 ```http
 Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 ```
 
 #### 3. X-Content-Type-Options
+
 ```http
 X-Content-Type-Options: nosniff
 ```
 
 #### 4. X-Frame-Options
+
 ```http
 X-Frame-Options: DENY
 ```
 
 #### 5. Permissions Policy
+
 ```http
-Permissions-Policy: 
-  accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), 
-  display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(), 
-  gamepad=(), geolocation=(), gyroscope=(), layout-animations=(), legacy-image-formats=(), 
-  magnetometer=(), microphone=(), midi=(), oversized-images=(), payment=(), 
-  picture-in-picture=(), publickey-credentials-get=(), sync-xhr=(), usb=(), 
+Permissions-Policy:
+  accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(),
+  display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(),
+  gamepad=(), geolocation=(), gyroscope=(), layout-animations=(), legacy-image-formats=(),
+  magnetometer=(), microphone=(), midi=(), oversized-images=(), payment=(),
+  picture-in-picture=(), publickey-credentials-get=(), sync-xhr=(), usb=(),
   vr=(), wake-lock=(), screen-wake-lock=(), web-share=(), xr-spatial-tracking=()
 ```
 
 #### 6. Referrer Policy
+
 ```http
 Referrer-Policy: strict-origin-when-cross-origin
 ```
 
 #### 7. Other Headers
+
 ```http
 X-Download-Options: noopen
 X-Permitted-Cross-Domain-Policies: none
@@ -67,37 +75,44 @@ Cross-Origin-Resource-Policy: same-site
 ## CSP Directives Explained
 
 ### default-src
+
 - **'self'**: Only allow resources from the same origin
 - **Purpose**: Fallback for other directives
 
 ### script-src
+
 - **'self'**: Scripts from same origin
 - **'unsafe-inline'**: Allow inline scripts (required for some frameworks)
 - **'unsafe-eval'**: Allow eval() (required for some libraries)
 - **CDNs**: Trusted content delivery networks
 
 ### style-src
+
 - **'self'**: Styles from same origin
 - **'unsafe-inline'**: Allow inline styles
 - **Google Fonts**: Allow font stylesheets
 
 ### font-src
+
 - **'self'**: Fonts from same origin
 - **Google Fonts**: Allow font downloads
 - **data:**: Allow data URIs for fonts
 
 ### img-src
+
 - **'self'**: Images from same origin
 - **data:**: Data URIs for images
 - **blob:**: Blob URLs
 - **https:**: All HTTPS sources
 
 ### connect-src
+
 - **'self'**: API calls to same origin
 - **Frontend URL**: Allow connections to frontend
 - **Sentry**: Error reporting and monitoring
 
 ### Security Restrictions
+
 - **frame-src 'none'**: Disable iframes completely
 - **object-src 'none'**: Disable plugins (Flash, Java)
 - **frame-ancestors 'none'**: Prevent clickjacking
@@ -105,39 +120,49 @@ Cross-Origin-Resource-Policy: same-site
 ## Environment-Specific Configuration
 
 ### Development
+
 ```typescript
 // CSP reports only (no enforcement)
-reportOnly: true
+reportOnly: true;
 ```
 
-### Production  
+### Production
+
 ```typescript
 // Full enforcement with reporting
-reportOnly: false
-reportUri: '/api/security/csp-report'
+reportOnly: false;
+reportUri: '/api/security/csp-report';
 ```
 
 ## Reporting Endpoints
 
 ### CSP Violation Reports
+
 **Endpoint**: `POST /api/security/csp-report`
+
 - Logs CSP violations in development
 - Ignored in production (configure external reporting)
 
-### XSS Violation Reports  
+### XSS Violation Reports
+
 **Endpoint**: `POST /api/security/xss-report`
+
 - Logs potential XSS attacks
 - Development debugging only
 
 ### Certificate Transparency Reports
+
 **Endpoint**: `POST /api/security/ct-report`
+
 - SSL/TLS certificate monitoring
 - Development debugging only
 
 ## Testing Security Headers
 
 ### Test Endpoint
+
 **Endpoint**: `GET /api/security/headers-test`
+
 ```json
 {
   "success": true,
@@ -158,6 +183,7 @@ reportUri: '/api/security/csp-report'
 ```
 
 ### Manual Testing
+
 ```bash
 # Test headers with curl
 curl -I http://localhost:3010/api/health
@@ -172,11 +198,13 @@ curl -I http://localhost:3010/api/security/headers-test
 ## Integration with Monitoring
 
 ### Sentry Integration
+
 - CSP violations can be forwarded to Sentry
 - Real-time alerting for security events
 - Correlation with application errors
 
 ### Logging
+
 - Security-relevant requests are logged
 - Authentication attempts tracked
 - Admin access monitored
@@ -184,26 +212,26 @@ curl -I http://localhost:3010/api/security/headers-test
 ## Customization
 
 ### Modifying CSP
+
 ```typescript
 // Custom CSP configuration
 const customCSP = {
   directives: {
-    scriptSrc: [
-      "'self'",
-      "https://your-cdn.example.com",
-    ],
+    scriptSrc: ["'self'", 'https://your-cdn.example.com'],
     // ... other directives
-  }
+  },
 };
 ```
 
 ### Adding New Headers
+
 ```typescript
 // Custom security header
 res.setHeader('X-Custom-Security-Policy', 'your-policy');
 ```
 
 ### Environment-specific Rules
+
 ```typescript
 // Different rules for different environments
 if (config.nodeEnv === 'development') {
@@ -216,18 +244,21 @@ if (config.nodeEnv === 'development') {
 ## Best Practices
 
 ### CSP Implementation
+
 1. **Start with Report-Only**: Begin with `reportOnly: true`
 2. **Monitor Violations**: Address all reported violations
 3. **Gradual Enforcement**: Move to enforcement gradually
 4. **Regular Review**: Periodically review and update policies
 
 ### Header Configuration
+
 1. **Minimum Privilege**: Grant minimum necessary permissions
 2. **HTTPS Enforcement**: Always use HSTS in production
 3. **Frame Protection**: Prevent clickjacking with frame options
 4. **MIME Sniffing**: Disable MIME type sniffing
 
 ### Maintenance
+
 1. **Regular Audits**: Conduct security header audits
 2. **Dependency Updates**: Update policies for new dependencies
 3. **Monitoring**: Continuously monitor for violations
@@ -238,20 +269,24 @@ if (config.nodeEnv === 'development') {
 ### Common Issues
 
 #### CSP Violations
+
 - **Missing Sources**: Add required domains to appropriate directives
 - **Inline Code**: Use nonces or hashes for inline code
 - **Dynamic Content**: Adjust policies for dynamic content
 
 #### Header Conflicts
+
 - **Multiple Headers**: Ensure no conflicting headers
 - **Proxy Interference**: Check reverse proxy configurations
 - **CDN Settings**: Verify CDN security header settings
 
 #### Browser Compatibility
+
 - **Legacy Browsers**: Some headers not supported in older browsers
 - **Feature Detection**: Use feature detection for progressive enhancement
 
 ### Debugging
+
 ```bash
 # Enable debug logging
 LOG_LEVEL=debug npm run dev
@@ -266,17 +301,20 @@ LOG_LEVEL=debug npm run dev
 ## Tools and Resources
 
 ### Testing Tools
+
 - [SecurityHeaders.com](https://securityheaders.com/)
 - [Mozilla Observatory](https://observatory.mozilla.org/)
 - [SSL Labs](https://www.ssllabs.com/ssltest/)
 - [CSP Evaluator](https://csp-evaluator.withgoogle.com/)
 
 ### Documentation
+
 - [MDN CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
 - [OWASP Security Headers](https://owasp.org/www-project-secure-headers/)
 - [Helmet.js Documentation](https://helmetjs.github.io/)
 
 ### Monitoring
+
 - [Sentry CSP Reporting](https://docs.sentry.io/product/security-policy-reporting/)
 - [Report-URI](https://report-uri.com/)
 - [Google CSP Reporter](https://csp.withgoogle.com/docs/index.html)
@@ -284,12 +322,14 @@ LOG_LEVEL=debug npm run dev
 ## Compliance
 
 ### Security Standards
+
 - **OWASP Top 10**: Protects against XSS, clickjacking, etc.
 - **PCI DSS**: Meets payment card industry requirements
 - **GDPR**: Supports data protection requirements
 - **ISO 27001**: Aligns with information security standards
 
 ### Regular Audits
+
 - Quarterly security header audits
 - Penetration testing inclusion
 - Compliance verification

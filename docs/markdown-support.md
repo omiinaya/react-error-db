@@ -5,10 +5,12 @@ This document describes the rich text markdown support implemented for error des
 ## Overview
 
 The application now supports rich text markdown formatting for:
+
 - Error descriptions
 - Solution texts
 
 This allows users to create well-formatted, readable content with support for:
+
 - Headers (H1-H6)
 - Bold and italic text
 - Code blocks and inline code
@@ -21,9 +23,11 @@ This allows users to create well-formatted, readable content with support for:
 ## Components
 
 ### MarkdownRenderer
+
 A reusable component that safely renders markdown content with XSS protection.
 
 **Usage:**
+
 ```tsx
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 
@@ -38,9 +42,11 @@ import MarkdownRenderer from '@/components/MarkdownRenderer';
 ```
 
 ### MarkdownEditor
+
 A rich text editor with live preview functionality.
 
 **Usage:**
+
 ```tsx
 import MarkdownEditor from '@/components/MarkdownEditor';
 
@@ -66,10 +72,13 @@ import MarkdownEditor from '@/components/MarkdownEditor';
 ## Features
 
 ### 1. Live Preview
+
 The editor includes a "Write" and "Preview" tab, allowing users to see how their markdown will be rendered in real-time.
 
 ### 2. Toolbar Support
+
 The editor provides a toolbar with common formatting options:
+
 - Headers (H1, H2, H3)
 - Bold, italic, strikethrough
 - Lists (ordered/unordered)
@@ -79,17 +88,21 @@ The editor provides a toolbar with common formatting options:
 - Blockquotes
 
 ### 3. Character Counting
+
 Built-in character counting with visual indicators:
+
 - Normal: Gray text
 - Warning (80% of limit): Yellow text
 - Over limit: Red text with negative count
 
 ### 4. Security
+
 - XSS protection through `rehype-sanitize`
 - Configurable allowed HTML tags and attributes
 - Safe handling of user-generated content
 
 ### 5. Responsive Design
+
 - Mobile-friendly interface
 - Touch-friendly toolbar buttons
 - Adaptive layout for different screen sizes
@@ -97,20 +110,25 @@ Built-in character counting with visual indicators:
 ## Markdown Syntax Support
 
 ### Basic Formatting
+
 ```markdown
 **bold text**
-*italic text*
+_italic text_
 ~~strikethrough~~
 ```
 
 ### Headers
+
 ```markdown
 # H1 Header
+
 ## H2 Header
+
 ### H3 Header
 ```
 
 ### Lists
+
 ```markdown
 - Unordered item 1
 - Unordered item 2
@@ -120,31 +138,36 @@ Built-in character counting with visual indicators:
 ```
 
 ### Code
-```markdown
+
+````markdown
 Inline `code` text
 
 ```javascript
 // Code block
-const example = "Hello World";
+const example = 'Hello World';
 ```
-```
+````
+
+````
 
 ### Links and Images
 ```markdown
 [Link text](https://example.com)
 
 ![Alt text](image-url.jpg)
-```
+````
 
 ### Tables
+
 ```markdown
 | Header 1 | Header 2 |
-|----------|----------|
+| -------- | -------- |
 | Cell 1   | Cell 2   |
 | Cell 3   | Cell 4   |
 ```
 
 ### Blockquotes
+
 ```markdown
 > This is a blockquote
 > With multiple lines
@@ -153,15 +176,20 @@ const example = "Hello World";
 ## Implementation Details
 
 ### Database Schema
+
 No changes were required to the database schema. The existing `String` fields for `description` and `solutionText` can store markdown content.
 
 ### Validation
+
 The backend validation schemas have been updated to handle markdown content while maintaining the same character limits:
+
 - Error descriptions: 5000 characters max
 - Solution texts: 10000 characters max
 
 ### Styling
+
 Custom CSS has been implemented to ensure proper styling of rendered markdown content, including:
+
 - Consistent typography
 - Code syntax highlighting colors
 - Table borders and spacing
@@ -171,6 +199,7 @@ Custom CSS has been implemented to ensure proper styling of rendered markdown co
 ## Usage Examples
 
 ### Creating an Error with Rich Description
+
 1. Navigate to the error creation page
 2. Use the markdown editor in the "Description" field
 3. Format your content using the toolbar or markdown syntax
@@ -178,12 +207,14 @@ Custom CSS has been implemented to ensure proper styling of rendered markdown co
 5. Submit the form
 
 ### Adding a Solution with Formatting
+
 1. On any error detail page, scroll to the solutions section
 2. Use the markdown editor in the "Add Solution" form
 3. Format your solution with code blocks, lists, or other markdown features
 4. Preview your formatting before submitting
 
 ### Editing Solutions
+
 1. Click the edit button on your solution
 2. The edit dialog will open with the markdown editor
 3. Make your changes with full formatting support
@@ -201,15 +232,19 @@ Custom CSS has been implemented to ensure proper styling of rendered markdown co
 ## Troubleshooting
 
 ### Common Issues
+
 1. **Character limit exceeded**: Check the character counter and reduce content
 2. **Formatting not working**: Ensure you're using correct markdown syntax
 3. **Preview not updating**: Switch between Write/Preview tabs to refresh
 
 ### Browser Compatibility
+
 The markdown editor and renderer are compatible with all modern browsers. For older browsers, a graceful fallback to plain text is provided.
 
 ## Future Enhancements
+
 Potential future improvements include:
+
 - Image upload functionality
 - Math equation support (LaTeX)
 - Mermaid diagram support

@@ -1,6 +1,7 @@
 # React Error Database - Comprehensive Setup Guide
 
 ## 📋 Table of Contents
+
 1. [Prerequisites](#prerequisites)
 2. [Automated Setup](#automated-setup)
 3. [Manual Setup](#manual-setup)
@@ -15,6 +16,7 @@
 ## 🚀 Prerequisites
 
 ### System Requirements
+
 - **Node.js**: 18.0.0 or higher
 - **npm**: 8.0.0 or higher
 - **PostgreSQL**: 15+ (or Docker)
@@ -22,12 +24,14 @@
 - **Git**: Latest version
 
 ### Recommended Development Tools
+
 - **Docker & Docker Compose** (recommended for database setup)
 - **Visual Studio Code** (with recommended extensions)
 - **Postman** or **Insomnia** (API testing)
 - **pgAdmin** or **DBeaver** (database management)
 
 ### Operating System Support
+
 - **Windows**: 10/11 (WSL2 recommended for better performance)
 - **macOS**: 10.15+ (Catalina or newer)
 - **Linux**: Ubuntu 20.04+, CentOS 8+, or similar distributions
@@ -37,6 +41,7 @@
 ### Using Setup Scripts
 
 #### Unix/Linux/macOS (setup.sh)
+
 ```bash
 # Make the script executable
 chmod +x scripts/setup.sh
@@ -49,16 +54,18 @@ chmod +x scripts/setup.sh
 ```
 
 #### Windows (setup.bat)
+
 ```cmd
 # Run the batch script
 scripts\setup.bat
 ```
 
 ### What the Automated Setup Does
+
 1. **Prerequisites Check**: Verifies Node.js, npm versions
 2. **Environment Setup**: Creates `.env` files from examples
 3. **Dependency Installation**: Installs all npm dependencies
-4. **Database Setup**: 
+4. **Database Setup**:
    - Uses Docker if available (PostgreSQL + Redis)
    - Runs database migrations
    - Seeds with sample data
@@ -68,6 +75,7 @@ scripts\setup.bat
 ## 🛠️ Manual Setup
 
 ### Step 1: Clone and Initialize
+
 ```bash
 # Clone the repository
 git clone <repository-url>
@@ -78,6 +86,7 @@ npm install
 ```
 
 ### Step 2: Environment Configuration
+
 ```bash
 # Copy environment files
 cp .env.example .env
@@ -88,6 +97,7 @@ cp frontend/.env.example frontend/.env
 ### Step 3: Database Setup
 
 #### Option A: Using Docker (Recommended)
+
 ```bash
 # Start PostgreSQL and Redis
 docker-compose up -d postgres redis
@@ -103,7 +113,9 @@ cd ..
 ```
 
 #### Option B: Manual Database Installation
+
 1. **Install PostgreSQL**:
+
    ```bash
    # Ubuntu/Debian
    sudo apt update
@@ -116,6 +128,7 @@ cd ..
    ```
 
 2. **Install Redis**:
+
    ```bash
    # Ubuntu/Debian
    sudo apt install redis-server
@@ -134,6 +147,7 @@ cd ..
    ```
 
 ### Step 4: Install Dependencies
+
 ```bash
 # Backend dependencies
 cd backend
@@ -147,6 +161,7 @@ cd ..
 ```
 
 ### Step 5: Database Migrations
+
 ```bash
 # Generate Prisma client
 cd backend
@@ -163,6 +178,7 @@ cd ..
 ## 🔧 Environment Configuration
 
 ### Root .env File
+
 ```env
 # Backend Environment Variables
 DATABASE_URL="postgresql://user:password@localhost:5432/errdb"
@@ -174,7 +190,7 @@ NODE_ENV=development
 FRONTEND_URL="http://localhost:3000"
 RATE_LIMIT_MAX=1000
 
-# Frontend Environment Variables  
+# Frontend Environment Variables
 VITE_API_BASE_URL="http://localhost:3010/api"
 VITE_APP_NAME="Error Database"
 VITE_ENABLE_ANALYTICS="false"
@@ -182,6 +198,7 @@ VITE_ENABLE_DEBUG="false"
 ```
 
 ### Backend .env (backend/.env)
+
 ```env
 # Database
 DATABASE_URL="postgresql://user:password@localhost:5432/errdb"
@@ -205,6 +222,7 @@ RATE_LIMIT_MAX=1000
 ```
 
 ### Frontend .env (frontend/.env)
+
 ```env
 # API Configuration
 VITE_API_BASE_URL="http://localhost:3001/api"
@@ -221,22 +239,23 @@ VITE_GOOGLE_ANALYTICS_ID=""
 
 ### Environment Variables Reference
 
-| Variable | Description | Default | Required |
-|----------|-------------|---------|----------|
-| `DATABASE_URL` | PostgreSQL connection string | - | ✅ |
-| `REDIS_URL` | Redis connection URL | `redis://localhost:6379` | ❌ |
-| `JWT_SECRET` | Secret for JWT token signing | - | ✅ |
-| `JWT_REFRESH_SECRET` | Secret for refresh tokens | - | ✅ |
-| `PORT` | Backend server port | `3010` | ❌ |
-| `NODE_ENV` | Environment mode | `development` | ❌ |
-| `FRONTEND_URL` | Frontend URL for CORS | `http://localhost:3000` | ❌ |
-| `RATE_LIMIT_MAX` | Max requests per window | `1000` | ❌ |
-| `VITE_API_BASE_URL` | Frontend API base URL | `http://localhost:3001/api` | ❌ |
-| `VITE_APP_NAME` | Application name | `Error Database` | ❌ |
+| Variable             | Description                  | Default                     | Required |
+| -------------------- | ---------------------------- | --------------------------- | -------- |
+| `DATABASE_URL`       | PostgreSQL connection string | -                           | ✅       |
+| `REDIS_URL`          | Redis connection URL         | `redis://localhost:6379`    | ❌       |
+| `JWT_SECRET`         | Secret for JWT token signing | -                           | ✅       |
+| `JWT_REFRESH_SECRET` | Secret for refresh tokens    | -                           | ✅       |
+| `PORT`               | Backend server port          | `3010`                      | ❌       |
+| `NODE_ENV`           | Environment mode             | `development`               | ❌       |
+| `FRONTEND_URL`       | Frontend URL for CORS        | `http://localhost:3000`     | ❌       |
+| `RATE_LIMIT_MAX`     | Max requests per window      | `1000`                      | ❌       |
+| `VITE_API_BASE_URL`  | Frontend API base URL        | `http://localhost:3001/api` | ❌       |
+| `VITE_APP_NAME`      | Application name             | `Error Database`            | ❌       |
 
 ## 🗄️ Database Setup
 
 ### Database Schema Overview
+
 The application uses PostgreSQL with the following main tables:
 
 - **users**: User accounts and authentication
@@ -250,6 +269,7 @@ The application uses PostgreSQL with the following main tables:
 ### Database Operations
 
 #### Prisma Commands
+
 ```bash
 # Generate Prisma client
 npx prisma generate
@@ -268,6 +288,7 @@ npx prisma db seed
 ```
 
 #### Database Management
+
 ```bash
 # Backup database
 npm run db:backup
@@ -280,7 +301,9 @@ npm run db:health
 ```
 
 ### Sample Data
+
 The seed script creates:
+
 - 2 users (admin@errdb.com/admin123, user@errdb.com/user123)
 - 3 categories (Programming Languages, Web Frameworks, Databases)
 - 6 applications (JavaScript, Python, React, Express.js, PostgreSQL, MongoDB)
@@ -292,6 +315,7 @@ The seed script creates:
 ### Running Development Servers
 
 #### Option A: Using Root Script (Recommended)
+
 ```bash
 # Start both frontend and backend
 npm run dev
@@ -304,6 +328,7 @@ npm run dev:frontend
 ```
 
 #### Option B: Manual Startup
+
 ```bash
 # Terminal 1 - Backend
 cd backend
@@ -315,6 +340,7 @@ npm run dev
 ```
 
 ### Access Points
+
 - **Frontend Application**: http://localhost:3005
 - **Backend API**: http://localhost:3010
 - **API Documentation**: http://localhost:3010/api/docs
@@ -323,6 +349,7 @@ npm run dev
 ### Development Tools
 
 #### Backend Debugging
+
 ```bash
 # Debug mode with auto-reload
 npm run dev
@@ -335,6 +362,7 @@ npx prisma studio
 ```
 
 #### Frontend Debugging
+
 ```bash
 # Development server with hot reload
 npm run dev
@@ -346,6 +374,7 @@ npm run dev
 ## 🧪 Testing
 
 ### Test Structure
+
 - **Backend**: Jest for unit and integration tests
 - **Frontend**: Vitest for unit tests, React Testing Library
 - **E2E**: Playwright for end-to-end testing
@@ -353,6 +382,7 @@ npm run dev
 ### Running Tests
 
 #### Complete Test Suite
+
 ```bash
 # Run all tests
 npm run test
@@ -362,6 +392,7 @@ npm run test:coverage
 ```
 
 #### Backend Tests
+
 ```bash
 cd backend
 
@@ -379,6 +410,7 @@ npm test -- src/__tests__/auth.test.ts
 ```
 
 #### Frontend Tests
+
 ```bash
 cd frontend
 
@@ -393,6 +425,7 @@ npm run test:coverage
 ```
 
 #### E2E Tests
+
 ```bash
 # Run all E2E tests
 npm run test:e2e
@@ -408,6 +441,7 @@ npm run test:e2e:ci
 ```
 
 ### Test Data Setup
+
 ```bash
 # Setup test database
 npm run test:db:setup
@@ -424,6 +458,7 @@ npm run test:db:seed
 ### Docker Deployment
 
 #### Development Deployment
+
 ```bash
 # Start all services
 docker-compose up -d
@@ -436,6 +471,7 @@ docker-compose logs -f
 ```
 
 #### Production Deployment
+
 ```bash
 # Build and start production containers
 docker-compose -f docker-compose.prod.yml up -d --build
@@ -447,6 +483,7 @@ docker-compose -f docker-compose.prod.yml up -d
 ```
 
 #### Scaling Deployment
+
 ```bash
 # For high traffic scenarios
 docker-compose -f docker-compose.scale.yml up -d --build
@@ -455,6 +492,7 @@ docker-compose -f docker-compose.scale.yml up -d --build
 ### Manual Deployment
 
 #### Backend Deployment
+
 ```bash
 # Build backend
 cd backend
@@ -468,6 +506,7 @@ pm2 start dist/server.js --name errdb-backend
 ```
 
 #### Frontend Deployment
+
 ```bash
 # Build frontend
 cd frontend
@@ -480,6 +519,7 @@ npm run build
 ### Environment Configuration for Production
 
 #### Production .env
+
 ```env
 NODE_ENV=production
 DATABASE_URL="postgresql://user:password@production-db:5432/errdb_prod"
@@ -490,6 +530,7 @@ FRONTEND_URL="https://yourdomain.com"
 ```
 
 #### Security Considerations
+
 - Use strong, randomly generated secrets
 - Enable HTTPS with valid SSL certificates
 - Configure proper CORS settings
@@ -502,6 +543,7 @@ FRONTEND_URL="https://yourdomain.com"
 ### Common Issues
 
 #### Database Connection Issues
+
 ```bash
 # Check PostgreSQL status
 sudo systemctl status postgresql
@@ -514,6 +556,7 @@ telnet localhost 5432
 ```
 
 #### Port Conflicts
+
 ```bash
 # Check port usage
 sudo lsof -i :3001
@@ -525,6 +568,7 @@ sudo kill -9 $(lsof -t -i:3000)
 ```
 
 #### Dependency Issues
+
 ```bash
 # Clear npm cache
 npm cache clean --force
@@ -535,6 +579,7 @@ npm install
 ```
 
 #### Docker Issues
+
 ```bash
 # Check Docker status
 docker ps -a
@@ -550,6 +595,7 @@ docker system prune -a
 ### Performance Issues
 
 #### High CPU Usage
+
 ```bash
 # Monitor CPU usage
 top -c
@@ -560,6 +606,7 @@ ps aux --sort=-%cpu | head -10
 ```
 
 #### Memory Issues
+
 ```bash
 # Check memory usage
 free -h
@@ -574,6 +621,7 @@ node --max-old-space-size=4096 server.js
 ### Logging and Monitoring
 
 #### Application Logs
+
 ```bash
 # View backend logs
 tail -f /var/log/errdb/application.log
@@ -586,6 +634,7 @@ grep -E "(ERROR|error|Exception)" application.log
 ```
 
 #### Database Monitoring
+
 ```bash
 # Check active queries
 psql -c "SELECT * FROM pg_stat_activity WHERE state = 'active';"
@@ -648,16 +697,19 @@ react-error-db/
 ## 🤝 Support
 
 ### Getting Help
+
 1. Check the [documentation](docs/) first
 2. Search existing issues on GitHub
 3. Create a new issue with detailed information
 
 ### Emergency Contacts
+
 - **Primary Admin**: admin@errdb.com
 - **Secondary Admin**: backup-admin@errdb.com
 - **Emergency Pager**: +1-555-EMERGENCY
 
 ### Community Resources
+
 - Discord/Slack channel
 - GitHub Discussions
 - Stack Overflow tag: `error-database`

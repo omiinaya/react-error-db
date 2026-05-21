@@ -1,11 +1,13 @@
 # Security Best Practices
 
 ## Overview
+
 This document outlines comprehensive security best practices for the Error Database application, covering infrastructure security, application security, data protection, and compliance requirements.
 
 ## Security Principles
 
 ### Core Principles
+
 1. **Defense in Depth**: Multiple layers of security controls
 2. **Least Privilege**: Minimum necessary access permissions
 3. **Zero Trust**: Verify explicitly, never trust, always verify
@@ -13,6 +15,7 @@ This document outlines comprehensive security best practices for the Error Datab
 5. **Continuous Monitoring**: Real-time security monitoring
 
 ### Security Framework
+
 - **OWASP Top 10**: Web application security risks
 - **NIST Cybersecurity Framework**: Risk management
 - **ISO 27001**: Information security management
@@ -24,6 +27,7 @@ This document outlines comprehensive security best practices for the Error Datab
 ### Network Security
 
 #### Firewall Configuration
+
 ```bash
 # Configure UFW firewall
 sudo ufw default deny incoming
@@ -39,6 +43,7 @@ docker network create --internal isolated-network
 ```
 
 #### Network Segmentation
+
 ```yaml
 # docker-compose network segmentation
 networks:
@@ -61,6 +66,7 @@ services:
 ### Server Hardening
 
 #### SSH Security
+
 ```bash
 # SSH configuration (/etc/ssh/sshd_config)
 PermitRootLogin no
@@ -76,6 +82,7 @@ ssh-keygen -t ed25519 -C "deploy-key" -f ~/.ssh/id_ed25519
 ```
 
 #### System Updates
+
 ```bash
 # Automatic security updates
 sudo apt-get install unattended-upgrades
@@ -96,6 +103,7 @@ echo "net.ipv4.conf.all.rp_filter=1" >> /etc/sysctl.conf
 ### Authentication & Authorization
 
 #### JWT Security
+
 ```typescript
 // Secure JWT configuration
 const jwtConfig = {
@@ -105,7 +113,7 @@ const jwtConfig = {
   refreshExpiresIn: '7d', // Longer-lived refresh tokens
   algorithm: 'HS256',
   issuer: 'errdb-api',
-  audience: 'errdb-users'
+  audience: 'errdb-users',
 };
 
 // Token validation middleware
@@ -113,12 +121,13 @@ const validateToken = (token: string) => {
   return jwt.verify(token, jwtConfig.secret, {
     algorithms: [jwtConfig.algorithm],
     issuer: jwtConfig.issuer,
-    audience: jwtConfig.audience
+    audience: jwtConfig.audience,
   });
 };
 ```
 
 #### Password Security
+
 ```typescript
 // Password hashing with bcrypt
 const SALT_ROUNDS = 12;
@@ -127,7 +136,10 @@ async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, SALT_ROUNDS);
 }
 
-async function verifyPassword(password: string, hash: string): Promise<boolean> {
+async function verifyPassword(
+  password: string,
+  hash: string
+): Promise<boolean> {
   return bcrypt.compare(password, hash);
 }
 
@@ -137,16 +149,17 @@ function validatePassword(password: string): {
   errors: string[];
 } {
   const errors: string[] = [];
-  
+
   if (password.length < 12) errors.push('Minimum 12 characters');
   if (!/[A-Z]/.test(password)) errors.push('At least one uppercase letter');
   if (!/[a-z]/.test(password)) errors.push('At least one lowercase letter');
   if (!/[0-9]/.test(password)) errors.push('At least one number');
-  if (!/[!@#$%^&*()_\-+=]/.test(password)) errors.push('At least one special character');
-  
+  if (!/[!@#$%^&*()_\-+=]/.test(password))
+    errors.push('At least one special character');
+
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   };
 }
 ```
@@ -154,17 +167,24 @@ function validatePassword(password: string): {
 ### Input Validation
 
 #### Schema Validation
+
 ```typescript
 // Zod schema validation
-const userRegistrationSchema = z.object({
-  email: z.string().email().max(255),
-  username: z.string().min(3).max(50).regex(/^[a-zA-Z0-9_]+$/),
-  password: z.string().min(12).max(100),
-  confirmPassword: z.string()
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"]
-});
+const userRegistrationSchema = z
+  .object({
+    email: z.string().email().max(255),
+    username: z
+      .string()
+      .min(3)
+      .max(50)
+      .regex(/^[a-zA-Z0-9_]+$/),
+    password: z.string().min(12).max(100),
+    confirmPassword: z.string(),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 // Sanitization middleware
 const sanitizeInput = (input: string): string => {
@@ -177,11 +197,12 @@ const sanitizeInput = (input: string): string => {
 ```
 
 #### SQL Injection Prevention
+
 ```typescript
 // Use parameterized queries with Prisma
 async function getUserByEmail(email: string) {
   return prisma.user.findUnique({
-    where: { email }
+    where: { email },
   });
 }
 
@@ -198,6 +219,7 @@ async function searchErrors(query: string) {
 ### API Security
 
 #### Rate Limiting
+
 ```typescript
 // Express rate limiting
 const limiter = rateLimit({
@@ -206,29 +228,32 @@ const limiter = rateLimit({
   message: 'Too many requests from this IP',
   standardHeaders: true,
   legacyHeaders: false,
-  skip: (req) => req.ip === '127.0.0.1' // Skip localhost
+  skip: req => req.ip === '127.0.0.1', // Skip localhost
 });
 
 // Per-route rate limiting
 const authLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 5, // 5 attempts per hour
-  message: 'Too many login attempts'
+  message: 'Too many login attempts',
 });
 
 app.use('/api/auth/login', authLimiter);
 ```
 
 #### CORS Configuration
+
 ```typescript
 // Secure CORS configuration
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  maxAge: 86400 // 24 hours
-}));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    maxAge: 86400, // 24 hours
+  })
+);
 ```
 
 ## Data Security
@@ -236,6 +261,7 @@ app.use(cors({
 ### Encryption
 
 #### Data at Rest
+
 ```sql
 -- PostgreSQL encryption
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
@@ -253,6 +279,7 @@ ALTER DATABASE errdb_prod SET encryption = on;
 ```
 
 #### Data in Transit
+
 ```nginx
 # SSL/TLS configuration (nginx)
 ssl_protocols TLSv1.2 TLSv1.3;
@@ -270,12 +297,14 @@ add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" alway
 ### Data Classification
 
 #### Sensitivity Levels
+
 1. **Public**: Error codes, solutions (no restrictions)
 2. **Internal**: User profiles, application metrics
 3. **Confidential**: Passwords, API keys, personal data
 4. **Restricted**: Financial data, authentication tokens
 
 #### Access Controls
+
 ```sql
 -- Row Level Security (RLS)
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
@@ -294,6 +323,7 @@ FOR ALL USING (current_user_role() = 'admin');
 ### Security Monitoring
 
 #### Audit Logging
+
 ```typescript
 // Comprehensive audit logging
 interface AuditLog {
@@ -316,7 +346,7 @@ app.use((req, res, next) => {
     resource: req.path,
     ipAddress: req.ip,
     userAgent: req.get('User-Agent'),
-    timestamp: new Date()
+    timestamp: new Date(),
   };
 
   // Log to database and console
@@ -326,6 +356,7 @@ app.use((req, res, next) => {
 ```
 
 #### Intrusion Detection
+
 ```bash
 # Fail2Ban configuration
 sudo apt-get install fail2ban
@@ -351,6 +382,7 @@ bantime = 86400
 ### Security Scanning
 
 #### Dependency Scanning
+
 ```bash
 # Regular dependency audits
 npm audit
@@ -365,6 +397,7 @@ dependency-check --project "ErrorDB" --scan ./ --out ./reports
 ```
 
 #### Code Scanning
+
 ```bash
 # ESLint security rules
 npx eslint . --ext .ts,.tsx --config .eslintrc.security.js
@@ -381,6 +414,7 @@ npx semgrep scan --config=p/security-audit
 ### GDPR Compliance
 
 #### Data Protection
+
 ```typescript
 // Right to be forgotten
 async function deleteUserData(userId: string): Promise<void> {
@@ -388,7 +422,7 @@ async function deleteUserData(userId: string): Promise<void> {
     prisma.user.delete({ where: { id: userId } }),
     prisma.userSession.deleteMany({ where: { userId } }),
     prisma.solution.deleteMany({ where: { userId } }),
-    prisma.vote.deleteMany({ where: { userId } })
+    prisma.vote.deleteMany({ where: { userId } }),
   ]);
 }
 
@@ -397,12 +431,13 @@ async function exportUserData(userId: string): Promise<UserDataExport> {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   const solutions = await prisma.solution.findMany({ where: { userId } });
   const votes = await prisma.vote.findMany({ where: { userId } });
-  
+
   return { user, solutions, votes };
 }
 ```
 
 #### Privacy by Design
+
 ```typescript
 // Data minimization
 interface UserRegistration {
@@ -421,21 +456,21 @@ const privacyLogger = {
   error: (message: string, error?: any) => {
     const sanitizedError = sanitizePii(error);
     logger.error(message, sanitizedError);
-  }
+  },
 };
 
 function sanitizePii(data: any): any {
   if (typeof data !== 'object' || data === null) return data;
-  
+
   const sensitiveFields = ['password', 'email', 'ssn', 'phone', 'address'];
   const sanitized = { ...data };
-  
+
   sensitiveFields.forEach(field => {
     if (sanitized[field]) {
       sanitized[field] = '***REDACTED***';
     }
   });
-  
+
   return sanitized;
 }
 ```
@@ -443,6 +478,7 @@ function sanitizePii(data: any): any {
 ### PCI DSS Compliance
 
 #### Payment Security
+
 ```typescript
 // Never store payment data
 interface PaymentProcessing {
@@ -458,6 +494,7 @@ async function createPaymentIntent(amount: number): Promise<PaymentIntent> {
 ```
 
 #### Access Controls
+
 ```sql
 -- Payment data access restrictions
 CREATE ROLE payment_processor;
@@ -480,12 +517,14 @@ CREATE TABLE payment_audit (
 ### Security Incident Procedures
 
 #### Incident Classification
+
 1. **Critical**: Data breach, system compromise
 2. **High**: Unauthorized access, data leakage
 3. **Medium**: Vulnerability exploitation, DoS attacks
 4. **Low**: Security misconfigurations, minor issues
 
 #### Response Plan
+
 ```bash
 # Incident response checklist
 1. Identify and contain the incident
@@ -504,6 +543,7 @@ PR_TEAM="pr@errdb.com"
 ### Forensics & Investigation
 
 #### Evidence Collection
+
 ```bash
 # Preserve system state
 sudo systemctl stop errdb-backend
@@ -520,6 +560,7 @@ sudo tar -czf /evidence/logs.tar.gz /var/log/
 ```
 
 #### Investigation Tools
+
 ```bash
 # Network analysis
 tcpdump -i any -w /evidence/network.pcap
@@ -537,12 +578,14 @@ sudo find / -type f -printf "%T+ %p\n" 2>/dev/null | sort > /evidence/timeline.t
 ### Developer Training
 
 #### Security Awareness
+
 - OWASP Top 10 vulnerabilities
 - Secure coding practices
 - Dependency management
 - Incident response procedures
 
 #### Regular Training
+
 ```bash
 # Quarterly security training
 security-training --topics xss,sqli,injection
@@ -557,6 +600,7 @@ security-review --pull-request 123
 ### Operational Security
 
 #### Access Management
+
 ```bash
 # Principle of least privilege
 sudo adduser deploy-user
@@ -570,6 +614,7 @@ access-review --quarterly
 ```
 
 #### Security Updates
+
 ```bash
 # Automated security patches
 unattended-upgrades --enable

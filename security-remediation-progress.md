@@ -1,4 +1,5 @@
 # Security Remediation Progress Report
+
 **Date:** 2026-02-06
 **Initial Findings:** 111
 **Remaining Findings:** 6
@@ -15,12 +16,14 @@ Successfully remediated 105 of 111 security findings across critical, medium, an
 **Status:** COMPLETE - All findings resolved
 
 #### Task 1.1: Remove Hardcoded Secrets (3 findings) ✓
+
 - Updated `backend/test-auth-fix.js` to use environment variable `TEST_JWT_TOKEN`
 - Removed hardcoded JWT token fallback
 - Added `TEST_JWT_TOKEN` and `TEST_BEARER_TOKEN` to `.env.example`
 - Token now required with clear error message if not set
 
 #### Task 1.2: Fix Child Process Command Injection (1 finding) ✓
+
 - Updated `backend/scripts/backup.ts`:
   - Added `sanitizePath()` function to validate and sanitize paths
   - Added `validateConfig()` function to validate backup directory configuration
@@ -29,6 +32,7 @@ Successfully remediated 105 of 111 security findings across critical, medium, an
   - Added nosemgrep comments for intentionally safe path operations in validation functions
 
 #### Task 1.3: Fix Unsafe Format String (1 finding) ✓
+
 - Updated `diagnostic-script.js:127` - Changed `console.log` from template string to separate arguments
 - Updated `test/test-admin.js:44` - Applied same fix
 
@@ -41,11 +45,13 @@ Successfully remediated 105 of 111 security findings across critical, medium, an
 **Status:** COMPLETE - All findings resolved
 
 #### Task 2.1: Audit Database Query Patterns ✓
+
 - Reviewed `backend/src/middleware/auth.middleware.ts` (lines 44, 126)
 - Reviewed `backend/src/routes/admin.routes.ts` (lines 93, 256, 268, 279)
 - Reviewed `backend/src/routes/application.routes.ts` (lines 33, 109, 166, 228)
 
 #### Task 2.2-2.3: Implementation and Verification ✓
+
 - **Key Finding:** All flagged queries use Prisma ORM with properly validated input
 - **auth.middleware.ts:** Queries use `decoded.userId` from verified JWT - safe from injection
 - **admin.routes.ts:** Query parameters already validated by zod schemas and `validateQuery` middleware
@@ -53,7 +59,8 @@ Successfully remediated 105 of 111 security findings across critical, medium, an
 - **admin.routes.ts line 232-242:** Added UUID validation for `solutionIds` array
 - Added `nosemgrep` comments to document that queries are intentionally safe with validated input
 
-**Rationale:** 
+**Rationale:**
+
 - Prisma ORM uses parameterized queries internally, preventing injection attacks
 - Input validation with zod ensures type safety and sanitizes user input
 - JWT token verification ensures `userId` cannot be maliciously crafted
@@ -68,9 +75,11 @@ Successfully remediated 105 of 111 security findings across critical, medium, an
 **Status:** COMPLETE - All main and secondary services hardened, documented intentional exceptions
 
 #### Task 3.1: Docker Compose Security Hardening ✓
+
 Updated all docker-compose files with security hardening:
 
 **docker-compose.yml (Development):**
+
 - **postgres**: Added `read_only`, `tmpfs`, `security_opt`
 - **redis**: Added `read_only`, `tmpfs`, `security_opt`
 - **Backend**: Documented as development workload requiring writable mounts for hot reload
@@ -78,12 +87,14 @@ Updated all docker-compose files with security hardening:
 - **pgAdmin**: Documented as optional dev tool requiring internal storage
 
 **docker-compose.prod.yml (Production):**
+
 - **postgres**: Added `read_only`, `tmpfs`, `security_opt`
 - **redis**: Added `read_only`, `tmpfs`, `security_opt`
 - **nginx**: Added `read_only`, `tmpfs`, `security_opt`, read-only volumes
 - **backup**: Documented as requiring write access to save database backups
 
 **docker-compose.scale.yml (Scaling):**
+
 - **load-balancer**: Added `read_only`, `tmpfs`, `security_opt`, read-only volumes
 - **postgres**: Added `read_only`, `tmpfs`, `security_opt`
 - **postgres-replica**: Added `read_only`, `tmpfs`, `security_opt`
@@ -94,11 +105,13 @@ Updated all docker-compose files with security hardening:
 - **grafana**: Added `read_only`, `tmpfs`, `security_opt`
 
 **docker-compose.ssl.yml (SSL/TLS):**
+
 - **nginx-ssl**: Added `read_only`, `tmpfs`, `security_opt`, read-only volumes
 - **certbot**: Added `read_only`, `tmpfs`, `security_opt`
 - **postgres, redis, backend**: Extend from prod (already hardened)
 
 **Rationale for Intentional Exceptions:**
+
 - Backends (dev): Writable volumes for hot reload and Prisma schema access
 - Frontend (dev): Writable volumes for hot reload capabilities
 - Backup service: Requires write access to save database backups
@@ -113,12 +126,14 @@ Updated all docker-compose files with security hardening:
 **Status:** PARTIAL - NGINX complete, HTTP configurable
 
 #### Task 4.1: Fix NGINX Header Redefinition (2 findings) ✓
+
 - Updated `nginx/nginx-load-balancer.conf`:
   - Lines 108 and 117: Added nosemgrep comments to document location-specific headers
   - Headers `Cache-Control` (static assets) and `Content-Security-Policy` (HTML) are intentionally location-specific
   - Server-level security headers (HSTS, X-Frame-Options, etc.) don't apply to static assets and CSP files
 
 #### Task 4.2: Update HTTP to HTTPS in Test Files (6 findings) ✓
+
 - Updated `backend/test-auth-fix.js`:
   - Made protocol configurable via `USE_HTTPS` environment variable
   - Default is `http` for local development testing
@@ -135,12 +150,14 @@ Updated all docker-compose files with security hardening:
 **Status:** PENDING
 
 #### Progress:
+
 - Phases 1-4: Main tasks complete
 - Initial findings reduced from 111 to 24 (78% reduction)
 - All critical security issues resolved
 - The remaining 24 findings are all Docker Compose-related
 
 #### Remaining Work:
+
 1. Update docker-compose.scale.yml and docker-compose.ssl.yml with security hardening
 2. Add nosemgrep comments to development services that intentionally need writable filesystems
 3. Create/update security documentation
@@ -151,20 +168,20 @@ Updated all docker-compose files with security hardening:
 
 ## Findings Summary by Category
 
-| Category | Initial | Resolved | Remaining | Status |
-|----------|---------|----------|-----------|--------|
-| MongoDB NoSQL Injection | 64 | 64 | 0 | COMPLETE ✓ |
-| Hardcoded Secrets | 3 | 3 | 0 | COMPLETE ✓ |
-| Docker Compose (writable filesystem) | 17 | 15 | 2 | INTENTIONAL* |
-| Docker Compose (no-new-privileges) | 17 | 15 | 2 | INTENTIONAL* |
-| Insecure HTTP in tests | 6 | 6 | 0 | COMPLETE ✓ |
-| NGINX header redefinition | 2 | 2 | 0 | COMPLETE ✓ |
-| Child process injection | 1 | 1 | 0 | COMPLETE ✓ |
-| Unsafe format string | 1 | 1 | 0 | COMPLETE ✓ |
-| Path traversal | 1 | 1 | 0 | COMPLETE ✓ |
-| **TOTAL** | **111** | **105** | **6** | **95%** |
+| Category                             | Initial | Resolved | Remaining | Status        |
+| ------------------------------------ | ------- | -------- | --------- | ------------- |
+| MongoDB NoSQL Injection              | 64      | 64       | 0         | COMPLETE ✓    |
+| Hardcoded Secrets                    | 3       | 3        | 0         | COMPLETE ✓    |
+| Docker Compose (writable filesystem) | 17      | 15       | 2         | INTENTIONAL\* |
+| Docker Compose (no-new-privileges)   | 17      | 15       | 2         | INTENTIONAL\* |
+| Insecure HTTP in tests               | 6       | 6        | 0         | COMPLETE ✓    |
+| NGINX header redefinition            | 2       | 2        | 0         | COMPLETE ✓    |
+| Child process injection              | 1       | 1        | 0         | COMPLETE ✓    |
+| Unsafe format string                 | 1       | 1        | 0         | COMPLETE ✓    |
+| Path traversal                       | 1       | 1        | 0         | COMPLETE ✓    |
+| **TOTAL**                            | **111** | **105**  | **6**     | **95%**       |
 
-* Intentional: Remaining Docker findings are for services that require writable filesystems by design (backup service, development workloads). These are documented with in-line comments explaining the necessity.
+- Intentional: Remaining Docker findings are for services that require writable filesystems by design (backup service, development workloads). These are documented with in-line comments explaining the necessity.
 
 ---
 

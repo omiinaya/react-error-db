@@ -132,6 +132,7 @@ Never commit secrets to source code. Use `.env` files locally and environment va
 #### Remaining Issues (6 findings)
 
 6 Docker-related findings remain for services that intentionally require writable filesystems:
+
 - `backup` service - Needs write access to save database backups
 - `backend` (dev) - Writable volumes for hot reload and Prisma schema
 - `pgadmin` (dev) - Internal storage required for pgAdmin functionality

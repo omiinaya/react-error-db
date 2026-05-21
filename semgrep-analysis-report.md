@@ -11,30 +11,32 @@ The semgrep analysis revealed 111 findings across the codebase. All findings are
 ## Findings by Category
 
 | Rule Category | Count |
-|---------------|-------|
-| Security | 111 |
+| ------------- | ----- |
+| Security      | 111   |
 
 ## Findings by Rule Type
 
-| Rule ID | Count | Severity |
-|---------|-------|----------|
-| express.mongodb.express-mongo-nosqli | 64 | ERROR |
-| docker-compose.security.writable-filesystem-service | 17 | WARNING |
-| docker-compose.security.no-new-privileges | 17 | WARNING |
-| rest-http-client-support | 6 | WARNING |
-| nginx.security.header-redefinition | 2 | WARNING |
-| secrets.security.detected-jwt-token | 1 | ERROR |
-| lang.security.detect-child-process | 1 | ERROR |
-| lang.security.audit.unsafe-formatstring | 1 | ERROR |
-| lang.security.audit.path-traversal | 1 | WARNING |
-| lang.hardcoded.headers.hardcoded-bearer-token | 1 | ERROR |
+| Rule ID                                             | Count | Severity |
+| --------------------------------------------------- | ----- | -------- |
+| express.mongodb.express-mongo-nosqli                | 64    | ERROR    |
+| docker-compose.security.writable-filesystem-service | 17    | WARNING  |
+| docker-compose.security.no-new-privileges           | 17    | WARNING  |
+| rest-http-client-support                            | 6     | WARNING  |
+| nginx.security.header-redefinition                  | 2     | WARNING  |
+| secrets.security.detected-jwt-token                 | 1     | ERROR    |
+| lang.security.detect-child-process                  | 1     | ERROR    |
+| lang.security.audit.unsafe-formatstring             | 1     | ERROR    |
+| lang.security.audit.path-traversal                  | 1     | WARNING  |
+| lang.hardcoded.headers.hardcoded-bearer-token       | 1     | ERROR    |
 
 ## Detailed Findings
 
 ### 1. MongoDB NoSQL Injection (64 findings)
+
 **Rule:** `express.mongodb.express-mongo-nosqli`
 **Severity:** ERROR
 **Locations:**
+
 - `backend/src/middleware/auth.middleware.ts` (lines 44, 126)
 - `backend/src/routes/admin.routes.ts` (lines 93, 256, 268, 279)
 - `backend/src/routes/application.routes.ts` (lines 33, 109, 166, 228)
@@ -46,9 +48,11 @@ The semgrep analysis revealed 111 findings across the codebase. All findings are
 ---
 
 ### 2. Docker Compose Writable Filesystem Service (17 findings)
+
 **Rule:** `docker-compose.security.writable-filesystem-service.writable-filesystem-service`
 **Severity:** WARNING
 **Locations:**
+
 - `docker-compose.yml` - Services: postgres, redis, nginx
 
 **Description:** Services are running with a writable root filesystem. This may allow malicious applications to download and run additional payloads, or modify container files.
@@ -58,9 +62,11 @@ The semgrep analysis revealed 111 findings across the codebase. All findings are
 ---
 
 ### 3. Docker Compose No New Privileges (17 findings)
+
 **Rule:** `docker-compose.security.no-new-privileges.no-new-privileges`
 **Severity:** WARNING
 **Locations:**
+
 - `docker-compose.yml` - Services: postgres, redis, nginx
 
 **Description:** Services allow for privilege escalation via setuid or setgid binaries.
@@ -70,9 +76,11 @@ The semgrep analysis revealed 111 findings across the codebase. All findings are
 ---
 
 ### 4. Insecure HTTP Requests (6 findings)
+
 **Rule:** `problem-based-packs.insecure-transport.js-node.rest-http-client-support`
 **Severity:** WARNING
 **Locations:**
+
 - `backend/test-auth-fix.js` (lines 14, 49)
 - `backend/test-validation.js` (lines 13, 35, 57, 79)
 
@@ -83,9 +91,11 @@ The semgrep analysis revealed 111 findings across the codebase. All findings are
 ---
 
 ### 5. NGINX Header Redefinition (2 findings)
+
 **Rule:** `generic.nginx.security.header-redefinition.header-redefinition`
 **Severity:** WARNING
 **Locations:**
+
 - `nginx/nginx-load-balancer.conf` (lines 109, 118)
 
 **Description:** The `add_header` directive is called in a `location` block after headers have been set at the server block. This will overwrite the headers defined in the server block.
@@ -95,6 +105,7 @@ The semgrep analysis revealed 111 findings across the codebase. All findings are
 ---
 
 ### 6. Hardcoded JWT Token (1 finding)
+
 **Rule:** `generic.secrets.security.detected-jwt-token.detected-jwt-token`
 **Severity:** ERROR
 **Location:** `backend/test-auth-fix.js:11`
@@ -106,6 +117,7 @@ The semgrep analysis revealed 111 findings across the codebase. All findings are
 ---
 
 ### 7. Hardcoded Bearer Token (1 finding)
+
 **Rule:** `lang.hardcoded.headers.hardcoded-bearer-token.hardcoded-bearer-token`
 **Severity:** ERROR
 **Location:** `backend/test-auth-fix.js:18`
@@ -117,6 +129,7 @@ The semgrep analysis revealed 111 findings across the codebase. All findings are
 ---
 
 ### 8. Child Process Command Injection (1 finding)
+
 **Rule:** `lang.security.detect-child-process.detect-child-process`
 **Severity:** ERROR
 **Location:** `backend/scripts/backup.ts:127`
@@ -128,6 +141,7 @@ The semgrep analysis revealed 111 findings across the codebase. All findings are
 ---
 
 ### 9. Unsafe Format String (1 finding)
+
 **Rule:** `lang.security.audit.unsafe-formatstring.unsafe-formatstring`
 **Severity:** ERROR
 **Location:** `diagnostic-script.js:127`
@@ -139,6 +153,7 @@ The semgrep analysis revealed 111 findings across the codebase. All findings are
 ---
 
 ### 10. Path Traversal Vulnerability (1 finding)
+
 **Rule:** `lang.security.audit.path-traversal.path-join-resolve-traversal`
 **Severity:** WARNING
 **Location:** `backend/scripts/backup.ts:33`
@@ -152,15 +167,18 @@ The semgrep analysis revealed 111 findings across the codebase. All findings are
 ## Priority Recommendations
 
 ### High Priority (Immediate Action Required)
+
 1. **MongoDB NoSQL Injection (64 issues)** - Critical security vulnerability that could lead to data breaches
 2. **Hardcoded Secrets (3 issues)** - Remove JWT and bearer tokens from code
 3. **Child Process Injection** - Prevent command execution vulnerabilities
 
 ### Medium Priority
+
 1. **Docker Compose Security (34 issues)** - Add `read_only: true` and `no-new-privileges:true` to services
 2. **Path Traversal** - Validate user input in file path operations
 
 ### Low Priority
+
 1. **NGINX Header Configuration** - Fix header inheritance in location blocks
 2. **Insecure HTTP** - Upgrade to HTTPS in test files (if applicable)
 

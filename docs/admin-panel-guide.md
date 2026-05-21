@@ -73,38 +73,46 @@ Monitor system activity:
 ## API Endpoints
 
 ### Admin Dashboard
+
 - `GET /admin/dashboard/stats` - Get dashboard statistics
 
 ### User Management
+
 - `GET /admin/users` - Get all users with pagination
 - `PUT /admin/users/:userId/role` - Update user role
 - `DELETE /admin/users/:userId` - Delete user
 
 ### Content Moderation
+
 - `GET /admin/solutions/moderation` - Get solutions for moderation
 - `POST /admin/solutions/bulk-moderation` - Bulk moderate solutions
 - `POST /admin/solutions/:solutionId/verify` - Verify solution
 
 ### Application Management
+
 - `GET /admin/applications/stats` - Get applications with statistics
 
 ### System Logs
+
 - `GET /admin/system/logs` - Get system logs
 - `GET /admin/export/logs` - Export logs
 
 ## Security Features
 
 ### Role-Based Access Control
+
 - All admin routes require `isAdmin: true`
 - Protected routes use middleware validation
 - Frontend routes use ProtectedRoute component with `requireAdmin` prop
 
 ### Audit Logging
+
 - All admin actions are logged to the database
 - Logs include user, action, resource, and outcome
 - Audit trail for compliance and debugging
 
 ### Input Validation
+
 - All admin endpoints use Zod validation
 - Parameter sanitization and type checking
 - Rate limiting on sensitive operations

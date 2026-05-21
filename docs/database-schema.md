@@ -105,6 +105,7 @@ erDiagram
 ## Detailed Table Definitions
 
 ### Users Table
+
 Stores user account information and authentication details.
 
 ```sql
@@ -123,6 +124,7 @@ CREATE TABLE users (
 ```
 
 ### Categories Table
+
 Organizes applications into hierarchical categories.
 
 ```sql
@@ -140,6 +142,7 @@ CREATE TABLE categories (
 ```
 
 ### Applications Table
+
 Represents software applications that generate error codes.
 
 ```sql
@@ -158,6 +161,7 @@ CREATE TABLE applications (
 ```
 
 ### Error Codes Table
+
 Stores error codes with their metadata and descriptions.
 
 ```sql
@@ -177,6 +181,7 @@ CREATE TABLE error_codes (
 ```
 
 ### Solutions Table
+
 Contains user-contributed solutions for error codes.
 
 ```sql
@@ -197,6 +202,7 @@ CREATE TABLE solutions (
 ```
 
 ### Votes Table
+
 Tracks user votes on solutions to prevent duplicate voting.
 
 ```sql
@@ -212,6 +218,7 @@ CREATE TABLE votes (
 ```
 
 ### User Sessions Table
+
 Manages user authentication sessions.
 
 ```sql
@@ -281,6 +288,7 @@ npx prisma generate
 ## Sample Data
 
 Example category hierarchy:
+
 - Programming Languages
   - JavaScript
   - Python

@@ -5,38 +5,43 @@ This guide covers the setup, configuration, and maintenance of the PostgreSQL da
 ## Environment Setup
 
 ### Development Environment
+
 1. **Local Development**:
+
    ```bash
    # Start PostgreSQL container
    docker-compose up -d postgres
-   
+
    # Run migrations
    npm run db:migrate
-   
+
    # Seed database
    npm run db:seed
    ```
 
 2. **Test Environment**:
+
    ```bash
    # Use test environment variables
    cp .env.test .env
-   
+
    # Reset test database
    npm run test:db:setup
    ```
 
 ### Production Environment
+
 1. **Environment Variables**:
    - Copy `.env.production` to `.env` on production server
    - Update all values with production credentials
    - Ensure strong JWT secrets (64+ characters)
 
 2. **Database Setup**:
+
    ```bash
    # Run migrations
    npm run db:migrate
-   
+
    # Optional: Seed with production data
    npm run db:seed
    ```
@@ -44,6 +49,7 @@ This guide covers the setup, configuration, and maintenance of the PostgreSQL da
 ## Database Configuration
 
 ### Connection Pooling
+
 The application uses Prisma's built-in connection pooling with these settings:
 
 - **Development**: 2-10 connections
@@ -52,7 +58,9 @@ The application uses Prisma's built-in connection pooling with these settings:
 - **Idle Timeout**: 30 seconds
 
 ### SSL Configuration
+
 For production, enable SSL in `DATABASE_URL`:
+
 ```
 postgresql://user:password@host:5432/db?sslmode=require
 ```
@@ -60,6 +68,7 @@ postgresql://user:password@host:5432/db?sslmode=require
 ## Backup and Recovery
 
 ### Manual Backups
+
 ```bash
 # Create backup
 npm run backup:create
@@ -75,13 +84,16 @@ npm run backup:cleanup
 ```
 
 ### Automated Backups
+
 Set up a cron job for daily backups:
+
 ```bash
 # Add to crontab (runs daily at 2 AM)
 0 2 * * * cd /path/to/app/backend && npm run backup:scheduled
 ```
 
 ### Backup Retention
+
 - Default: 30 days retention
 - Compression: Enabled by default
 - Storage: Local backups directory
@@ -89,6 +101,7 @@ Set up a cron job for daily backups:
 ## Monitoring and Maintenance
 
 ### Health Checks
+
 ```bash
 # Check database health
 npm run test:db:check
@@ -98,6 +111,7 @@ npm run test:db:check
 ```
 
 ### Performance Tuning
+
 1. **Indexing**: Ensure proper indexes on frequently queried columns
 2. **Query Optimization**: Use Prisma's query logging to identify slow queries
 3. **Connection Management**: Monitor connection pool usage
@@ -105,6 +119,7 @@ npm run test:db:check
 ## Security Considerations
 
 ### Database Security
+
 1. **Network Security**:
    - Use VPN or VPC for database access
    - Restrict database port access
@@ -121,6 +136,7 @@ npm run test:db:check
    - Access controls
 
 ### Environment Security
+
 1. **Secrets Management**:
    - Never commit secrets to version control
    - Use environment variables or secret management services
@@ -129,6 +145,7 @@ npm run test:db:check
 ## Troubleshooting
 
 ### Common Issues
+
 1. **Connection Issues**:
    - Check database URL format
    - Verify network connectivity
@@ -144,6 +161,7 @@ npm run test:db:check
    - Review query performance
 
 ### Recovery Procedures
+
 1. **Database Corruption**:
    - Restore from latest backup
    - Run database integrity checks
@@ -160,6 +178,7 @@ npm run test:db:check
 ## Best Practices
 
 ### Development
+
 1. **Migrations**:
    - Always create migrations for schema changes
    - Test migrations in development first
@@ -171,6 +190,7 @@ npm run test:db:check
    - Use realistic test data
 
 ### Production
+
 1. **Monitoring**:
    - Set up database monitoring
    - Alert on slow queries
@@ -189,6 +209,7 @@ npm run test:db:check
 ## Support
 
 For database-related issues:
+
 1. Check application logs
 2. Review Prisma documentation
 3. Consult PostgreSQL documentation

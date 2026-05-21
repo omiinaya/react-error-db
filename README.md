@@ -5,6 +5,7 @@ A comprehensive error code database with community-driven solutions for develope
 ## 🚀 Features
 
 ### Core Features
+
 - **Error Code Search**: Search across multiple applications and programming languages
 - **Advanced Search**: Full-text search with filters (severity, application, category)
 - **Community Solutions**: User-contributed solutions with voting system
@@ -13,6 +14,7 @@ A comprehensive error code database with community-driven solutions for develope
 - **Authentication**: User registration and login with JWT
 
 ### Phase 2 - Enhanced Features
+
 - **Search Suggestions**: Autocomplete with popular searches
 - **Search History**: Track and revisit previous searches
 - **Search Analytics**: Insights into popular searches (admin)
@@ -20,6 +22,7 @@ A comprehensive error code database with community-driven solutions for develope
 - **Sorting Options**: Sort by relevance, newest, popular, most solutions
 
 ### Phase 3 - Advanced Features
+
 - **Bookmarks**: Save solutions with personal notes
 - **Notifications**: Real-time in-app notifications for events
 - **Achievements/Badges**: Gamification with bronze, silver, gold, platinum tiers
@@ -28,6 +31,7 @@ A comprehensive error code database with community-driven solutions for develope
 - **Data Export**: Export errors, solutions, analytics in JSON/CSV
 
 ### Additional Features
+
 - **Markdown Support**: Rich text formatting for solutions
 - **Internationalization**: Multi-language support (English/Spanish)
 - **Dark Mode**: Theme switching support
@@ -37,6 +41,7 @@ A comprehensive error code database with community-driven solutions for develope
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - **React 18** with TypeScript
 - **Vite** for fast development and building
 - **Tailwind CSS** for styling
@@ -48,6 +53,7 @@ A comprehensive error code database with community-driven solutions for develope
 - **i18next** for internationalization
 
 ### Backend
+
 - **Node.js** with Express and TypeScript
 - **PostgreSQL** with Prisma ORM
 - **Redis** for caching and sessions
@@ -57,6 +63,7 @@ A comprehensive error code database with community-driven solutions for develope
 - **Prometheus** for metrics
 
 ### Development & Deployment
+
 - **Docker** and **Docker Compose** for containerization
 - **ESLint** and **Prettier** for code quality
 - **Vitest** and **Jest** for testing
@@ -105,12 +112,14 @@ error-database/
 #### Option 1: Using Docker (Recommended)
 
 1. **Clone the repository**
+
 ```bash
 git clone <repository-url>
 cd error-database
 ```
 
 2. **Set up environment variables**
+
 ```bash
 # Copy the example environment files
 cp backend/.env.example backend/.env
@@ -121,11 +130,13 @@ cp frontend/.env.example frontend/.env
 ```
 
 3. **Start with Docker**
+
 ```bash
 docker-compose up -d
 ```
 
 This will start:
+
 - PostgreSQL database on port 5450
 - Redis on port 6380
 - Backend API on port 3010
@@ -133,12 +144,14 @@ This will start:
 - pgAdmin on port 5050 (optional)
 
 4. **Run database migrations**
+
 ```bash
 cd backend
 npx prisma migrate dev
 ```
 
 5. **Access the application**
+
 - Frontend: http://localhost:3005
 - Backend API: http://localhost:3010/api
 - API Documentation: http://localhost:3010/api-docs
@@ -147,6 +160,7 @@ npx prisma migrate dev
 #### Option 2: Manual Setup
 
 1. **Start backend**
+
 ```bash
 cd backend
 npm install
@@ -156,6 +170,7 @@ npm run dev
 ```
 
 2. **Start frontend (in another terminal)**
+
 ```bash
 cd frontend
 npm install
@@ -165,6 +180,7 @@ npm run dev
 ## 📋 Available Scripts
 
 ### Root Level
+
 ```bash
 # Install dependencies for both frontend and backend
 npm run install:all
@@ -183,6 +199,7 @@ npm run lint
 ```
 
 ### Backend
+
 ```bash
 cd backend
 
@@ -210,6 +227,7 @@ npm run backup:list
 ```
 
 ### Frontend
+
 ```bash
 cd frontend
 
@@ -232,12 +250,14 @@ npm run lint
 The API provides comprehensive endpoints for all features:
 
 ### Authentication
+
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - Login user
 - `GET /api/auth/me` - Get current user
 - `POST /api/auth/refresh` - Refresh access token
 
 ### Search (Phase 2)
+
 - `GET /api/search` - Advanced search with filters
 - `GET /api/search/suggestions` - Autocomplete
 - `GET /api/search/history` - Search history
@@ -245,18 +265,21 @@ The API provides comprehensive endpoints for all features:
 - `GET /api/search/trends` - Search trends (admin)
 
 ### Bookmarks (Phase 3)
+
 - `GET /api/bookmarks` - List bookmarks
 - `POST /api/bookmarks` - Create bookmark
 - `DELETE /api/bookmarks/:id` - Delete bookmark
 - `GET /api/bookmarks/check/:solutionId` - Check status
 
 ### Notifications (Phase 3)
+
 - `GET /api/notifications` - List notifications
 - `GET /api/notifications/unread-count` - Get unread count
 - `PATCH /api/notifications/read-all` - Mark all as read
 - `DELETE /api/notifications/:id` - Delete notification
 
 ### Webhooks (Phase 3)
+
 - `GET /api/webhooks` - List webhooks
 - `POST /api/webhooks` - Create webhook
 - `DELETE /api/webhooks/:id` - Delete webhook
@@ -264,6 +287,7 @@ The API provides comprehensive endpoints for all features:
 - `GET /api/webhooks/:id/deliveries` - Get delivery history
 
 ### Export (Phase 3)
+
 - `GET /api/export/stats` - Export statistics
 - `GET /api/export/errors` - Export errors (admin)
 - `GET /api/export/solutions` - Export solutions (admin)
@@ -279,6 +303,7 @@ The API provides comprehensive endpoints for all features:
 The application uses PostgreSQL with the following main entities:
 
 ### Core Tables
+
 - **users** - User accounts with extended profile fields
 - **categories** - Hierarchical category system
 - **applications** - Specific applications/frameworks
@@ -287,6 +312,7 @@ The application uses PostgreSQL with the following main entities:
 - **votes** - Solution voting system
 
 ### Phase 2 & 3 Tables
+
 - **search_history** - User search history
 - **search_analytics** - Aggregated search data
 - **bookmarks** - User bookmarks
@@ -304,6 +330,7 @@ The application uses PostgreSQL with the following main entities:
 ## 🎯 Environment Variables
 
 ### Backend (.env)
+
 ```env
 # Database
 DATABASE_URL="postgresql://user:password@localhost:5433/errdb"
@@ -327,6 +354,7 @@ RATE_LIMIT_MAX=1000
 ```
 
 ### Frontend (.env)
+
 ```env
 VITE_API_BASE_URL=http://localhost:3010/api
 VITE_APP_NAME=Error Database
@@ -354,6 +382,7 @@ VITE_APP_NAME=Error Database
 ## 🧪 Testing
 
 ### Backend Tests
+
 ```bash
 cd backend
 npm test                 # Run all tests
@@ -362,6 +391,7 @@ npm run test:coverage    # Coverage report
 ```
 
 ### Frontend Tests
+
 ```bash
 cd frontend
 npm test                 # Run all tests
@@ -369,6 +399,7 @@ npm run test:ui          # UI mode
 ```
 
 ### E2E Tests
+
 ```bash
 npm run test:e2e         # Run Playwright tests
 ```

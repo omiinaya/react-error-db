@@ -1,6 +1,7 @@
 # Error Database - File Structure Organization
 
 ## Project Root Structure
+
 ```
 error-database/
 ├── 📁 backend/                 # Node.js backend application
@@ -16,6 +17,7 @@ error-database/
 ```
 
 ## Backend Structure
+
 ```
 backend/
 ├── 📁 src/
@@ -78,6 +80,7 @@ backend/
 ```
 
 ## Frontend Structure
+
 ```
 frontend/
 ├── 📁 src/
@@ -164,6 +167,7 @@ frontend/
 ```
 
 ## Documentation Structure
+
 ```
 docs/
 ├── 📄 architecture-overview.md
@@ -180,6 +184,7 @@ docs/
 ## Configuration Files
 
 ### Backend package.json Highlights
+
 ```json
 {
   "scripts": {
@@ -195,6 +200,7 @@ docs/
 ```
 
 ### Frontend package.json Highlights
+
 ```json
 {
   "scripts": {
@@ -210,6 +216,7 @@ docs/
 ## Environment Variables
 
 ### Backend (.env)
+
 ```env
 # Database
 DATABASE_URL="postgresql://user:password@localhost:5432/errdb"
@@ -230,6 +237,7 @@ FRONTEND_URL="http://localhost:3005"
 ```
 
 ### Frontend (.env)
+
 ```env
 VITE_API_BASE_URL="http://localhost:3010/api"
 VITE_APP_NAME="Error Database"
@@ -238,12 +246,14 @@ VITE_APP_NAME="Error Database"
 ## Naming Conventions
 
 ### File Naming
+
 - **Components**: PascalCase (e.g., `ErrorCard.tsx`)
 - **Utilities**: camelCase (e.g., `formatDate.ts`)
 - **Types**: camelCase with .types.ts (e.g., `user.types.ts`)
 - **Constants**: UPPER_SNAKE_CASE (e.g., `API_CONSTANTS.ts`)
 
 ### Folder Naming
+
 - Use kebab-case for folder names
 - Group related functionality together
 - Keep folder structure flat when possible

@@ -37,6 +37,7 @@ graph TB
 ## Component Architecture
 
 ### Frontend Components
+
 - **Layout Components**: Header, Footer, Navigation
 - **Authentication Components**: Login, Register, Profile
 - **Search Components**: SearchBar, Filters, Results
@@ -45,6 +46,7 @@ graph TB
 - **Category Components**: CategoryBrowser, CategoryFilter
 
 ### Backend Services
+
 - **Authentication Service**: User registration, login, JWT management
 - **Error Service**: Error code CRUD operations, search functionality
 - **Solution Service**: Solution management, voting system

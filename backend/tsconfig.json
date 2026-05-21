@@ -35,17 +35,7 @@
       "@/routes/*": ["src/routes/*"]
     }
   },
-  "include": [
-    "src/**/*",
-    "prisma/**/*",
-    "tests/**/*",
-    "src/__tests__/**/*"
-  ],
+  "include": ["src/**/*", "prisma/**/*", "tests/**/*", "src/__tests__/**/*"],
   "types": ["jest"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "**/*.spec.ts"
-  ]
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
 }

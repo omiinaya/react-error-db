@@ -1,36 +1,47 @@
 # Rate Limiting Configuration Guide
 
 ## Overview
+
 The Error Database application implements comprehensive rate limiting to protect against abuse, DDoS attacks, and ensure fair usage of API resources. The system uses a multi-layered approach with different limits for various types of endpoints.
 
 ## Rate Limiting Strategies
 
 ### 1. Global Rate Limiting
+
 **Applies to**: All requests
+
 - **Window**: 15 minutes
 - **Limit**: 100 requests (production) / 1000 requests (development)
 - **Purpose**: Basic protection against abuse
 
-### 2. Authentication Rate Limiting  
+### 2. Authentication Rate Limiting
+
 **Applies to**: `/api/auth/*` endpoints
+
 - **Window**: 15 minutes
 - **Limit**: 5 attempts (production) / 20 attempts (development)
 - **Purpose**: Prevent brute force attacks on authentication
 
 ### 3. API Rate Limiting
+
 **Applies to**: All `/api/*` endpoints (except auth)
+
 - **Window**: 15 minutes
 - **Limit**: 100 requests (production) / 500 requests (development)
 - **Purpose**: Protect API resources from overuse
 
 ### 4. Admin Rate Limiting
+
 **Applies to**: `/api/admin/*` endpoints
+
 - **Window**: 15 minutes
 - **Limit**: 50 requests (production) / 200 requests (development)
 - **Purpose**: Protect administrative functions
 
 ### 5. Health Check Rate Limiting
+
 **Applies to**: `/health` and `/api/health` endpoints
+
 - **Window**: 1 minute
 - **Limit**: 60 requests (production) / 300 requests (development)
 - **Purpose**: Prevent health check abuse while allowing monitoring
@@ -38,6 +49,7 @@ The Error Database application implements comprehensive rate limiting to protect
 ## Configuration
 
 ### Environment Variables
+
 ```bash
 # Global rate limit (requests per 15 minutes)
 RATE_LIMIT_MAX=1000
@@ -47,6 +59,7 @@ REDIS_URL=redis://localhost:6379
 ```
 
 ### Rate Limit Store
+
 - **Memory Store**: Default for development and single-instance deployments
 - **Redis Store**: Recommended for production and multi-instance deployments
 - **Automatic Fallback**: Falls back to memory store if Redis is unavailable
@@ -54,6 +67,7 @@ REDIS_URL=redis://localhost:6379
 ## Response Format
 
 ### Rate Limit Exceeded Response
+
 ```json
 {
   "success": false,
@@ -66,6 +80,7 @@ REDIS_URL=redis://localhost:6379
 ```
 
 ### Headers Included
+
 ```http
 RateLimit-Limit: 100
 RateLimit-Remaining: 0
@@ -76,6 +91,7 @@ Retry-After: 900
 ## Customization
 
 ### Per-Endpoint Configuration
+
 ```typescript
 // Custom rate limiter for specific endpoint
 export const customRateLimiter = rateLimit({
@@ -93,11 +109,12 @@ export const customRateLimiter = rateLimit({
 ```
 
 ### Dynamic Rate Limiting
+
 ```typescript
 // Dynamic rate limiting based on user role
 export const dynamicUserRateLimiter = (req, res, next) => {
   const userLimit = req.user?.isPremium ? 1000 : 100;
-  
+
   return rateLimit({
     windowMs: 15 * 60 * 1000,
     max: userLimit,
@@ -109,23 +126,25 @@ export const dynamicUserRateLimiter = (req, res, next) => {
 ## Exemptions
 
 ### Exempt Endpoints
+
 - Internal health checks (localhost)
 - Certain monitoring endpoints
 - Emergency access routes
 
 ### Exemption Middleware
+
 ```typescript
 export const rateLimitExempt = (req, res, next) => {
   // Exempt health checks
   if (req.path === '/health' || req.path.startsWith('/api/health')) {
     return next();
   }
-  
+
   // Exempt internal IPs
   if (req.ip === '127.0.0.1' || req.ip === '::1') {
     return next();
   }
-  
+
   next();
 };
 ```
@@ -133,6 +152,7 @@ export const rateLimitExempt = (req, res, next) => {
 ## Monitoring and Logging
 
 ### Log Events
+
 - Rate limit exceeded events are logged with details:
   - IP address
   - Request path
@@ -140,11 +160,13 @@ export const rateLimitExempt = (req, res, next) => {
   - Timestamp
 
 ### Metrics
+
 - Rate limit usage metrics
 - Exceeded request counts
 - Store type (memory/Redis)
 
 ### Alerting
+
 - Alert on sustained rate limiting
 - Monitor for potential DDoS attacks
 - Track abnormal usage patterns
@@ -152,6 +174,7 @@ export const rateLimitExempt = (req, res, next) => {
 ## Redis Configuration (Production)
 
 ### Setup
+
 ```bash
 # Install Redis store dependency
 npm install rate-limit-redis
@@ -161,12 +184,14 @@ REDIS_URL=redis://username:password@host:port/database
 ```
 
 ### Benefits
+
 - **Distributed**: Works across multiple application instances
 - **Persistence**: Survives application restarts
 - **Performance**: Efficient memory usage
 - **Consistency**: Consistent rate limiting across cluster
 
 ### Fallback Strategy
+
 ```typescript
 const getRateLimitStore = () => {
   if (redisClient && config.nodeEnv === 'production') {
@@ -175,7 +200,7 @@ const getRateLimitStore = () => {
       prefix: 'ratelimit:',
     });
   }
-  
+
   // Fallback to memory store
   return undefined;
 };
@@ -184,6 +209,7 @@ const getRateLimitStore = () => {
 ## Testing
 
 ### Test Endpoints
+
 ```bash
 # Test global rate limiting
 curl -X GET http://localhost:3010/api/health
@@ -198,6 +224,7 @@ curl -I http://localhost:3010/api/health
 ```
 
 ### Development Testing
+
 ```typescript
 // Temporarily increase limits for testing
 if (config.nodeEnv === 'test') {
@@ -212,18 +239,21 @@ if (config.nodeEnv === 'test') {
 ## Best Practices
 
 ### Configuration
+
 1. **Start Conservative**: Begin with strict limits and adjust as needed
 2. **Monitor Usage**: Regularly review rate limit statistics
 3. **User Communication**: Provide clear error messages with retry information
 4. **Gradual Escalation**: Increase limits based on actual usage patterns
 
 ### Security
+
 1. **IP-Based Limits**: Primary protection against abuse
 2. **User-Based Limits**: Additional protection for authenticated users
 3. **Endpoint-Specific**: Different limits for different functionality
 4. **Brute Force Protection**: Strict limits on authentication endpoints
 
 ### Performance
+
 1. **Efficient Storage**: Use appropriate store for deployment scale
 2. **Minimal Overhead**: Rate limiting should not significantly impact performance
 3. **Caching**: Leverage Redis for efficient distributed rate limiting
@@ -234,12 +264,14 @@ if (config.nodeEnv === 'test') {
 ### Common Issues
 
 #### Rate Limits Too Strict
+
 ```bash
 # Temporary solution: Increase limits
 export RATE_LIMIT_MAX=2000
 ```
 
 #### Redis Connection Issues
+
 ```bash
 # Check Redis connection
 redis-cli ping
@@ -249,6 +281,7 @@ export REDIS_URL=""
 ```
 
 #### Header Issues
+
 ```typescript
 // Ensure proper header configuration
 standardHeaders: true,
@@ -256,6 +289,7 @@ legacyHeaders: false,
 ```
 
 ### Debugging
+
 ```bash
 # Enable debug logging
 LOG_LEVEL=debug npm run dev
@@ -265,6 +299,7 @@ curl http://localhost:3010/api/health/ratelimit-stats
 ```
 
 ### Monitoring
+
 - Monitor rate limit exceed events
 - Track store performance (memory vs Redis)
 - Alert on abnormal rate limiting patterns
@@ -273,18 +308,22 @@ curl http://localhost:3010/api/health/ratelimit-stats
 ## Integration with Other Systems
 
 ### Load Balancers
+
 - Coordinate with upstream rate limiting
 - Ensure consistent limits across infrastructure
 
 ### CDN Integration
+
 - Edge rate limiting where possible
 - Cache rate limit decisions
 
 ### Monitoring Systems
+
 - Export rate limit metrics to Prometheus/Grafana
 - Integrate with alerting systems
 
 ### Analytics
+
 - Track rate limit usage patterns
 - Analyze for abuse detection
 - Optimize limits based on usage

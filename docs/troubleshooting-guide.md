@@ -1,13 +1,15 @@
 # Troubleshooting Guide
 
 ## Overview
+
 This guide provides comprehensive troubleshooting procedures for the Error Database application, covering common issues, error messages, and step-by-step resolution procedures.
 
 ## Quick Reference
 
 ### Common Issues
+
 1. **Database Connection Issues**
-2. **Authentication Problems** 
+2. **Authentication Problems**
 3. **Performance Degradation**
 4. **Deployment Failures**
 5. **SSL/TLS Configuration**
@@ -15,6 +17,7 @@ This guide provides comprehensive troubleshooting procedures for the Error Datab
 7. **Security Incidents**
 
 ### Emergency Contacts
+
 - **Primary Admin**: admin@errdb.com
 - **Secondary Admin**: backup-admin@errdb.com
 - **Emergency Pager**: +1-555-EMERGENCY
@@ -24,11 +27,13 @@ This guide provides comprehensive troubleshooting procedures for the Error Datab
 ### Connection Problems
 
 #### Symptoms
+
 - "Connection refused" errors
 - "Connection timeout" messages
 - High latency in database operations
 
 #### Diagnosis
+
 ```bash
 # Check PostgreSQL status
 sudo systemctl status postgresql
@@ -44,6 +49,7 @@ telnet localhost 5432
 ```
 
 #### Resolution
+
 ```bash
 # Restart PostgreSQL
 sudo systemctl restart postgresql
@@ -58,11 +64,13 @@ psql -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE state = 'i
 ### Performance Issues
 
 #### Symptoms
+
 - Slow query response times
 - High CPU usage on database server
 - Timeout errors
 
 #### Diagnosis
+
 ```bash
 # Check active queries
 psql -c "SELECT * FROM pg_stat_activity WHERE state = 'active';"
@@ -78,6 +86,7 @@ psql -c "SELECT * FROM pg_locks WHERE granted = false;"
 ```
 
 #### Resolution
+
 ```sql
 -- Create indexes on frequently queried columns
 CREATE INDEX idx_errors_application_id ON error_codes(application_id);
@@ -95,11 +104,13 @@ EXPLAIN ANALYZE SELECT * FROM error_codes WHERE application_id = 1;
 ### Startup Failures
 
 #### Symptoms
+
 - Application fails to start
 - Port already in use errors
 - Environment variable issues
 
 #### Diagnosis
+
 ```bash
 # Check running processes
 ps aux | grep node
@@ -117,6 +128,7 @@ tail -f /var/log/errdb/application.log
 ```
 
 #### Resolution
+
 ```bash
 # Kill processes using ports
 sudo kill -9 $(lsof -t -i:3001)
@@ -133,11 +145,13 @@ pm2 restart errdb-backend
 ### Authentication Issues
 
 #### Symptoms
+
 - "Invalid token" errors
 - "Access denied" messages
 - Session expiration problems
 
 #### Diagnosis
+
 ```bash
 # Check JWT configuration
 echo $JWT_SECRET | wc -c
@@ -151,6 +165,7 @@ redis-cli -h localhost -p 6379 ping
 ```
 
 #### Resolution
+
 ```bash
 # Rotate JWT secrets
 curl -X POST -H "Authorization: Bearer <admin-token>" \
@@ -169,11 +184,13 @@ export JWT_REFRESH_SECRET=$(openssl rand -base64 64)
 ### SSL/TLS Problems
 
 #### Symptoms
+
 - "Certificate invalid" errors
 - "SSL handshake failed" messages
 - Mixed content warnings
 
 #### Diagnosis
+
 ```bash
 # Test SSL certificate
 openssl s_client -connect yourdomain.com:443 -servername yourdomain.com
@@ -186,6 +203,7 @@ sslscan yourdomain.com
 ```
 
 #### Resolution
+
 ```bash
 # Renew Let's Encrypt certificate
 sudo certbot renew --force-renewal
@@ -200,11 +218,13 @@ sudo nginx -t
 ### Firewall Issues
 
 #### Symptoms
+
 - Connection timeouts
 - "Connection refused" errors
 - Intermittent connectivity
 
 #### Diagnosis
+
 ```bash
 # Check firewall status
 sudo ufw status
@@ -218,6 +238,7 @@ traceroute yourdomain.com
 ```
 
 #### Resolution
+
 ```bash
 # Open necessary ports
 sudo ufw allow 80/tcp
@@ -236,11 +257,13 @@ sudo ufw status verbose
 ### High CPU Usage
 
 #### Symptoms
+
 - Slow response times
 - System becoming unresponsive
 - High load average
 
 #### Diagnosis
+
 ```bash
 # Check CPU usage
 top -c
@@ -257,6 +280,7 @@ node --inspect-brk server.js
 ```
 
 #### Resolution
+
 ```bash
 # Scale application
 pm2 scale errdb-backend +2
@@ -271,11 +295,13 @@ redis-cli SET cache_key "value" EX 3600
 ### Memory Issues
 
 #### Symptoms
+
 - "Out of memory" errors
 - High memory usage
 - Application crashes
 
 #### Diagnosis
+
 ```bash
 # Check memory usage
 free -h
@@ -291,6 +317,7 @@ kill -USR2 <pid>
 ```
 
 #### Resolution
+
 ```bash
 # Increase memory limits
 pm2 restart errdb-backend --max-memory-restart 1G
@@ -307,11 +334,13 @@ redis-cli FLUSHALL
 ### Build Failures
 
 #### Symptoms
+
 - npm install failures
 - TypeScript compilation errors
 - Docker build failures
 
 #### Diagnosis
+
 ```bash
 # Check npm logs
 npm install --verbose
@@ -328,6 +357,7 @@ npx tsc --noEmit
 ```
 
 #### Resolution
+
 ```bash
 # Clear npm cache
 npm cache clean --force
@@ -344,11 +374,13 @@ nvm use 18
 ### Container Issues
 
 #### Symptoms
+
 - Docker container crashes
 - Image pull failures
 - Volume mount problems
 
 #### Diagnosis
+
 ```bash
 # Check container status
 docker ps -a
@@ -365,6 +397,7 @@ docker images --digests
 ```
 
 #### Resolution
+
 ```bash
 # Restart Docker
 sudo systemctl restart docker
@@ -381,11 +414,13 @@ docker system prune -a
 ### Suspicious Activity
 
 #### Symptoms
+
 - Unusual login attempts
 - Unexpected database modifications
 - Security alert notifications
 
 #### Diagnosis
+
 ```bash
 # Check audit logs
 psql -c "SELECT * FROM audit_logs ORDER BY created_at DESC LIMIT 10;"
@@ -401,6 +436,7 @@ sudo tcpdump -i eth0 -n port 80 or port 443
 ```
 
 #### Resolution
+
 ```bash
 # Block suspicious IPs
 sudo fail2ban-client set nginx-ban banip 192.168.1.100
@@ -417,6 +453,7 @@ npx snyk test
 ### Data Breach Response
 
 #### Emergency Procedures
+
 1. **Isolate** affected systems
 2. **Preserve** evidence for forensic analysis
 3. **Notify** appropriate stakeholders
@@ -424,6 +461,7 @@ npx snyk test
 5. **Audit** access logs and database changes
 
 #### Recovery Steps
+
 ```bash
 # Take system offline
 sudo systemctl stop nginx
@@ -442,6 +480,7 @@ npx snyk monitor
 ### Log Analysis
 
 #### Common Log Patterns
+
 ```bash
 # Error patterns
 grep -E "(ERROR|error|Exception)" /var/log/errdb/application.log
@@ -454,6 +493,7 @@ grep -E "(failed|invalid|unauthorized)" /var/log/errdb/application.log
 ```
 
 #### Log Rotation
+
 ```bash
 # Configure logrotate
 sudo nano /etc/logrotate.d/errdb
@@ -468,6 +508,7 @@ ls -la /var/log/errdb/
 ### Monitoring Alerts
 
 #### Critical Alerts
+
 - Database connection failures
 - High error rate (>5%)
 - CPU usage >90% for 5 minutes
@@ -475,6 +516,7 @@ ls -la /var/log/errdb/
 - SSL certificate expiration <7 days
 
 #### Alert Response
+
 ```bash
 # Check system status
 uptime
@@ -493,6 +535,7 @@ ls -la /backups/
 ### Routine Maintenance
 
 #### Daily Tasks
+
 ```bash
 # Check database health
 psql -c "SELECT now(), version();"
@@ -505,6 +548,7 @@ psql -c "SELECT schemaname, tablename, n_dead_tup FROM pg_stat_user_tables ORDER
 ```
 
 #### Weekly Tasks
+
 ```bash
 # Vacuum database
 psql -c "VACUUM ANALYZE;"
@@ -519,7 +563,9 @@ pg_restore --list /backups/errdb-latest.dump | head -10
 ### Emergency Recovery
 
 #### Database Corruption
+
 ```bash
 # Check database integrity
 psql -c "CHECKPOINT;"
 psql -c "SELECT pg_check
+```

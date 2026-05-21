@@ -1,18 +1,23 @@
 # Error Database - API Endpoints Specification
 
 ## Base URL
+
 ```
 https://api.errdb.example.com/api
 ```
 
 ## Authentication
+
 All endpoints except public routes require Bearer token authentication:
+
 ```
 Authorization: Bearer <JWT_TOKEN>
 ```
 
 ## Response Format
+
 All responses follow this structure:
+
 ```json
 {
   "success": true,
@@ -25,6 +30,7 @@ All responses follow this structure:
 ```
 
 Error responses:
+
 ```json
 {
   "success": false,
@@ -37,6 +43,7 @@ Error responses:
 ```
 
 ## Table of Contents
+
 1. [Authentication](#authentication-endpoints)
 2. [Search](#search-endpoints)
 3. [Bookmarks](#bookmarks-endpoints)
@@ -55,9 +62,11 @@ Error responses:
 ## Authentication Endpoints
 
 ### Register User
+
 **POST** `/auth/register`
 
 Request body:
+
 ```json
 {
   "email": "user@example.com",
@@ -68,6 +77,7 @@ Request body:
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -86,9 +96,11 @@ Response:
 ```
 
 ### Login User
+
 **POST** `/auth/login`
 
 Request body:
+
 ```json
 {
   "email": "user@example.com",
@@ -99,9 +111,11 @@ Request body:
 Response: Same as register endpoint
 
 ### Get Current User
+
 **GET** `/auth/me`
 
 Response:
+
 ```json
 {
   "success": true,
@@ -123,9 +137,11 @@ Response:
 ```
 
 ### Refresh Token
+
 **POST** `/auth/refresh`
 
 Request body:
+
 ```json
 {
   "refreshToken": "refresh_token"
@@ -133,6 +149,7 @@ Request body:
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -148,9 +165,11 @@ Response:
 ## Search Endpoints
 
 ### Advanced Search
+
 **GET** `/search`
 
 Query parameters:
+
 - `query` (required): Search query string
 - `applicationId` (optional): Filter by application UUID
 - `categoryId` (optional): Filter by category UUID
@@ -161,6 +180,7 @@ Query parameters:
 - `limit` (optional): Items per page (default: 20, max: 100)
 
 Response:
+
 ```json
 {
   "success": true,
@@ -196,13 +216,16 @@ Response:
 ```
 
 ### Get Search Suggestions
+
 **GET** `/search/suggestions`
 
 Query parameters:
+
 - `query` (required): Search query (min 2 characters)
 - `limit` (optional): Number of suggestions (default: 5, max: 10)
 
 Response:
+
 ```json
 {
   "success": true,
@@ -222,12 +245,15 @@ Response:
 ```
 
 ### Get Search History
+
 **GET** `/search/history`
 
 Query parameters:
+
 - `limit` (optional): Number of history items (default: 10)
 
 Response:
+
 ```json
 {
   "success": true,
@@ -246,9 +272,11 @@ Response:
 ```
 
 ### Clear Search History
+
 **DELETE** `/search/history`
 
 Response:
+
 ```json
 {
   "success": true,
@@ -257,9 +285,11 @@ Response:
 ```
 
 ### Delete Search History Item
+
 **DELETE** `/search/history/{id}`
 
 Response:
+
 ```json
 {
   "success": true,
@@ -268,12 +298,15 @@ Response:
 ```
 
 ### Get Search Trends (Admin)
+
 **GET** `/search/trends`
 
 Query parameters:
+
 - `days` (optional): Number of days (default: 7, max: 90)
 
 Response:
+
 ```json
 {
   "success": true,
@@ -295,13 +328,16 @@ Response:
 ## Bookmarks Endpoints
 
 ### Get User Bookmarks
+
 **GET** `/bookmarks`
 
 Query parameters:
+
 - `page` (optional): Pagination page (default: 1)
 - `limit` (optional): Items per page (default: 20, max: 100)
 
 Response:
+
 ```json
 {
   "success": true,
@@ -335,9 +371,11 @@ Response:
 ```
 
 ### Create Bookmark
+
 **POST** `/bookmarks`
 
 Request body:
+
 ```json
 {
   "solutionId": "uuid",
@@ -346,6 +384,7 @@ Request body:
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -362,9 +401,11 @@ Response:
 ```
 
 ### Delete Bookmark
+
 **DELETE** `/bookmarks/{id}`
 
 Response:
+
 ```json
 {
   "success": true,
@@ -373,9 +414,11 @@ Response:
 ```
 
 ### Update Bookmark Note
+
 **PATCH** `/bookmarks/{id}`
 
 Request body:
+
 ```json
 {
   "note": "Updated note text"
@@ -383,9 +426,11 @@ Request body:
 ```
 
 ### Check Bookmark Status
+
 **GET** `/bookmarks/check/{solutionId}`
 
 Response:
+
 ```json
 {
   "success": true,
@@ -400,14 +445,17 @@ Response:
 ## Notifications Endpoints
 
 ### Get User Notifications
+
 **GET** `/notifications`
 
 Query parameters:
+
 - `unread` (optional): Filter by unread only (true/false)
 - `page` (optional): Pagination page (default: 1)
 - `limit` (optional): Items per page (default: 20, max: 100)
 
 Response:
+
 ```json
 {
   "success": true,
@@ -434,9 +482,11 @@ Response:
 ```
 
 ### Get Unread Count
+
 **GET** `/notifications/unread-count`
 
 Response:
+
 ```json
 {
   "success": true,
@@ -447,9 +497,11 @@ Response:
 ```
 
 ### Mark Notification as Read
+
 **PATCH** `/notifications/{id}/read`
 
 Response:
+
 ```json
 {
   "success": true,
@@ -458,9 +510,11 @@ Response:
 ```
 
 ### Mark All Notifications as Read
+
 **PATCH** `/notifications/read-all`
 
 Response:
+
 ```json
 {
   "success": true,
@@ -469,9 +523,11 @@ Response:
 ```
 
 ### Delete Notification
+
 **DELETE** `/notifications/{id}`
 
 Response:
+
 ```json
 {
   "success": true,
@@ -484,13 +540,16 @@ Response:
 ## Categories Endpoints
 
 ### Get All Categories
+
 **GET** `/categories`
 
 Query parameters:
+
 - `parentId` (optional): Filter by parent category
 - `includeChildren` (optional): Include child categories
 
 Response:
+
 ```json
 {
   "success": true,
@@ -511,6 +570,7 @@ Response:
 ```
 
 ### Get Category by Slug
+
 **GET** `/categories/{slug}`
 
 Response: Single category object with applications
@@ -520,15 +580,18 @@ Response: Single category object with applications
 ## Applications Endpoints
 
 ### Get Applications
+
 **GET** `/applications`
 
 Query parameters:
+
 - `categoryId` (optional): Filter by category
 - `search` (optional): Search by name
 - `page` (optional): Pagination page
 - `limit` (optional): Items per page
 
 Response:
+
 ```json
 {
   "success": true,
@@ -558,6 +621,7 @@ Response:
 ```
 
 ### Get Application by Slug
+
 **GET** `/applications/{slug}`
 
 Response: Single application with error codes count
@@ -567,9 +631,11 @@ Response: Single application with error codes count
 ## Error Codes Endpoints
 
 ### Search Error Codes
+
 **GET** `/errors`
 
 Query parameters:
+
 - `applicationId` (optional): Filter by application
 - `search` (optional): Search by code or title
 - `severity` (optional): Filter by severity
@@ -577,6 +643,7 @@ Query parameters:
 - `limit` (optional): Items per page
 
 Response:
+
 ```json
 {
   "success": true,
@@ -603,9 +670,11 @@ Response:
 ```
 
 ### Get Error Code Detail
+
 **GET** `/errors/{id}`
 
 Response:
+
 ```json
 {
   "success": true,
@@ -650,9 +719,11 @@ Response:
 ```
 
 ### Create Error Code (Admin)
+
 **POST** `/errors`
 
 Request body:
+
 ```json
 {
   "code": "E123",
@@ -669,9 +740,11 @@ Request body:
 ## Solutions Endpoints
 
 ### Add Solution
+
 **POST** `/errors/{errorId}/solutions`
 
 Request body:
+
 ```json
 {
   "solutionText": "Step by step solution..."
@@ -679,6 +752,7 @@ Request body:
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -702,9 +776,11 @@ Response:
 ```
 
 ### Vote on Solution
+
 **POST** `/solutions/{solutionId}/vote`
 
 Request body:
+
 ```json
 {
   "voteType": "upvote"
@@ -714,9 +790,11 @@ Request body:
 Response: Updated solution with new vote counts
 
 ### Update Solution (Owner/Admin)
+
 **PUT** `/solutions/{solutionId}`
 
 Request body:
+
 ```json
 {
   "solutionText": "Updated solution text..."
@@ -724,6 +802,7 @@ Request body:
 ```
 
 ### Delete Solution (Owner/Admin)
+
 **DELETE** `/solutions/{solutionId}`
 
 ---
@@ -731,9 +810,11 @@ Request body:
 ## Users Endpoints
 
 ### Get User Profile
+
 **GET** `/users/{userId}`
 
 Response:
+
 ```json
 {
   "success": true,
@@ -756,9 +837,11 @@ Response:
 ```
 
 ### Get User Stats
+
 **GET** `/users/{userId}/stats`
 
 Response:
+
 ```json
 {
   "success": true,
@@ -793,9 +876,11 @@ Response:
 ```
 
 ### Update User Profile
+
 **PUT** `/users/me`
 
 Request body:
+
 ```json
 {
   "displayName": "New Display Name",
@@ -809,9 +894,11 @@ Request body:
 ## Webhooks Endpoints
 
 ### Get User Webhooks
+
 **GET** `/webhooks`
 
 Response:
+
 ```json
 {
   "success": true,
@@ -831,9 +918,11 @@ Response:
 ```
 
 ### Create Webhook
+
 **POST** `/webhooks`
 
 Request body:
+
 ```json
 {
   "url": "https://example.com/webhook",
@@ -842,6 +931,7 @@ Request body:
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -859,9 +949,11 @@ Response:
 ```
 
 ### Update Webhook
+
 **PATCH** `/webhooks/{id}`
 
 Request body:
+
 ```json
 {
   "url": "https://example.com/new-webhook",
@@ -871,9 +963,11 @@ Request body:
 ```
 
 ### Delete Webhook
+
 **DELETE** `/webhooks/{id}`
 
 Response:
+
 ```json
 {
   "success": true,
@@ -882,9 +976,11 @@ Response:
 ```
 
 ### Regenerate Webhook Secret
+
 **POST** `/webhooks/{id}/regenerate-secret`
 
 Response:
+
 ```json
 {
   "success": true,
@@ -895,12 +991,15 @@ Response:
 ```
 
 ### Get Webhook Delivery History
+
 **GET** `/webhooks/{id}/deliveries`
 
 Query parameters:
+
 - `limit` (optional): Number of deliveries (default: 50, max: 100)
 
 Response:
+
 ```json
 {
   "success": true,
@@ -918,9 +1017,11 @@ Response:
 ```
 
 ### Get Webhook Event Types
+
 **GET** `/webhooks/events/types`
 
 Response:
+
 ```json
 {
   "success": true,
@@ -940,6 +1041,7 @@ Response:
 ```
 
 **Available Events:**
+
 - `error.created` - New error code created
 - `error.updated` - Error code updated
 - `solution.created` - New solution submitted
@@ -954,9 +1056,11 @@ Response:
 ## Export Endpoints
 
 ### Get Export Statistics
+
 **GET** `/export/stats`
 
 Response:
+
 ```json
 {
   "success": true,
@@ -975,9 +1079,11 @@ Response:
 ```
 
 ### Export Errors (Admin)
+
 **GET** `/export/errors`
 
 Query parameters:
+
 - `format` (optional): json or csv (default: json)
 - `startDate` (optional): Filter by start date
 - `endDate` (optional): Filter by end date
@@ -985,9 +1091,11 @@ Query parameters:
 Response: File download (JSON or CSV)
 
 ### Export Solutions (Admin)
+
 **GET** `/export/solutions`
 
 Query parameters:
+
 - `format` (optional): json or csv (default: json)
 - `startDate` (optional): Filter by start date
 - `endDate` (optional): Filter by end date
@@ -995,14 +1103,17 @@ Query parameters:
 Response: File download (JSON or CSV)
 
 ### Export User Data
+
 **GET** `/export/user-data`
 
 Response: User data export in JSON format
 
 ### Export Analytics (Admin)
+
 **GET** `/export/analytics`
 
 Query parameters:
+
 - `format` (optional): json or csv (default: json)
 - `startDate` (optional): Filter by start date
 - `endDate` (optional): Filter by end date
@@ -1014,25 +1125,30 @@ Response: Analytics data export
 ## Admin Endpoints
 
 ### Verify Solution
+
 **POST** `/admin/solutions/{solutionId}/verify`
 
 Response: Solution with verified status
 
 ### Manage Users
+
 - **GET** `/admin/users` - List all users
 - **PUT** `/admin/users/{userId}` - Update user role
 - **DELETE** `/admin/users/{userId}` - Delete user
 
 ### Manage Error Codes
+
 - **POST** `/admin/errors` - Create error code
 - **PUT** `/admin/errors/{errorId}` - Update error code
 - **DELETE** `/admin/errors/{errorId}` - Delete error code
 
 ### Content Moderation
+
 - **GET** `/admin/solutions/moderation` - Get solutions for moderation
 - **POST** `/admin/solutions/bulk-moderation` - Bulk moderate solutions
 
 ### System Logs
+
 - **GET** `/admin/system/logs` - Get system logs
 
 ---
@@ -1045,6 +1161,7 @@ Response: Solution with verified status
 - **Critical endpoints**: Additional rate limiting as needed
 
 Rate limit headers:
+
 ```
 X-RateLimit-Limit: 1000
 X-RateLimit-Remaining: 999
@@ -1056,6 +1173,7 @@ X-RateLimit-Reset: 1704067200
 ## API Documentation
 
 Interactive API documentation is available at:
+
 - **Swagger UI**: `http://localhost:3010/api-docs`
 - **OpenAPI Spec**: `http://localhost:3010/openapi.yaml`
 

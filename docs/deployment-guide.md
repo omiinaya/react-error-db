@@ -1,11 +1,13 @@
 # Deployment Guide
 
 ## Overview
+
 This guide provides comprehensive instructions for deploying the Error Database application across different environments (development, staging, production) with best practices for security, scalability, and reliability.
 
 ## Prerequisites
 
 ### System Requirements
+
 - **Node.js**: 18.x or higher
 - **PostgreSQL**: 15.x or higher
 - **Redis**: 7.x or higher
@@ -15,6 +17,7 @@ This guide provides comprehensive instructions for deploying the Error Database 
 - **CPU**: 2+ cores
 
 ### Dependencies
+
 ```bash
 # Core dependencies
 npm install
@@ -28,9 +31,11 @@ npm install -g concurrently
 ## Environment Setup
 
 ### Environment Variables
+
 Create environment files for each environment:
 
 #### .env.development
+
 ```env
 # Node Environment
 NODE_ENV=development
@@ -72,11 +77,12 @@ RATE_LIMIT_WINDOW_MS=900000
 ```
 
 #### .env.production
+
 ```env
 # Node Environment
 NODE_ENV=production
 
-# Database  
+# Database
 DATABASE_URL=postgresql://user:password@production-db:5432/errdb_prod
 DATABASE_POOL_MIN=5
 DATABASE_POOL_MAX=20
@@ -126,6 +132,7 @@ HEALTH_CHECK_ENABLED=true
 ### 1. Docker Deployment (Recommended)
 
 #### Production Dockerfile
+
 ```dockerfile
 # backend/Dockerfile
 FROM node:18-alpine AS builder
@@ -160,6 +167,7 @@ CMD ["npm", "start"]
 ```
 
 #### Docker Compose (Production)
+
 ```yaml
 # docker-compose.production.yml
 version: '3.8'
@@ -174,7 +182,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_HOST_AUTH_METHOD: scram-sha-256
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -187,7 +195,7 @@ services:
     container_name: errdb-redis-prod
     command: redis-server --requirepass ${REDIS_PASSWORD}
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis_data:/data
     networks:
@@ -206,7 +214,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
     ports:
-      - "3010:3010"
+      - '3010:3010'
     depends_on:
       - postgres
       - redis
@@ -214,7 +222,7 @@ services:
       - errdb-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3010/api/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:3010/api/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -228,7 +236,7 @@ services:
       - VITE_API_BASE_URL=https://api.yourdomain.com/api
       - VITE_APP_NAME=Error Database
     ports:
-      - "3005:3005"
+      - '3005:3005'
     depends_on:
       - backend
     networks:
@@ -245,6 +253,7 @@ networks:
 ```
 
 #### Deployment Commands
+
 ```bash
 # Build and start
 docker-compose -f docker-compose.production.yml up -d --build
@@ -262,6 +271,7 @@ docker-compose -f docker-compose.production.yml up -d --build --force-recreate
 ### 2. Manual Deployment
 
 #### Server Setup
+
 ```bash
 # Update system
 sudo apt update && sudo apt upgrade -y
@@ -281,6 +291,7 @@ sudo npm install -g pm2
 ```
 
 #### Database Setup
+
 ```bash
 # Create database and user
 sudo -u postgres psql -c "CREATE DATABASE errdb_prod;"
@@ -294,6 +305,7 @@ npm run db:seed
 ```
 
 #### Application Deployment
+
 ```bash
 # Build application
 npm run build:backend
@@ -308,39 +320,44 @@ pm2 startup
 ```
 
 #### PM2 Configuration
+
 ```javascript
 // ecosystem.config.js
 module.exports = {
-  apps: [{
-    name: 'errdb-backend',
-    script: './backend/dist/server.js',
-    instances: 'max',
-    exec_mode: 'cluster',
-    env: {
-      NODE_ENV: 'production',
-      PORT: 3010
+  apps: [
+    {
+      name: 'errdb-backend',
+      script: './backend/dist/server.js',
+      instances: 'max',
+      exec_mode: 'cluster',
+      env: {
+        NODE_ENV: 'production',
+        PORT: 3010,
+      },
+      error_file: './logs/backend-error.log',
+      out_file: './logs/backend-out.log',
+      merge_logs: true,
+      log_date_format: 'YYYY-MM-DD HH:mm:ss',
     },
-    error_file: './logs/backend-error.log',
-    out_file: './logs/backend-out.log',
-    merge_logs: true,
-    log_date_format: 'YYYY-MM-DD HH:mm:ss'
-  }, {
-    name: 'errdb-frontend',
-    script: 'serve',
-    args: ['-s', 'frontend/dist', '-l', '3005'],
-    instances: 1,
-    env: {
-      PM2_SERVE_PATH: './frontend/dist',
-      PM2_SERVE_PORT: 3005,
-      PM2_SERVE_SPA: 'true'
-    }
-  }]
+    {
+      name: 'errdb-frontend',
+      script: 'serve',
+      args: ['-s', 'frontend/dist', '-l', '3005'],
+      instances: 1,
+      env: {
+        PM2_SERVE_PATH: './frontend/dist',
+        PM2_SERVE_PORT: 3005,
+        PM2_SERVE_SPA: 'true',
+      },
+    },
+  ],
 };
 ```
 
 ### 3. Cloud Deployment (AWS Example)
 
 #### ECS Task Definition
+
 ```json
 {
   "family": "errdb-task",
@@ -354,10 +371,13 @@ module.exports = {
       "name": "backend",
       "image": "your-ecr-repo/errdb-backend:latest",
       "essential": true,
-      "portMappings": [{"containerPort": 3010, "protocol": "tcp"}],
+      "portMappings": [{ "containerPort": 3010, "protocol": "tcp" }],
       "environment": [
-        {"name": "NODE_ENV", "value": "production"},
-        {"name": "DATABASE_URL", "value": "postgresql://user:pass@rds-endpoint:5432/errdb"}
+        { "name": "NODE_ENV", "value": "production" },
+        {
+          "name": "DATABASE_URL",
+          "value": "postgresql://user:pass@rds-endpoint:5432/errdb"
+        }
       ],
       "logConfiguration": {
         "logDriver": "awslogs",
@@ -373,6 +393,7 @@ module.exports = {
 ```
 
 #### Deployment Script
+
 ```bash
 #!/bin/bash
 # deploy.sh
@@ -393,6 +414,7 @@ aws ecs update-service --cluster errdb-cluster --service errdb-service --force-n
 ## SSL/TLS Configuration
 
 ### Let's Encrypt with Certbot
+
 ```bash
 # Install Certbot
 sudo apt-get install certbot python3-certbot-nginx
@@ -406,6 +428,7 @@ sudo crontab -e
 ```
 
 ### Nginx Configuration
+
 ```nginx
 # /etc/nginx/sites-available/errdb
 server {
@@ -452,6 +475,7 @@ server {
 ## Database Setup
 
 ### Production Database Configuration
+
 ```sql
 -- Enable essential extensions
 CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
@@ -471,6 +495,7 @@ GRANT SELECT ON ALL TABLES IN SCHEMA public TO read_only_user;
 ```
 
 ### Database Backup Strategy
+
 ```bash
 #!/bin/bash
 # backup.sh
@@ -491,6 +516,7 @@ find /backups -name "errdb-*.enc" -mtime +7 -delete
 ## Monitoring and Logging
 
 ### Prometheus Configuration
+
 ```yaml
 # prometheus.yml
 global:
@@ -512,6 +538,7 @@ scrape_configs:
 ```
 
 ### Health Checks
+
 ```bash
 # Application health
 curl -f https://api.yourdomain.com/api/health
@@ -519,13 +546,14 @@ curl -f https://api.yourdomain.com/api/health
 # Database health
 curl -f https://api.yourdomain.com/api/health/database
 
-# Redis health  
+# Redis health
 curl -f https://api.yourdomain.com/api/health/redis
 ```
 
 ## Security Hardening
 
 ### System Security
+
 ```bash
 # Configure firewall
 sudo ufw allow 22
@@ -542,6 +570,7 @@ sudo dpkg-reconfigure -plow unattended-upgrades
 ```
 
 ### Application Security
+
 ```bash
 # Regular dependency updates
 npm audit fix
@@ -555,6 +584,7 @@ npx snyk test
 ## Scaling Strategies
 
 ### Horizontal Scaling
+
 ```yaml
 # docker-compose.scale.yml
 services:
@@ -576,6 +606,7 @@ services:
 ```
 
 ### Database Scaling
+
 ```sql
 -- Read replicas
 CREATE PUBLICATION errdb_publication FOR ALL TABLES;
@@ -587,6 +618,7 @@ PUBLICATION errdb_publication;
 ## Rollback Procedures
 
 ### Database Rollback
+
 ```bash
 # Restore from backup
 pg_restore -d errdb_prod /backups/errdb-20231201.dump
@@ -596,6 +628,7 @@ psql -d errdb_prod -c "SELECT COUNT(*) FROM users;"
 ```
 
 ### Application Rollback
+
 ```bash
 # Revert to previous Docker image
 docker-compose -f docker-compose.production.yml up -d --force-recreate --no-build backend:previous-version
@@ -607,6 +640,7 @@ pm2 deploy ecosystem.config.js production revert 1
 ## Maintenance Tasks
 
 ### Regular Maintenance
+
 ```bash
 # Database maintenance
 psql -d errdb_prod -c "VACUUM ANALYZE;"
@@ -619,6 +653,7 @@ pg_restore --list /backups/errdb-latest.dump | head -10
 ```
 
 ### Monitoring Tasks
+
 ```bash
 # Check disk space
 df -h

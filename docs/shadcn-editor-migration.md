@@ -102,15 +102,15 @@ npm uninstall react-markdown-editor-lite
 
 ## Features Comparison
 
-| Feature | Old Editor | New Shadcn Editor |
-|---------|------------|-------------------|
-| **Theming** | ❌ Complex CSS overrides | ✅ Native shadcn theming |
-| **Toolbar** | ❌ Hidden buttons, z-index issues | ✅ Visible, accessible toolbar |
-| **Performance** | ❌ Heavy CSS, slow rendering | ✅ Lightweight, fast |
-| **Maintenance** | ❌ Fragile CSS hacks | ✅ Clean, maintainable code |
-| **Accessibility** | ❌ Poor | ✅ Built-in accessibility |
-| **TypeScript** | ❌ Limited | ✅ Full TypeScript support |
-| **Extensibility** | ❌ Hard to extend | ✅ Plugin-based architecture |
+| Feature           | Old Editor                        | New Shadcn Editor              |
+| ----------------- | --------------------------------- | ------------------------------ |
+| **Theming**       | ❌ Complex CSS overrides          | ✅ Native shadcn theming       |
+| **Toolbar**       | ❌ Hidden buttons, z-index issues | ✅ Visible, accessible toolbar |
+| **Performance**   | ❌ Heavy CSS, slow rendering      | ✅ Lightweight, fast           |
+| **Maintenance**   | ❌ Fragile CSS hacks              | ✅ Clean, maintainable code    |
+| **Accessibility** | ❌ Poor                           | ✅ Built-in accessibility      |
+| **TypeScript**    | ❌ Limited                        | ✅ Full TypeScript support     |
+| **Extensibility** | ❌ Hard to extend                 | ✅ Plugin-based architecture   |
 
 ## Advanced Configuration
 
@@ -121,7 +121,8 @@ npm uninstall react-markdown-editor-lite
 import { Heading, Link, Image, Table } from 'lucide-react';
 
 // Add more toggle functions
-const toggleHeading = () => editor?.chain().focus().toggleHeading({ level: 2 }).run();
+const toggleHeading = () =>
+  editor?.chain().focus().toggleHeading({ level: 2 }).run();
 const toggleLink = () => editor?.chain().focus().toggleLink().run();
 ```
 
@@ -190,6 +191,7 @@ If issues arise, you can quickly rollback:
 ## Support
 
 For issues with the new implementation:
+
 1. Check browser console for errors
 2. Verify all dependencies are installed correctly
 3. Ensure shadcn components are properly configured

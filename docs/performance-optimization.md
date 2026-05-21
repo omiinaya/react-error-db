@@ -1,11 +1,13 @@
 # Performance Optimization Guide
 
 ## Overview
+
 This document provides comprehensive performance optimization strategies for the Error Database application, covering database optimization, application performance, caching strategies, and monitoring best practices.
 
 ## Performance Metrics
 
 ### Key Performance Indicators (KPIs)
+
 - **Response Time**: <200ms for API endpoints
 - **Throughput**: >100 requests/second
 - **Error Rate**: <1% of total requests
@@ -15,6 +17,7 @@ This document provides comprehensive performance optimization strategies for the
 - **Memory Usage**: <80% of available
 
 ### Monitoring Tools
+
 - **Prometheus**: Metrics collection
 - **Grafana**: Dashboard visualization
 - **PM2**: Process monitoring
@@ -26,6 +29,7 @@ This document provides comprehensive performance optimization strategies for the
 ### Indexing Strategies
 
 #### Essential Indexes
+
 ```sql
 -- Core application indexes
 CREATE INDEX idx_errors_application_id ON error_codes(application_id);
@@ -49,6 +53,7 @@ CREATE INDEX idx_votes_created_at ON votes(created_at);
 ```
 
 #### Composite Indexes
+
 ```sql
 -- For common query patterns
 CREATE INDEX idx_errors_app_code ON error_codes(application_id, code);
@@ -59,26 +64,28 @@ CREATE INDEX idx_search_errors ON error_codes USING gin(to_tsvector('english', m
 ### Query Optimization
 
 #### Slow Query Identification
+
 ```sql
 -- Enable query monitoring
 ALTER SYSTEM SET shared_preload_libraries = 'pg_stat_statements';
 ALTER SYSTEM SET pg_stat_statements.track = 'all';
 
 -- Top slow queries
-SELECT 
-  query, 
+SELECT
+  query,
   calls,
   total_time,
   mean_time,
   rows,
   shared_blks_hit,
   shared_blks_read
-FROM pg_stat_statements 
-ORDER BY mean_time DESC 
+FROM pg_stat_statements
+ORDER BY mean_time DESC
 LIMIT 10;
 ```
 
 #### Query Optimization Techniques
+
 ```sql
 -- Use EXPLAIN ANALYZE
 EXPLAIN ANALYZE SELECT * FROM error_codes WHERE application_id = 1;
@@ -90,7 +97,7 @@ SELECT id, code, message FROM error_codes WHERE application_id = 1;
 SELECT * FROM error_codes ORDER BY created_at DESC LIMIT 50;
 
 -- Batch operations
-INSERT INTO solutions (error_id, content, user_id) VALUES 
+INSERT INTO solutions (error_id, content, user_id) VALUES
   (1, 'Solution 1', 1),
   (2, 'Solution 2', 1),
   (3, 'Solution 3', 1);
@@ -99,6 +106,7 @@ INSERT INTO solutions (error_id, content, user_id) VALUES
 ### Database Configuration
 
 #### PostgreSQL Tuning
+
 ```ini
 # postgresql.conf optimizations
 max_connections = 200
@@ -118,6 +126,7 @@ effective_io_concurrency = 200
 ```
 
 #### Connection Pooling
+
 ```bash
 # Install and configure PgBouncer
 sudo apt-get install pgbouncer
@@ -137,6 +146,7 @@ default_pool_size = 20
 ### Code Optimization
 
 #### Efficient Data Handling
+
 ```typescript
 // Use pagination for large datasets
 async function getErrors(page: number = 1, limit: number = 50) {
@@ -145,17 +155,17 @@ async function getErrors(page: number = 1, limit: number = 50) {
     skip,
     take: limit,
     include: { application: true },
-    orderBy: { createdAt: 'desc' }
+    orderBy: { createdAt: 'desc' },
   });
 }
 
 // Batch database operations
 async function updateMultipleSolutions(solutions: SolutionUpdate[]) {
   return prisma.$transaction(
-    solutions.map(solution => 
+    solutions.map(solution =>
       prisma.solution.update({
         where: { id: solution.id },
-        data: { content: solution.content }
+        data: { content: solution.content },
       })
     )
   );
@@ -163,16 +173,17 @@ async function updateMultipleSolutions(solutions: SolutionUpdate[]) {
 ```
 
 #### Memory Management
+
 ```typescript
 // Stream large responses
 app.get('/api/errors/export', async (req, res) => {
   const stream = prisma.errorCode.findManyStream({
-    include: { solutions: true }
+    include: { solutions: true },
   });
-  
+
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Content-Disposition', 'attachment; filename=errors.json');
-  
+
   stream.pipe(JSONStream.stringify()).pipe(res);
 });
 
@@ -191,22 +202,26 @@ function getCachedData(key: object) {
 ### API Optimization
 
 #### Response Compression
+
 ```typescript
 // Enable compression middleware
 import compression from 'compression';
-app.use(compression({
-  level: 6,
-  threshold: 1024,
-  filter: (req, res) => {
-    if (req.headers['x-no-compression']) {
-      return false;
-    }
-    return compression.filter(req, res);
-  }
-}));
+app.use(
+  compression({
+    level: 6,
+    threshold: 1024,
+    filter: (req, res) => {
+      if (req.headers['x-no-compression']) {
+        return false;
+      }
+      return compression.filter(req, res);
+    },
+  })
+);
 ```
 
 #### Response Caching
+
 ```typescript
 // API endpoint caching
 app.get('/api/errors', cacheMiddleware(300), async (req, res) => {
@@ -219,11 +234,11 @@ app.get('/api/errors', cacheMiddleware(300), async (req, res) => {
 app.get('/api/errors/:id', async (req, res) => {
   const error = await getError(req.params.id);
   const etag = generateETag(error);
-  
+
   if (req.headers['if-none-match'] === etag) {
     return res.status(304).end();
   }
-  
+
   res.set('ETag', etag);
   res.json(error);
 });
@@ -234,6 +249,7 @@ app.get('/api/errors/:id', async (req, res) => {
 ### Redis Configuration
 
 #### Optimal Redis Setup
+
 ```bash
 # redis.conf optimizations
 maxmemory 1gb
@@ -249,6 +265,7 @@ tcp-keepalive 60
 ```
 
 #### Cache Implementation
+
 ```typescript
 // Redis cache service
 class CacheService {
@@ -280,18 +297,19 @@ class CacheService {
 ### Cache Patterns
 
 #### Read-Through Cache
+
 ```typescript
 async function getErrorWithCache(errorId: number): Promise<ErrorCode> {
   const cacheKey = `error:${errorId}`;
   const cached = await cache.get<ErrorCode>(cacheKey);
-  
+
   if (cached) {
     return cached;
   }
 
   const error = await prisma.errorCode.findUnique({
     where: { id: errorId },
-    include: { solutions: true }
+    include: { solutions: true },
   });
 
   if (error) {
@@ -303,11 +321,12 @@ async function getErrorWithCache(errorId: number): Promise<ErrorCode> {
 ```
 
 #### Write-Through Cache
+
 ```typescript
 async function updateErrorWithCache(errorId: number, data: Partial<ErrorCode>) {
   const error = await prisma.errorCode.update({
     where: { id: errorId },
-    data
+    data,
   });
 
   // Update cache
@@ -327,6 +346,7 @@ async function updateErrorWithCache(errorId: number, data: Partial<ErrorCode>) {
 ### Bundle Optimization
 
 #### Vite Configuration
+
 ```typescript
 // vite.config.ts optimizations
 export default defineConfig({
@@ -336,23 +356,24 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           utils: ['lodash', 'axios', 'date-fns'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-select']
-        }
-      }
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-select'],
+        },
+      },
     },
     chunkSizeWarningLimit: 1000,
-    sourcemap: false
+    sourcemap: false,
   },
   plugins: [
     compression({
       algorithm: 'gzip',
-      ext: '.gz'
-    })
-  ]
+      ext: '.gz',
+    }),
+  ],
 });
 ```
 
 #### Code Splitting
+
 ```typescript
 // Lazy load components
 const ErrorDetail = lazy(() => import('./pages/ErrorDetail'));
@@ -370,6 +391,7 @@ const router = createBrowserRouter([
 ### Asset Optimization
 
 #### Image Optimization
+
 ```bash
 # Convert images to WebP
 convert input.jpg -quality 80 output.webp
@@ -385,6 +407,7 @@ sharp('input.jpg')
 ```
 
 #### Font Optimization
+
 ```css
 /* Preload critical fonts */
 <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
@@ -402,6 +425,7 @@ sharp('input.jpg')
 ### Load Balancing
 
 #### Nginx Configuration
+
 ```nginx
 # Load balancing configuration
 upstream backend {
@@ -424,6 +448,7 @@ server {
 ```
 
 #### Health Checks
+
 ```nginx
 # Health check endpoint
 location /health {
@@ -437,6 +462,7 @@ location /health {
 ### CDN Configuration
 
 #### Cloudflare Optimization
+
 ```nginx
 # Cache static assets
 location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff2)$ {
@@ -458,6 +484,7 @@ location /api/errors {
 ### Performance Monitoring
 
 #### Prometheus Metrics
+
 ```yaml
 # prometheus.yml
 scrape_configs:
@@ -474,13 +501,14 @@ scrape_configs:
 ```
 
 #### Custom Metrics
+
 ```typescript
 // Custom performance metrics
 const httpRequestDuration = new prometheus.Histogram({
   name: 'http_request_duration_seconds',
   help: 'Duration of HTTP requests in seconds',
   labelNames: ['method', 'route', 'status_code'],
-  buckets: [0.1, 0.5, 1, 2, 5]
+  buckets: [0.1, 0.5, 1, 2, 5],
 });
 
 // Measure request duration
@@ -488,11 +516,14 @@ app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
     const duration = (Date.now() - start) / 1000;
-    httpRequestDuration.observe({
-      method: req.method,
-      route: req.route?.path || req.path,
-      status_code: res.statusCode
-    }, duration);
+    httpRequestDuration.observe(
+      {
+        method: req.method,
+        route: req.route?.path || req.path,
+        status_code: res.statusCode,
+      },
+      duration
+    );
   });
   next();
 });
@@ -501,28 +532,29 @@ app.use((req, res, next) => {
 ### Alerting Rules
 
 #### Critical Alerts
+
 ```yaml
 # alert.rules.yml
 groups:
-- name: errdb-alerts
-  rules:
-  - alert: HighErrorRate
-    expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
-    for: 5m
-    labels:
-      severity: critical
-    annotations:
-      summary: "High error rate detected"
-      description: "Error rate is above 5% for the last 5 minutes"
+  - name: errdb-alerts
+    rules:
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'High error rate detected'
+          description: 'Error rate is above 5% for the last 5 minutes'
 
-  - alert: HighResponseTime
-    expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
-    for: 10m
-    labels:
-      severity: warning
-    annotations:
-      summary: "High response time detected"
-      description: "95th percentile response time above 2 seconds"
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'High response time detected'
+          description: '95th percentile response time above 2 seconds'
 ```
 
 ## Performance Testing
@@ -530,6 +562,7 @@ groups:
 ### Load Testing
 
 #### Artillery Configuration
+
 ```yaml
 # load-test.yml
 config:
@@ -555,3 +588,4 @@ scenarios:
       - think: 1
       - get:
           url: "/api/errors/{{ $loop
+```

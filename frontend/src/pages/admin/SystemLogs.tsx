@@ -26,7 +26,7 @@ interface SystemLog {
   timestamp: string;
   level: 'info' | 'warn' | 'error' | 'debug';
   message: string;
-  context: any;
+  context: unknown;
   userId?: string;
   ipAddress?: string;
   userAgent?: string;
@@ -61,7 +61,7 @@ const SystemLogs: React.FC = () => {
   const fetchLogs = async () => {
     try {
       setLoading(true);
-      const params: any = {
+      const params: Record<string, unknown> = {
         page: pagination.page,
         limit: pagination.limit,
       };
@@ -80,7 +80,7 @@ const SystemLogs: React.FC = () => {
 
       setLogs(response.logs);
       setPagination(response.pagination);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(
         err.response?.data?.error?.message || 'Failed to fetch system logs'
       );
@@ -107,7 +107,7 @@ const SystemLogs: React.FC = () => {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err.response?.data?.error?.message || 'Failed to export logs');
     }
   };

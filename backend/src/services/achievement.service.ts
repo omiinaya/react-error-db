@@ -95,7 +95,7 @@ export class AchievementService {
         update: {},
         create: {
           ...badge,
-          criteria: badge.criteria as any,
+          criteria: badge.criteria as unknown,
         },
       });
     }

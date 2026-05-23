@@ -162,10 +162,11 @@ if (require.main === module) {
         case 'setup':
           await setupTestDatabase();
           break;
-        case 'check':
+        case 'check': {
           const ready = await isTestDatabaseReady();
           console.log(ready ? '✅ Database ready' : '❌ Database not ready');
           break;
+        }
         default:
           console.log(
             'Usage: ts-node test-database.ts [reset|seed|setup|check]'

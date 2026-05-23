@@ -139,7 +139,7 @@ export class DatabaseSecurityService {
   /**
    * Get current database statistics
    */
-  async getDatabaseStats(): Promise<any> {
+  async getDatabaseStats(): Promise<Record<string, unknown>> {
     try {
       const stats = await this.prisma.$queryRaw`
         SELECT 
@@ -173,7 +173,7 @@ export class DatabaseSecurityService {
   /**
    * Monitor for suspicious database activity
    */
-  async monitorSuspiciousActivity(): Promise<any> {
+  async monitorSuspiciousActivity(): Promise<Record<string, unknown>[]> {
     try {
       const suspiciousActivity = await this.prisma.$queryRaw`
         SELECT 
@@ -223,7 +223,7 @@ export class DatabaseSecurityService {
   /**
    * Perform security health check
    */
-  async securityHealthCheck(): Promise<any> {
+  async securityHealthCheck(): Promise<Record<string, unknown>> {
     const checks = {
       rls_enabled: false,
       audit_logging: false,
@@ -243,7 +243,7 @@ export class DatabaseSecurityService {
 
       checks.rls_enabled =
         Array.isArray(rlsStatus) &&
-        rlsStatus.every((table: any) => table.rowsecurity);
+        rlsStatus.every((table) => table.rowsecurity);
 
       // Check audit table exists
       const auditTableExists = await this.prisma.$queryRaw`

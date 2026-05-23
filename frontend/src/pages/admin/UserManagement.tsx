@@ -72,7 +72,7 @@ const UserManagement: React.FC = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const params: any = {
+      const params: Record<string, unknown> = {
         page: pagination.page,
         limit: pagination.limit,
       };
@@ -91,7 +91,7 @@ const UserManagement: React.FC = () => {
 
       setUsers(response.users);
       setPagination(response.pagination);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err.response?.data?.error?.message || 'Failed to fetch users');
     } finally {
       setLoading(false);
@@ -108,7 +108,7 @@ const UserManagement: React.FC = () => {
 
       // Refresh the user list
       fetchUsers();
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(
         err.response?.data?.error?.message || 'Failed to update user role'
       );
@@ -132,7 +132,7 @@ const UserManagement: React.FC = () => {
 
       // Refresh the user list
       fetchUsers();
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err.response?.data?.error?.message || 'Failed to delete user');
     }
   };

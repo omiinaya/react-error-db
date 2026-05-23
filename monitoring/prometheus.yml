@@ -7,11 +7,11 @@ global:
 alerting:
   alertmanagers:
     - static_configs:
-        - targets: ["alertmanager:9093"]
+        - targets: ['alertmanager:9093']
 
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'
 rule_files:
-  - "alert-rules.yml"
+  - 'alert-rules.yml'
 
 # Scrape configurations
 scrape_configs:
@@ -62,9 +62,9 @@ scrape_configs:
       module: [http_2xx]
     static_configs:
       - targets:
-        - http://backend:3001/api/health
-        - http://frontend:3000
-        - http://nginx:80
+          - http://backend:3001/api/health
+          - http://frontend:3000
+          - http://nginx:80
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -87,7 +87,7 @@ scrape_configs:
 
 # Remote write configuration (for long-term storage)
 remote_write:
-  - url: "http://thanos:10908/api/v1/receive"
+  - url: 'http://thanos:10908/api/v1/receive'
     queue_config:
       max_samples_per_send: 1000
       capacity: 10000
@@ -95,5 +95,5 @@ remote_write:
 
 # Remote read configuration
 remote_read:
-  - url: "http://thanos:10908/api/v1/read"
+  - url: 'http://thanos:10908/api/v1/read'
     read_recent: true

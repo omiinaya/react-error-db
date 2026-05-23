@@ -6,8 +6,8 @@ services:
     container_name: errdb-load-balancer
     read_only: true
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - ./nginx/nginx-load-balancer.conf:/etc/nginx/nginx.conf:ro
       - ./ssl/certs:/etc/ssl/certs:ro
@@ -154,7 +154,7 @@ services:
     container_name: errdb-prometheus
     read_only: true
     ports:
-      - "9090:9090"
+      - '9090:9090'
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
@@ -171,7 +171,7 @@ services:
     container_name: errdb-grafana
     read_only: true
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
       - GF_PATHS_DATA=/var/lib/grafana

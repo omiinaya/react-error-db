@@ -11,7 +11,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - '${POSTGRES_PORT:-5432}:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -23,7 +23,11 @@ services:
     networks:
       - errdb-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-errdb}"]
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-errdb}',
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -35,7 +39,7 @@ services:
     container_name: errdb-redis-prod
     read_only: true
     ports:
-      - "${REDIS_PORT:-6379}:6379"
+      - '${REDIS_PORT:-6379}:6379'
     volumes:
       - redis_data:/data
     tmpfs:
@@ -45,7 +49,7 @@ services:
     networks:
       - errdb-network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -59,7 +63,7 @@ services:
       target: production
     container_name: errdb-backend-prod
     ports:
-      - "${BACKEND_PORT:-3010}:3010"
+      - '${BACKEND_PORT:-3010}:3010'
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-errdb}
@@ -86,7 +90,7 @@ services:
     container_name: errdb-nginx-prod
     read_only: true
     ports:
-      - "${FRONTEND_PORT:-3005}:80"
+      - '${FRONTEND_PORT:-3005}:80'
     volumes:
       - ./frontend/dist:/usr/share/nginx/html:ro
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro

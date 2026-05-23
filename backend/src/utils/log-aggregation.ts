@@ -86,13 +86,13 @@ export const structuredLogger = createLogger({
 
 // Log aggregation transport for external services
 export interface LogAggregationTransport {
-  sendLog: (log: any) => Promise<void>;
+  sendLog: (log: Record<string, unknown>) => Promise<void>;
   flush: () => Promise<void>;
 }
 
 // Example: Elasticsearch transport (placeholder implementation)
 class ElasticsearchTransport implements LogAggregationTransport {
-  private buffer: any[] = [];
+  private buffer: Array<Record<string, unknown>> = [];
   private readonly maxBufferSize = 100;
   private readonly flushInterval = 5000; // 5 seconds
   private intervalId: NodeJS.Timeout | null = null;
@@ -101,7 +101,7 @@ class ElasticsearchTransport implements LogAggregationTransport {
     this.startFlushInterval();
   }
 
-  async sendLog(log: any): Promise<void> {
+  async sendLog(log: Record<string, unknown>): Promise<void> {
     this.buffer.push(log);
 
     if (this.buffer.length >= this.maxBufferSize) {
@@ -149,7 +149,7 @@ class ElasticsearchTransport implements LogAggregationTransport {
 class LokiTransport implements LogAggregationTransport {
   constructor(private readonly endpoint: string) {}
 
-  async sendLog(_log: any): Promise<void> {
+  async sendLog(_log: Record<string, unknown>): Promise<void> {
     try {
       // In a real implementation, this would send logs to Loki
       console.log(`[Loki] Would send log to ${this.endpoint}`);
@@ -196,7 +196,7 @@ export class LogAggregationManager {
     // Add more transports as needed (Datadog, Splunk, etc.)
   }
 
-  async sendLog(log: any): Promise<void> {
+  async sendLog(log: Record<string, unknown>): Promise<void> {
     const promises = this.transports.map(transport =>
       transport.sendLog(log).catch(error => {
         console.error('Failed to send log to transport:', error);
@@ -239,7 +239,7 @@ export const logAggregation = new LogAggregationManager();
 
 // Enhanced logger that also sends to aggregation services
 export const aggregatedLogger = {
-  info: (message: string, meta?: any) => {
+  info: (message: string, meta?: unknown) => {
     structuredLogger.info(message, meta);
     const logEntry = {
       level: 'info',
@@ -252,7 +252,7 @@ export const aggregatedLogger = {
     logAggregation.sendLog(logEntry).catch(console.error);
   },
 
-  error: (message: string, meta?: any) => {
+  error: (message: string, meta?: unknown) => {
     structuredLogger.error(message, meta);
     const logEntry = {
       level: 'error',
@@ -265,7 +265,7 @@ export const aggregatedLogger = {
     logAggregation.sendLog(logEntry).catch(console.error);
   },
 
-  warn: (message: string, meta?: any) => {
+  warn: (message: string, meta?: unknown) => {
     structuredLogger.warn(message, meta);
     const logEntry = {
       level: 'warn',
@@ -278,7 +278,7 @@ export const aggregatedLogger = {
     logAggregation.sendLog(logEntry).catch(console.error);
   },
 
-  debug: (message: string, meta?: any) => {
+  debug: (message: string, meta?: unknown) => {
     structuredLogger.debug(message, meta);
     const logEntry = {
       level: 'debug',
@@ -293,7 +293,7 @@ export const aggregatedLogger = {
 };
 
 // Middleware to add request context to logs
-export const addRequestContext = (req: any, _res: any, next: any) => {
+export const addRequestContext = (req, _res, next) => {
   const requestId =
     req.headers['x-request-id'] || Math.random().toString(36).substring(7);
 

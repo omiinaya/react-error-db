@@ -61,7 +61,7 @@ const CategoryApplicationSelector: React.FC<
     try {
       const response = await api.getCategories({ includeChildren: false });
       setCategories(response.categories);
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: 'Error',
         description: 'Failed to load categories',
@@ -76,7 +76,7 @@ const CategoryApplicationSelector: React.FC<
     try {
       const response = await api.getApplications({ categoryId });
       setApplications(response.applications);
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: 'Error',
         description: 'Failed to load applications',

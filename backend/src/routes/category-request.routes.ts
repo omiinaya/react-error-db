@@ -139,14 +139,14 @@ router.get(
   validateQuery(categoryRequestQuerySchema),
   async (req: AuthenticatedRequest, res) => {
     try {
-      const query = req.query as any;
+      const query = req.query as unknown;
       const status = query.status as string | undefined;
       const userId = query.userId as string | undefined;
       const search = query.search as string | undefined;
       const page = parseInt(query.page as string) || 1;
       const limit = parseInt(query.limit as string) || 20;
 
-      const where: any = {};
+      const where: Record<string, unknown> = {};
 
       if (status) {
         where.status = status;

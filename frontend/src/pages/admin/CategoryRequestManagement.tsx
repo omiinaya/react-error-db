@@ -73,7 +73,7 @@ const CategoryRequestManagement: React.FC = () => {
   const fetchRequests = async () => {
     try {
       setLoading(true);
-      const params: any = {
+      const params: Record<string, unknown> = {
         page: pagination.page,
         limit: pagination.limit,
       };
@@ -83,7 +83,7 @@ const CategoryRequestManagement: React.FC = () => {
 
       const response = await api.request<{
         categoryRequests: CategoryRequest[];
-        meta?: any;
+        meta?: unknown;
       }>({
         method: 'get',
         url: '/category-requests',
@@ -99,7 +99,7 @@ const CategoryRequestManagement: React.FC = () => {
           pages: 1,
         }
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(
         err.response?.data?.error?.message ||
           'Failed to fetch category requests'
@@ -119,7 +119,7 @@ const CategoryRequestManagement: React.FC = () => {
           'Category request has been approved and the category has been created.',
       });
       fetchRequests();
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast({
         title: 'Error',
         description:
@@ -153,7 +153,7 @@ const CategoryRequestManagement: React.FC = () => {
       });
       setRejectReason('');
       fetchRequests();
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast({
         title: 'Error',
         description:

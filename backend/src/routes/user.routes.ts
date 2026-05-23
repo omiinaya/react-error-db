@@ -190,7 +190,7 @@ router.get(
         orderBy: { createdAt: 'desc' },
       });
 
-      const usersWithStats = users.map((user: any) => ({
+      const usersWithStats = users.map((user) => ({
         ...user,
         solutionsCount: user._count.solutions,
         _count: undefined,

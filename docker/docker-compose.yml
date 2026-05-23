@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     ports:
-      - "5433:5432"
+      - '5433:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -22,7 +22,7 @@ services:
     networks:
       - errdb-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d errdb"]
+      test: ['CMD-SHELL', 'pg_isready -U user -d errdb']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -32,7 +32,7 @@ services:
     container_name: errdb-redis
     read_only: true
     ports:
-      - "6380:6379"
+      - '6380:6379'
     volumes:
       - redis_data:/data
     tmpfs:
@@ -42,7 +42,7 @@ services:
     networks:
       - errdb-network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -58,7 +58,7 @@ services:
       dockerfile: Dockerfile.dev
       container_name: errdb-backend
     ports:
-      - "3010:3010"
+      - '3010:3010'
     environment:
       - NODE_ENV=development
       - DATABASE_URL=postgresql://user:password@postgres:5432/errdb
@@ -88,7 +88,7 @@ services:
       dockerfile: Dockerfile.dev
       container_name: errdb-frontend
     ports:
-      - "3005:3005"
+      - '3005:3005'
     environment:
       - VITE_API_BASE_URL=http://localhost:3010/api
       - VITE_APP_NAME=Error Database
@@ -112,7 +112,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@errdb.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "5050:80"
+      - '5050:80'
     depends_on:
       - postgres
     networks:

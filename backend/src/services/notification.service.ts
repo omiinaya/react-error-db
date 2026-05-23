@@ -24,7 +24,7 @@ export interface CreateNotificationData {
 
 export class NotificationService {
   async createNotification(data: CreateNotificationData) {
-    const createData: any = {
+    const createData: Record<string, unknown> = {
       userId: data.userId,
       type: data.type,
       title: data.title,
@@ -60,7 +60,7 @@ export class NotificationService {
   ) {
     const skip = (page - 1) * limit;
 
-    const where: any = { userId };
+    const where: Record<string, unknown> = { userId };
     if (unreadOnly) {
       where.isRead = false;
     }

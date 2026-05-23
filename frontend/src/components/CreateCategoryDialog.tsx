@@ -8,7 +8,7 @@ import { api } from '@/services/api';
 import { CreateCategoryRequest } from '@/types';
 
 interface CreateCategoryDialogProps {
-  onCategoryCreated: (category: any) => void;
+  onCategoryCreated: (category: unknown) => void;
   onClose: () => void;
 }
 
@@ -104,7 +104,7 @@ const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({
         title: 'Success',
         description: 'Category created successfully',
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: 'Error',
         description:

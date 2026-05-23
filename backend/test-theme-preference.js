@@ -45,7 +45,7 @@ async function testThemePreferenceFetching() {
     console.log('\nStep 3: Testing theme preference with invalid token...');
 
     try {
-      const invalidThemeResponse = await axios.get(
+      await axios.get(
         `${API_BASE_URL}/users/me/theme`,
         {
           headers: {
@@ -69,7 +69,7 @@ async function testThemePreferenceFetching() {
     console.log('\nStep 4: Testing theme preference without token...');
 
     try {
-      const noTokenResponse = await axios.get(`${API_BASE_URL}/users/me/theme`);
+      await axios.get(`${API_BASE_URL}/users/me/theme`);
       console.log('❌ Expected 401 but got success response');
     } catch (noTokenError) {
       console.log('✅ Correctly rejected request without token');

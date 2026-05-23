@@ -84,7 +84,7 @@ const Register: React.FC = () => {
         displayName: formData.displayName,
       });
       navigate('/');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Registration failed:', error);
       if (error.response?.data?.error?.message) {
         setErrors({ submit: error.response.data.error.message });

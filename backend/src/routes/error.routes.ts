@@ -23,7 +23,7 @@ const router = Router();
 // Search error codes with optional filtering and pagination
 router.get('/', validateQuery(errorCodeQuerySchema), async (req, res) => {
   try {
-    const query = req.query as any;
+    const query = req.query as unknown;
     const applicationId = query.applicationId as string | undefined;
     const search = query.search as string | undefined;
     const severity = query.severity as string | undefined;
@@ -31,7 +31,7 @@ router.get('/', validateQuery(errorCodeQuerySchema), async (req, res) => {
     const page = parseInt(query.page as string) || 1;
     const limit = parseInt(query.limit as string) || 20;
 
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     if (applicationId) {
       where.applicationId = applicationId;
@@ -50,7 +50,7 @@ router.get('/', validateQuery(errorCodeQuerySchema), async (req, res) => {
     }
 
     // Determine orderBy based on sort parameter
-    let orderBy: any = { createdAt: 'desc' };
+    let orderBy: Record<string, unknown> = { createdAt: 'desc' };
 
     if (sort === 'views') {
       orderBy = { viewCount: 'desc' };
@@ -90,7 +90,7 @@ router.get('/', validateQuery(errorCodeQuerySchema), async (req, res) => {
     ]);
 
     // Transform data to include solutionCount
-    const errorCodesWithCount = errorCodes.map((errorCode: any) => ({
+    const errorCodesWithCount = errorCodes.map((errorCode) => ({
       ...errorCode,
       solutionCount: errorCode._count.solutions,
       _count: undefined,
@@ -193,7 +193,7 @@ router.get('/:id', optionalAuth, async (req: AuthenticatedRequest, res) => {
     });
 
     // Transform solutions to include userVote
-    const solutionsWithVote = solutions.map((solution: any) => {
+    const solutionsWithVote = solutions.map((solution) => {
       const userVote =
         solution.votes &&
         Array.isArray(solution.votes) &&

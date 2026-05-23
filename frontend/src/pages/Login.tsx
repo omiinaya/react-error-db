@@ -38,7 +38,7 @@ const Login: React.FC = () => {
     try {
       await login(email, password);
       navigate(from, { replace: true });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login failed:', error);
     } finally {
       setIsLoading(false);

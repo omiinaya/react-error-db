@@ -14,7 +14,7 @@ export class ExportService {
   async exportErrors(
     options: ExportOptions
   ): Promise<{ data: string; filename: string; contentType: string }> {
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     if (options.startDate || options.endDate) {
       where.createdAt = {};
@@ -59,7 +59,7 @@ export class ExportService {
   async exportSolutions(
     options: ExportOptions
   ): Promise<{ data: string; filename: string; contentType: string }> {
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     if (options.startDate || options.endDate) {
       where.createdAt = {};
@@ -156,7 +156,7 @@ export class ExportService {
     }
 
     // Remove sensitive information
-    const { passwordHash, ...userData } = user as any;
+    const { passwordHash: _, ...userData } = user as unknown as { passwordHash: string; [key: string]: unknown };
 
     return {
       data: JSON.stringify(userData, null, 2),
@@ -168,7 +168,7 @@ export class ExportService {
   async exportAnalytics(
     options: ExportOptions
   ): Promise<{ data: string; filename: string; contentType: string }> {
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     if (options.startDate || options.endDate) {
       where.createdAt = {};
@@ -218,7 +218,7 @@ export class ExportService {
   }
 
   private convertToCSV(
-    data: any[],
+    data: Record<string, unknown>[],
     filename: string
   ): { data: string; filename: string; contentType: string } {
     if (data.length === 0) {

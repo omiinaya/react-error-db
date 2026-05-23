@@ -128,7 +128,7 @@ router.get(
         SELECT * FROM audit_logs 
         WHERE 1=1
       `;
-      const params: any[] = [];
+      const params: (string | number)[] = [];
       let paramCount = 0;
 
       if (table_name) {
@@ -166,7 +166,7 @@ router.get(
 
       // Get total count
       let countQuery = `SELECT COUNT(*) FROM audit_logs WHERE 1=1`;
-      const countParams: any[] = [];
+      const countParams: (string | number)[] = [];
       paramCount = 0;
 
       if (table_name) {

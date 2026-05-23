@@ -1,5 +1,5 @@
 // API Response Types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data: T;
   message?: string;
@@ -11,7 +11,7 @@ export interface ApiResponse<T = any> {
 export interface ApiError {
   code: string;
   message: string;
-  details?: any;
+  details?: unknown;
 }
 
 export interface PaginationMeta {
@@ -175,7 +175,7 @@ export interface ErrorCode {
   severity: 'low' | 'medium' | 'high' | 'critical';
   metadata?: {
     commonCauses?: string[];
-    [key: string]: any;
+    [key: string]: unknown;
   };
   viewCount: number;
   solutionCount: number;
@@ -195,7 +195,7 @@ export interface CreateErrorCodeRequest {
   severity: 'low' | 'medium' | 'high' | 'critical';
   metadata?: {
     commonCauses?: string[];
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 

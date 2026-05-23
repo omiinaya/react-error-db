@@ -2,7 +2,7 @@ module.exports = {
   root: true,
   // This tells ESLint to load the config from the package's `eslint-config`
   // or look for eslint config in each package
-  extends: ['eslint:recommended', '@typescript-eslint/recommended'],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
   parserOptions: {
@@ -22,7 +22,7 @@ module.exports = {
         varsIgnorePattern: '^_',
       },
     ],
-    '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/no-explicit-any': 'error',
   },
   overrides: [
     {

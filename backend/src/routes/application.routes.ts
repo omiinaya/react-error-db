@@ -18,13 +18,13 @@ const router = Router();
 // Get all applications with optional filtering and pagination
 router.get('/', validateRequest(applicationQuerySchema), async (req, res) => {
   try {
-    const query = req.query as any;
+    const query = req.query as unknown;
     const categoryId = query.categoryId as string | undefined;
     const search = query.search as string | undefined;
     const page = parseInt(query.page as string) || 1;
     const limit = parseInt(query.limit as string) || 20;
 
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     if (categoryId) {
       where.categoryId = categoryId;
@@ -63,19 +63,19 @@ router.get('/', validateRequest(applicationQuerySchema), async (req, res) => {
       },
       where: {
         applicationId: {
-          in: applications.map((app: any) => app.id),
+          in: applications.map((app) => app.id),
         },
       },
     });
 
     // Create a map of applicationId to error count
     const errorCountMap = new Map();
-    errorCounts.forEach((item: any) => {
+    errorCounts.forEach((item) => {
       errorCountMap.set(item.applicationId, item._count._all);
     });
 
     // Transform data to include errorCount
-    const applicationsWithCount = applications.map((app: any) => ({
+    const applicationsWithCount = applications.map((app) => ({
       ...app,
       errorCount: errorCountMap.get(app.id) || 0,
     }));

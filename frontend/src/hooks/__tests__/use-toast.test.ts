@@ -87,11 +87,11 @@ describe('useToast', () => {
 
   it('should provide dismiss function', () => {
     const mockDismiss = vi.fn();
-    (toast as any).mockReturnValue({ id: '123', dismiss: mockDismiss });
+    (toast as jest.Mock).mockReturnValue({ id: '123', dismiss: mockDismiss });
 
     const { result } = renderHook(() => useToast());
 
-    let toastResult: any;
+    let toastResult: unknown;
     act(() => {
       toastResult = result.current.toast({
         title: 'Test',
@@ -108,11 +108,11 @@ describe('useToast', () => {
 
   it('should handle toast dismissal', () => {
     const mockDismiss = vi.fn();
-    (toast as any).mockReturnValue({ id: '123', dismiss: mockDismiss });
+    (toast as jest.Mock).mockReturnValue({ id: '123', dismiss: mockDismiss });
 
     const { result } = renderHook(() => useToast());
 
-    let toastResult: any;
+    let toastResult: unknown;
     act(() => {
       toastResult = result.current.toast({
         title: 'Test',

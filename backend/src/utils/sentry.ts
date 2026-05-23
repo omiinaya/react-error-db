@@ -32,7 +32,7 @@ export const initSentry = () => {
     profilesSampleRate: config.nodeEnv === 'production' ? 0.1 : 1.0,
 
     // Filter out health check endpoints
-    beforeSend: (event: any) => {
+    beforeSend: (event) => {
       if (event.request?.url?.includes('/health')) {
         return null;
       }
@@ -47,10 +47,10 @@ export const initSentry = () => {
 // Capture exceptions
 export const captureException = (
   error: Error,
-  context?: Record<string, any>
+  context?: Record<string, unknown>
 ) => {
   if (context) {
-    Sentry.withScope((scope: any) => {
+    Sentry.withScope((scope) => {
       Object.entries(context).forEach(([key, value]) => {
         scope.setExtra(key, value);
       });
@@ -90,7 +90,7 @@ export const addBreadcrumb = (breadcrumb: Sentry.Breadcrumb) => {
 };
 
 // Performance monitoring - start transaction
-export const startTransaction = (name: string, context?: Partial<any>) => {
+export const startTransaction = (name: string, context?: Record<string, unknown>) => {
   return Sentry.startTransaction({
     name,
     ...context,
@@ -113,7 +113,7 @@ export const closeSentry = async () => {
 };
 
 // Error handler middleware for Express
-export const sentryErrorHandler: any = Sentry.Handlers.errorHandler();
+export const sentryErrorHandler = Sentry.Handlers.errorHandler();
 
 // Request handler middleware for Express
 export const sentryRequestHandler = Sentry.Handlers.requestHandler();
@@ -136,9 +136,9 @@ export enum ErrorType {
 export const captureError = (
   error: Error,
   type: ErrorType = ErrorType.INTERNAL,
-  context?: Record<string, any>
+  context?: Record<string, unknown>
 ) => {
-  Sentry.withScope((scope: any) => {
+  Sentry.withScope((scope) => {
     scope.setTag('error_type', type);
     if (context) {
       Object.entries(context).forEach(([key, value]) => {
@@ -149,8 +149,13 @@ export const captureError = (
   });
 };
 
-// Monitor function execution
-export const monitorFunction = <T extends (...args: any[]) => any>(
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyFunction = (...args: any[]) => any;
+
+/**
+ * Monitor function execution with Sentry
+ */
+export const monitorFunction = <T extends AnyFunction>(
   fn: T,
   name: string
 ): T => {

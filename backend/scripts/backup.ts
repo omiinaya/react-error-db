@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { execFileSync, execSync } from 'child_process';
-import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs';
+import { execFileSync } from 'child_process';
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, normalize, resolve, sep } from 'path';
 import { logger } from '../src/utils/logger';
 
@@ -258,10 +258,11 @@ if (require.main === module) {
           }
           await restoreBackup(backupPath);
           break;
-        case 'list':
+        case 'list': {
           const backups = listBackups();
           console.log('Available backups:', backups);
           break;
+        }
         case 'cleanup':
           cleanupOldBackups();
           break;

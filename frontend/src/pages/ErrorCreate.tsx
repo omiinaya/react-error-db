@@ -92,7 +92,7 @@ const ErrorCreate: React.FC = () => {
         description: 'Error code created successfully',
       });
       navigate('/');
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: 'Error',
         description:

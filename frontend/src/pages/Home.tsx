@@ -25,7 +25,7 @@ const Home: React.FC = () => {
     queryFn: async () => {
       const response = await api.searchErrors({
         limit: 6,
-        sort: 'views' as any,
+        sort: 'views',
       });
       return response.errors;
     },
@@ -163,7 +163,7 @@ const Home: React.FC = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {trendingErrors?.map((error: any) => (
+              {trendingErrors?.map((error: unknown) => (
                 <Card
                   key={error.id}
                   className="hover:shadow-lg transition-shadow"

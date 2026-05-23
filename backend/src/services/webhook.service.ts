@@ -4,7 +4,7 @@ import { logger } from '../utils/logger';
 
 export interface WebhookEvent {
   event: string;
-  data: any;
+  data: Record<string, unknown>;
   timestamp: string;
 }
 
@@ -19,7 +19,7 @@ export class WebhookService {
       data: {
         userId,
         url,
-        events: events as any,
+        events: events as unknown,
         secret,
         isActive: true,
         failureCount: 0,
@@ -51,7 +51,7 @@ export class WebhookService {
       where: { id: webhookId },
       data: {
         ...(data.url && { url: data.url }),
-        ...(data.events && { events: data.events as any }),
+        ...(data.events && { events: data.events as unknown }),
         ...(data.isActive !== undefined && { isActive: data.isActive }),
         updatedAt: new Date(),
       },
@@ -74,7 +74,7 @@ export class WebhookService {
     return { success: true };
   }
 
-  async triggerEvent(eventType: string, data: any) {
+  async triggerEvent(eventType: string, data: Record<string, unknown>) {
     // Fetch all active webhooks and filter by event type
     const allWebhooks = await prisma.webhook.findMany({
       where: {

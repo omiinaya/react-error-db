@@ -231,7 +231,7 @@ router.put(
       }
 
       // Prepare update data
-      const updateData: any = {
+      const updateData: Record<string, unknown> = {
         solutionText,
         editCount: (solution.editCount || 0) + 1,
         lastEditedAt: new Date(),

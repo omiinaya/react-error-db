@@ -159,7 +159,7 @@ router.post('/login', validateRequest(loginSchema), async (req, res) => {
     });
 
     // Remove password hash from response
-    const { passwordHash, ...userWithoutPassword } = user;
+    const { passwordHash: _, ...userWithoutPassword } = user;
 
     return res.json({
       success: true,

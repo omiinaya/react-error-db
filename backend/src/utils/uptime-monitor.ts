@@ -16,7 +16,7 @@ export interface UptimeAlert {
   message: string;
   severity: 'warning' | 'critical';
   timestamp: Date;
-  data: any;
+  data: Record<string, unknown>;
 }
 
 export class UptimeMonitor {
@@ -251,7 +251,7 @@ export class UptimeMonitor {
 export const uptimeMonitor = new UptimeMonitor();
 
 // Middleware to track request metrics
-export const uptimeMiddleware = (_req: any, res: any, next: any) => {
+export const uptimeMiddleware = (_req, res, next) => {
   const startTime = Date.now();
 
   res.on('finish', () => {

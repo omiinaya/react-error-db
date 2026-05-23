@@ -53,7 +53,7 @@ const SearchPage: React.FC = () => {
       sortBy,
     ],
     queryFn: async () => {
-      const params: any = {};
+      const params: Record<string, unknown> = {};
       if (searchQuery) params.search = searchQuery;
       if (applicationFilter && applicationFilter !== 'all')
         params.applicationId = applicationFilter;

@@ -93,7 +93,7 @@ const ContentModeration: React.FC = () => {
   const fetchSolutions = async () => {
     try {
       setLoading(true);
-      const params: any = {
+      const params: Record<string, unknown> = {
         page: pagination.page,
         limit: pagination.limit,
         status,
@@ -111,7 +111,7 @@ const ContentModeration: React.FC = () => {
       setSolutions(response.solutions);
       setPagination(response.pagination);
       setSelectedSolutions([]);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(
         err.response?.data?.error?.message || 'Failed to fetch solutions'
       );
@@ -135,7 +135,7 @@ const ContentModeration: React.FC = () => {
 
       // Refresh the solutions list
       fetchSolutions();
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(
         err.response?.data?.error?.message || `Failed to ${action} solutions`
       );

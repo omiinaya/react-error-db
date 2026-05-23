@@ -7,7 +7,7 @@ export class SearchService {
     const normalizedQuery = this.normalizeQuery(query);
 
     // Build where clause
-    const where: any = {
+    const where: Record<string, unknown> = {
       OR: [
         { code: { contains: query, mode: 'insensitive' } },
         { title: { contains: query, mode: 'insensitive' } },
@@ -81,7 +81,7 @@ export class SearchService {
       filters,
       resultCount: totalCount,
       searchDuration,
-    } as any;
+    } as unknown;
 
     if (userId) {
       analyticsPayload.userId = userId;
@@ -151,12 +151,12 @@ export class SearchService {
     });
 
     const suggestions: SearchSuggestion[] = [
-      ...errorSuggestions.map((error: any) => ({
+      ...errorSuggestions.map((error) => ({
         type: 'error' as const,
         value: `${error.application.name}: ${error.code}`,
         label: error.title,
       })),
-      ...popularSearches.map((search: any) => ({
+      ...popularSearches.map((search) => ({
         type: 'popular' as const,
         value: search.normalizedQuery,
         label: `Popular search: ${search.normalizedQuery}`,
@@ -184,7 +184,7 @@ export class SearchService {
       data: {
         userId,
         query,
-        filters: filters as any,
+        filters: filters as unknown,
         resultCount,
       },
     });
@@ -218,10 +218,10 @@ export class SearchService {
     searchDuration: number;
   }) {
     try {
-      const analyticsData: any = {
+      const analyticsData: Record<string, unknown> = {
         query: data.query,
         normalizedQuery: data.normalizedQuery,
-        filters: data.filters as any,
+        filters: data.filters as unknown,
         resultCount: data.resultCount,
         searchDuration: data.searchDuration,
       };

@@ -108,9 +108,9 @@ export const recordExists = async (
 export const getPaginatedResults = async <T>(
   model: ModelName,
   options: {
-    where?: any;
-    orderBy?: any;
-    include?: any;
+    where?: Record<string, unknown>;
+    orderBy?: Record<string, unknown>;
+    include?: Record<string, unknown>;
     skip?: number;
     take?: number;
   } = {}
@@ -206,7 +206,7 @@ export const softDelete = async (
  */
 export const batchOperation = async <T>(
   items: T[],
-  operation: (chunk: T[]) => Promise<any>,
+  operation: (chunk: T[]) => Promise<unknown>,
   chunkSize = 100
 ): Promise<void> => {
   for (let i = 0; i < items.length; i += chunkSize) {
@@ -224,7 +224,7 @@ export const checkDatabaseHealth = async (): Promise<{
   details: {
     connection: boolean;
     queryPerformance: boolean;
-    poolStatus?: any;
+    poolStatus?: Record<string, unknown>;
   };
 }> => {
   const startTime = Date.now();
@@ -265,7 +265,7 @@ export const checkDatabaseHealth = async (): Promise<{
 export const generateBackup = async (): Promise<string> => {
   try {
     // Get all data from all tables in proper order to handle foreign key constraints
-    const backupData: Record<string, any[]> = {};
+    const backupData: Record<string, unknown[]> = {};
 
     // Order matters for foreign key constraints
     const tablesInOrder: BackupModelName[] = [
@@ -373,23 +373,23 @@ export const restoreFromBackup = async (backupData: string): Promise<void> => {
         backup.data[tableName].length > 0
       ) {
         const createManyMap = {
-          user: (data: any[]) =>
+          user: (data: Array<Record<string, unknown>>) =>
             prisma.user.createMany({ data, skipDuplicates: true }),
-          category: (data: any[]) =>
+          category: (data: Array<Record<string, unknown>>) =>
             prisma.category.createMany({ data, skipDuplicates: true }),
-          application: (data: any[]) =>
+          application: (data: Array<Record<string, unknown>>) =>
             prisma.application.createMany({ data, skipDuplicates: true }),
-          errorCode: (data: any[]) =>
+          errorCode: (data: Array<Record<string, unknown>>) =>
             prisma.errorCode.createMany({ data, skipDuplicates: true }),
-          solution: (data: any[]) =>
+          solution: (data: Array<Record<string, unknown>>) =>
             prisma.solution.createMany({ data, skipDuplicates: true }),
-          vote: (data: any[]) =>
+          vote: (data: Array<Record<string, unknown>>) =>
             prisma.vote.createMany({ data, skipDuplicates: true }),
-          userSession: (data: any[]) =>
+          userSession: (data: Array<Record<string, unknown>>) =>
             prisma.userSession.createMany({ data, skipDuplicates: true }),
-          auditLog: (data: any[]) =>
+          auditLog: (data: Array<Record<string, unknown>>) =>
             prisma.auditLog.createMany({ data, skipDuplicates: true }),
-          categoryRequest: (data: any[]) =>
+          categoryRequest: (data: Array<Record<string, unknown>>) =>
             prisma.categoryRequest.createMany({ data, skipDuplicates: true }),
         };
 

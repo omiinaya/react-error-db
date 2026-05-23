@@ -69,7 +69,7 @@ export const getTokenExpirationTime = (token: string | null): number | null => {
  * @param token The JWT token to decode
  * @returns The decoded payload or null if invalid
  */
-export const getTokenPayload = (token: string | null): any => {
+export const getTokenPayload = (token: string | null): Record<string, unknown> | null => {
   if (!token) return null;
 
   try {
@@ -96,7 +96,7 @@ export const validateToken = (
   isValid: boolean;
   isExpired: boolean;
   expiresIn: number | null;
-  payload: any;
+  payload: Record<string, unknown>;
 } => {
   if (!token) {
     return {

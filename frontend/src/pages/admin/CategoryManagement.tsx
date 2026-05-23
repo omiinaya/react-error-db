@@ -81,7 +81,7 @@ const CategoryManagement: React.FC = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const params: any = {
+      const params: Record<string, unknown> = {
         page: pagination.page,
         limit: pagination.limit,
         includeChildren: true,
@@ -105,7 +105,7 @@ const CategoryManagement: React.FC = () => {
 
       setCategories(response.categories);
       setPagination(response.meta.pagination);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(
         err.response?.data?.error?.message || 'Failed to fetch categories'
       );
@@ -143,7 +143,7 @@ const CategoryManagement: React.FC = () => {
         description: 'Category deleted successfully',
       });
       fetchCategories();
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast({
         title: 'Error',
         description:

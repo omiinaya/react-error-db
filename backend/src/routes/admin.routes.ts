@@ -88,7 +88,7 @@ router.get(
       const skip = (Number(page) - 1) * Number(limit);
       const take = Number(limit);
 
-      const where: any = {};
+      const where: Record<string, unknown> = {};
 
       if (search) {
         where.OR = [
@@ -129,7 +129,7 @@ router.get(
         prisma.user.count({ where }),
       ]);
 
-      const usersWithStats = users.map((user: any) => ({
+      const usersWithStats = users.map((user) => ({
         ...user,
         solutionsCount: user._count.solutions,
         votesCount: user._count.votes,
@@ -172,7 +172,7 @@ router.get(
       const skip = (Number(page) - 1) * Number(limit);
       const take = Number(limit);
 
-      const where: any = {};
+      const where: Record<string, unknown> = {};
 
       if (status === 'pending') {
         where.isVerified = false;
@@ -358,7 +358,7 @@ router.get(
       const { page = 1, limit = 50 } = req.query;
 
       // This is a placeholder - you should integrate with your actual logging system
-      const logs: any[] = [];
+      const logs: Array<Record<string, unknown>> = [];
       const total = 0;
 
       res.json({
@@ -410,7 +410,7 @@ router.get(
         orderBy: { createdAt: 'desc' },
       });
 
-      const applicationsWithStats = applications.map((app: any) => ({
+      const applicationsWithStats = applications.map((app) => ({
         ...app,
         errorCount: app._count.errorCodes,
         _count: undefined,
@@ -445,7 +445,7 @@ router.get(
       const { type } = req.params;
       const { format = 'json' } = req.query;
 
-      let data: any;
+      let data: Record<string, unknown> | null;
 
       switch (type) {
         case 'users':
@@ -509,7 +509,7 @@ router.get(
         // Simple CSV conversion (you might want to use a library for complex data)
         const headers = Object.keys(data[0] || {}).join(',');
         const rows = data
-          .map((item: any) =>
+          .map((item) =>
             Object.values(item)
               .map(val =>
                 typeof val === 'string' ? `"${val.replace(/"/g, '""')}"` : val

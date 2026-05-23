@@ -1,6 +1,5 @@
 // Test script to reproduce validation errors and capture detailed logs
 const axios = require('axios');
-const fs = require('fs');
 
 const USE_HTTPS = process.env.USE_HTTPS === 'true';
 const BASE_URL = `${USE_HTTPS ? 'https' : 'http'}://localhost:3001/api`;

@@ -10,7 +10,7 @@ export interface AuditLog {
   userId: string;
   userIp?: string | null;
   userAgent?: string | null;
-  details?: any;
+  details?: Record<string, unknown>;
   status: 'success' | 'failure';
 }
 
@@ -24,10 +24,10 @@ export const auditMiddleware = (
     const originalSend = res.send;
 
     // Store response data for logging
-    let responseBody: any;
+    let responseBody: string;
 
     // Override res.send to capture response
-    res.send = function (body: any): Response {
+    res.send = function (body): Response {
       responseBody = body;
       return originalSend.call(this, body);
     };
@@ -77,7 +77,7 @@ export const auditMiddleware = (
         // Store in database (optional - you might want to store only critical actions)
         if (auditLog.action.startsWith('admin.')) {
           try {
-            await (prisma as any).auditLog.create({
+            await (prisma  as unknown).auditLog.create({
               data: {
                 action: auditLog.action,
                 resource: auditLog.resource,

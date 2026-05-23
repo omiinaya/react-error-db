@@ -310,7 +310,7 @@ export class SecretManager {
 
       for (const [key, value] of Object.entries(secretsData) as [
         string,
-        any,
+        unknown,
       ][]) {
         this.secrets.set(key, {
           value: value.value,

@@ -9,9 +9,9 @@ groups:
           severity: critical
           team: backend
         annotations:
-          summary: "High error rate detected"
-          description: "Error rate is above 5% for the last 5 minutes"
-          value: "{{ $value }}"
+          summary: 'High error rate detected'
+          description: 'Error rate is above 5% for the last 5 minutes'
+          value: '{{ $value }}'
 
       # High latency alert
       - alert: HighLatency
@@ -21,9 +21,9 @@ groups:
           severity: warning
           team: backend
         annotations:
-          summary: "High latency detected"
-          description: "95th percentile latency is above 1 second"
-          value: "{{ $value }}s"
+          summary: 'High latency detected'
+          description: '95th percentile latency is above 1 second'
+          value: '{{ $value }}s'
 
       # High memory usage alert
       - alert: HighMemoryUsage
@@ -33,9 +33,9 @@ groups:
           severity: warning
           team: backend
         annotations:
-          summary: "High memory usage"
-          description: "Node.js memory usage is above 80%"
-          value: "{{ $value }}%"
+          summary: 'High memory usage'
+          description: 'Node.js memory usage is above 80%'
+          value: '{{ $value }}%'
 
       # High CPU usage alert
       - alert: HighCPUUsage
@@ -45,9 +45,9 @@ groups:
           severity: warning
           team: backend
         annotations:
-          summary: "High CPU usage"
-          description: "CPU usage is above 80%"
-          value: "{{ $value }}%"
+          summary: 'High CPU usage'
+          description: 'CPU usage is above 80%'
+          value: '{{ $value }}%'
 
   - name: database-alerts
     rules:
@@ -59,9 +59,9 @@ groups:
           severity: critical
           team: database
         annotations:
-          summary: "Database connection errors"
-          description: "Database connection errors detected"
-          value: "{{ $value }}"
+          summary: 'Database connection errors'
+          description: 'Database connection errors detected'
+          value: '{{ $value }}'
 
       # Slow database queries
       - alert: SlowQueries
@@ -71,9 +71,9 @@ groups:
           severity: warning
           team: database
         annotations:
-          summary: "Slow database queries"
-          description: "Average query duration above 500ms"
-          value: "{{ $value }}s"
+          summary: 'Slow database queries'
+          description: 'Average query duration above 500ms'
+          value: '{{ $value }}s'
 
       # High database connections
       - alert: HighDatabaseConnections
@@ -83,9 +83,9 @@ groups:
           severity: warning
           team: database
         annotations:
-          summary: "High database connections"
-          description: "Database connection count above 50"
-          value: "{{ $value }}"
+          summary: 'High database connections'
+          description: 'Database connection count above 50'
+          value: '{{ $value }}'
 
   - name: redis-alerts
     rules:
@@ -97,9 +97,9 @@ groups:
           severity: warning
           team: redis
         annotations:
-          summary: "High Redis memory usage"
-          description: "Redis memory usage above 80%"
-          value: "{{ $value }}%"
+          summary: 'High Redis memory usage'
+          description: 'Redis memory usage above 80%'
+          value: '{{ $value }}%'
 
       # Redis connection errors
       - alert: RedisConnectionErrors
@@ -109,9 +109,9 @@ groups:
           severity: critical
           team: redis
         annotations:
-          summary: "Redis connection errors"
-          description: "Redis connection errors detected"
-          value: "{{ $value }}"
+          summary: 'Redis connection errors'
+          description: 'Redis connection errors detected'
+          value: '{{ $value }}'
 
   - name: system-alerts
     rules:
@@ -123,9 +123,9 @@ groups:
           severity: warning
           team: infrastructure
         annotations:
-          summary: "High system load"
-          description: "System load is above 80% of CPU cores"
-          value: "{{ $value }}"
+          summary: 'High system load'
+          description: 'System load is above 80% of CPU cores'
+          value: '{{ $value }}'
 
       # Low disk space
       - alert: LowDiskSpace
@@ -135,9 +135,9 @@ groups:
           severity: warning
           team: infrastructure
         annotations:
-          summary: "Low disk space"
-          description: "Disk space is below 20%"
-          value: "{{ $value }}%"
+          summary: 'Low disk space'
+          description: 'Disk space is below 20%'
+          value: '{{ $value }}%'
 
       # High network traffic
       - alert: HighNetworkTraffic
@@ -147,9 +147,9 @@ groups:
           severity: warning
           team: infrastructure
         annotations:
-          summary: "High network traffic"
-          description: "Network receive traffic above 100MB/s"
-          value: "{{ $value }} bytes/s"
+          summary: 'High network traffic'
+          description: 'Network receive traffic above 100MB/s'
+          value: '{{ $value }} bytes/s'
 
   - name: application-alerts
     rules:
@@ -161,9 +161,9 @@ groups:
           severity: critical
           team: backend
         annotations:
-          summary: "Application is down"
-          description: "Backend application is not responding"
-          value: "{{ $value }}"
+          summary: 'Application is down'
+          description: 'Backend application is not responding'
+          value: '{{ $value }}'
 
       # Database down
       - alert: DatabaseDown
@@ -173,9 +173,9 @@ groups:
           severity: critical
           team: database
         annotations:
-          summary: "Database is down"
-          description: "PostgreSQL database is not responding"
-          value: "{{ $value }}"
+          summary: 'Database is down'
+          description: 'PostgreSQL database is not responding'
+          value: '{{ $value }}'
 
       # Redis down
       - alert: RedisDown
@@ -185,9 +185,9 @@ groups:
           severity: critical
           team: redis
         annotations:
-          summary: "Redis is down"
-          description: "Redis server is not responding"
-          value: "{{ $value }}"
+          summary: 'Redis is down'
+          description: 'Redis server is not responding'
+          value: '{{ $value }}'
 
   - name: business-metrics-alerts
     rules:
@@ -199,9 +199,9 @@ groups:
           severity: warning
           team: product
         annotations:
-          summary: "High error submission rate"
-          description: "Error submission rate above 100 per minute"
-          value: "{{ $value }}"
+          summary: 'High error submission rate'
+          description: 'Error submission rate above 100 per minute'
+          value: '{{ $value }}'
 
       # Low solution acceptance rate
       - alert: LowSolutionAcceptanceRate
@@ -211,6 +211,6 @@ groups:
           severity: warning
           team: product
         annotations:
-          summary: "Low solution acceptance rate"
-          description: "Solution acceptance rate below 10%"
-          value: "{{ $value }}%"
+          summary: 'Low solution acceptance rate'
+          description: 'Solution acceptance rate below 10%'
+          value: '{{ $value }}%'

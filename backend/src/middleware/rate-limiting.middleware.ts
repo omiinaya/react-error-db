@@ -36,7 +36,7 @@ const getRateLimitStore = () => {
   // For now, use memory store only (return undefined to use default memory store)
   // Redis store requires additional dependency and configuration
   // Return undefined to use the default in-memory store
-  return undefined as any; // Cast to any to avoid exactOptionalPropertyTypes issues
+  return undefined as unknown; // Cast to any to avoid exactOptionalPropertyTypes issues
 };
 
 /**
@@ -266,8 +266,8 @@ export const healthCheckRateLimiter = rateLimit({
 export const dynamicRateLimiter = (options: {
   windowMs: number;
   max: number;
-  keyGenerator?: (req: any) => string;
-  message?: any;
+  keyGenerator?: (req) => string;
+  message?: string;
 }) => {
   return rateLimit({
     ...options,
@@ -298,7 +298,7 @@ export const dynamicRateLimiter = (options: {
 /**
  * Middleware to exempt certain endpoints from rate limiting
  */
-export const rateLimitExempt = (req: any, _res: any, next: any) => {
+export const rateLimitExempt = (req, _res, next) => {
   // Exempt health checks from rate limiting
   if (req.path === '/health' || req.path.startsWith('/api/health')) {
     return next();

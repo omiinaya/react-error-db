@@ -95,8 +95,8 @@ describe('Validation Utilities', () => {
 
     it('should handle empty or invalid input', () => {
       expect(sanitizeInput('')).toBe('');
-      expect(sanitizeInput(null as any)).toBe('');
-      expect(sanitizeInput(undefined as any)).toBe('');
+      expect(sanitizeInput(null as unknown)).toBe('');
+      expect(sanitizeInput(undefined as unknown)).toBe('');
     });
 
     it('should pass through normal text', () => {

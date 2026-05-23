@@ -49,7 +49,7 @@ const Dashboard: React.FC = () => {
           url: '/admin/dashboard/stats',
         });
         setStats(response.stats);
-      } catch (err: any) {
+      } catch (err: unknown) {
         setError(
           err.response?.data?.error?.message ||
             'Failed to fetch dashboard statistics'

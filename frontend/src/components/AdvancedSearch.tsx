@@ -55,7 +55,7 @@ export function AdvancedSearch() {
   const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<unknown[]>([]);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 20,

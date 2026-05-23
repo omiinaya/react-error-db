@@ -13,7 +13,7 @@ router.get('/', authenticateToken, async (req, res, next) => {
 
     res.json({
       success: true,
-      data: webhooks.map((w: any) => ({
+      data: webhooks.map((w) => ({
         ...w,
         secret: undefined, // Don't expose secret
       })),

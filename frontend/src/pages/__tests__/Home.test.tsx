@@ -16,7 +16,7 @@ vi.mock('@/services/api', () => ({
 }));
 
 describe('Home Page', () => {
-  const mockUseAuthStore = useAuthStore as any;
+  const mockUseAuthStore = useAuthStore as unknown as Record<string, unknown>;
 
   beforeEach(() => {
     vi.clearAllMocks();

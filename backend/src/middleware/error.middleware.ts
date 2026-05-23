@@ -22,7 +22,7 @@ export const errorMiddleware = (
   let statusCode = error.statusCode || 500;
   let message = error.message || 'Internal Server Error';
   let errorCode = error.code || 'INTERNAL_ERROR';
-  let details: any = null;
+  let details: Record<string, unknown> | null = null;
 
   // Log the error
   logger.error('Error occurred:', {

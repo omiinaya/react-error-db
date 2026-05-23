@@ -21,14 +21,14 @@ const router = Router();
 // Get all categories with optional filtering and hierarchy support
 router.get('/', validateQuery(categoryQuerySchema), async (req, res) => {
   try {
-    const query = req.query as any;
+    const query = req.query as unknown;
     const parentId = query.parentId as string | undefined;
     const includeChildren = query.includeChildren as boolean | undefined;
     const search = query.search as string | undefined;
     const page = parseInt(query.page as string) || 1;
     const limit = parseInt(query.limit as string) || 20;
 
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     if (parentId) {
       where.parentId = parentId;
@@ -44,7 +44,7 @@ router.get('/', validateQuery(categoryQuerySchema), async (req, res) => {
     }
 
     // Get categories with optional children inclusion
-    const findManyOptions: any = {
+    const findManyOptions: Record<string, unknown> = {
       where,
       orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
       skip: (page - 1) * limit,
@@ -79,19 +79,19 @@ router.get('/', validateQuery(categoryQuerySchema), async (req, res) => {
       },
       where: {
         categoryId: {
-          in: categories.map((cat: any) => cat.id),
+          in: categories.map((cat) => cat.id),
         },
       },
     });
 
     // Create a map of categoryId to application count
     const applicationCountMap = new Map();
-    applicationCounts.forEach((item: any) => {
+    applicationCounts.forEach((item) => {
       applicationCountMap.set(item.categoryId, item._count._all);
     });
 
     // Transform data to include applicationCount and optionally children with their counts
-    const categoriesWithCounts = categories.map((category: any) => {
+    const categoriesWithCounts = categories.map((category) => {
       const baseCategory = {
         ...category,
         applicationCount: applicationCountMap.get(category.id) || 0,
@@ -100,7 +100,7 @@ router.get('/', validateQuery(categoryQuerySchema), async (req, res) => {
       if (includeChildren && category.children) {
         return {
           ...baseCategory,
-          children: category.children.map((child: any) => ({
+          children: category.children.map((child) => ({
             ...child,
             applicationCount: applicationCountMap.get(child.id) || 0,
           })),
@@ -528,19 +528,19 @@ router.get('/:id/applications', async (req, res) => {
       },
       where: {
         applicationId: {
-          in: applications.map((app: any) => app.id),
+          in: applications.map((app) => app.id),
         },
       },
     });
 
     // Create a map of applicationId to error count
     const errorCountMap = new Map();
-    errorCounts.forEach((item: any) => {
+    errorCounts.forEach((item) => {
       errorCountMap.set(item.applicationId, item._count._all);
     });
 
     // Transform data to include errorCount
-    const applicationsWithCount = applications.map((app: any) => ({
+    const applicationsWithCount = applications.map((app) => ({
       ...app,
       errorCount: errorCountMap.get(app.id) || 0,
     }));

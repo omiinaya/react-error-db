@@ -9,7 +9,7 @@ import { CreateApplicationRequest } from '@/types';
 
 interface CreateApplicationDialogProps {
   categoryId: string;
-  onApplicationCreated: (application: any) => void;
+  onApplicationCreated: (application: unknown) => void;
 }
 
 const CreateApplicationDialog: React.FC<CreateApplicationDialogProps> = ({
@@ -73,7 +73,7 @@ const CreateApplicationDialog: React.FC<CreateApplicationDialogProps> = ({
         title: 'Success',
         description: 'Application created successfully',
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: 'Error',
         description:

@@ -8,7 +8,7 @@ import { api } from '@/services/api';
 import { CreateCategoryRequestInput } from '@/types';
 
 interface CategoryRequestDialogProps {
-  onRequestCreated: (request: any) => void;
+  onRequestCreated: (request: unknown) => void;
   onClose: () => void;
 }
 
@@ -81,7 +81,7 @@ const CategoryRequestDialog: React.FC<CategoryRequestDialogProps> = ({
         description:
           'Category request submitted successfully. It will be reviewed by an administrator.',
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: 'Error',
         description:

@@ -23,7 +23,7 @@ const searchSchema = z.object({
 
 router.get('/', validateQuery(searchSchema), async (req, res, next) => {
   try {
-    const { query, ...filters } = req.query as any;
+    const { query, ...filters } = req.query as unknown;
     const userId = req.user?.id;
 
     const results = await searchService.search(

@@ -20,7 +20,7 @@ class ApiClient {
 
   constructor() {
     this.client = axios.create({
-      baseURL: (import.meta as any).env?.VITE_API_BASE_URL || '/api',
+      baseURL: import.meta.env?.VITE_API_BASE_URL || '/api',
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json',
@@ -108,20 +108,20 @@ class ApiClient {
           }
 
           // Check if this is a retry attempt to avoid infinite loops
-          if ((originalRequest as any)._retry) {
+          if (originalRequest as unknown as { _retry?: boolean }._retry) {
             // Use auth store logout instead of hard redirect
             useAuthStore.getState().logout();
             return Promise.reject(error);
           }
 
           // Try to refresh the token
-          (originalRequest as any)._retry = true;
+          originalRequest as unknown as { _retry?: boolean }._retry = true;
           const refreshToken = localStorage.getItem('refreshToken');
 
           if (refreshToken) {
             try {
               const response = await axios.post(
-                `${(import.meta as any).env?.VITE_API_BASE_URL || '/api'}/auth/refresh`,
+                `${import.meta.env?.VITE_API_BASE_URL || '/api'}/auth/refresh`,
                 { refreshToken }
               );
 
@@ -251,7 +251,7 @@ class ApiClient {
 
   // Auth endpoints
   async login(data: { email: string; password: string }) {
-    return this.request<{ user: any; token: string; refreshToken: string }>({
+    return this.request<{ user: unknown; token: string; refreshToken: string }>({
       method: 'post',
       url: '/auth/login',
       data,
@@ -264,7 +264,7 @@ class ApiClient {
     password: string;
     displayName: string;
   }) {
-    return this.request<{ user: any; token: string; refreshToken: string }>({
+    return this.request<{ user: unknown; token: string; refreshToken: string }>({
       method: 'post',
       url: '/auth/register',
       data,
@@ -272,7 +272,7 @@ class ApiClient {
   }
 
   async getCurrentUser() {
-    return this.request<{ user: any }>({
+    return this.request<{ user: unknown }>({
       method: 'get',
       url: '/auth/me',
     });
@@ -283,7 +283,7 @@ class ApiClient {
     parentId?: string;
     includeChildren?: boolean;
   }) {
-    return this.request<{ categories: any[] }>({
+    return this.request<{ categories: unknown[] }>({
       method: 'get',
       url: '/categories',
       params,
@@ -291,14 +291,14 @@ class ApiClient {
   }
 
   async getCategoryBySlug(slug: string) {
-    return this.request<{ category: any }>({
+    return this.request<{ category: unknown }>({
       method: 'get',
       url: `/categories/${slug}`,
     });
   }
 
   async createCategory(data: CreateCategoryRequest) {
-    return this.request<{ category: any }>({
+    return this.request<{ category: unknown }>({
       method: 'post',
       url: '/categories',
       data,
@@ -306,7 +306,7 @@ class ApiClient {
   }
 
   async updateCategory(id: string, data: UpdateCategoryRequest) {
-    return this.request<{ category: any }>({
+    return this.request<{ category: unknown }>({
       method: 'put',
       url: `/categories/${id}`,
       data,
@@ -320,7 +320,7 @@ class ApiClient {
     page?: number;
     limit?: number;
   }) {
-    return this.request<{ applications: any[]; meta?: any }>({
+    return this.request<{ applications: unknown[]; meta?: unknown }>({
       method: 'get',
       url: '/applications',
       params,
@@ -328,14 +328,14 @@ class ApiClient {
   }
 
   async getApplicationBySlug(slug: string) {
-    return this.request<{ application: any }>({
+    return this.request<{ application: unknown }>({
       method: 'get',
       url: `/applications/${slug}`,
     });
   }
 
   async createApplication(data: CreateApplicationRequest) {
-    return this.request<{ application: any }>({
+    return this.request<{ application: unknown }>({
       method: 'post',
       url: '/applications',
       data,
@@ -343,7 +343,7 @@ class ApiClient {
   }
 
   async updateApplication(id: string, data: UpdateApplicationRequest) {
-    return this.request<{ application: any }>({
+    return this.request<{ application: unknown }>({
       method: 'put',
       url: `/applications/${id}`,
       data,
@@ -359,7 +359,7 @@ class ApiClient {
     limit?: number;
     sort?: string;
   }) {
-    return this.request<{ errors: any[]; meta?: any }>({
+    return this.request<{ errors: unknown[]; meta?: unknown }>({
       method: 'get',
       url: '/errors',
       params,
@@ -367,7 +367,7 @@ class ApiClient {
   }
 
   async getErrorById(id: string) {
-    return this.request<{ error: any; solutions: any[] }>({
+    return this.request<{ error: any; solutions: unknown[] }>({
       method: 'get',
       url: `/errors/${id}`,
     });
@@ -423,7 +423,7 @@ class ApiClient {
     page?: number;
     limit?: number;
   }) {
-    return this.request<{ results: any[] }>({
+    return this.request<{ results: unknown[] }>({
       method: 'get',
       url: '/search',
       params,
@@ -433,9 +433,9 @@ class ApiClient {
   // User endpoints
   async getUserProfile(userId: string) {
     return this.request<{
-      user: any;
-      recentSolutions: any[];
-      topSolutions: any[];
+      user: unknown;
+      recentSolutions: unknown[];
+      topSolutions: unknown[];
     }>({
       method: 'get',
       url: `/users/${userId}`,
@@ -443,7 +443,7 @@ class ApiClient {
   }
 
   async updateProfile(data: { displayName?: string; avatarUrl?: string }) {
-    return this.request<{ user: any }>({
+    return this.request<{ user: unknown }>({
       method: 'put',
       url: '/users/me',
       data,
@@ -480,7 +480,7 @@ class ApiClient {
     search?: string;
     role?: string;
   }) {
-    return this.request<{ users: any[]; pagination: any }>({
+    return this.request<{ users: unknown[]; pagination: any }>({
       method: 'get',
       url: '/admin/users',
       params,
@@ -492,7 +492,7 @@ class ApiClient {
     limit?: number;
     status?: string;
   }) {
-    return this.request<{ solutions: any[]; pagination: any }>({
+    return this.request<{ solutions: unknown[]; pagination: any }>({
       method: 'get',
       url: '/admin/solutions/moderation',
       params,
@@ -508,7 +508,7 @@ class ApiClient {
   }
 
   async getAdminApplications() {
-    return this.request<{ applications: any[] }>({
+    return this.request<{ applications: unknown[] }>({
       method: 'get',
       url: '/admin/applications/stats',
     });
@@ -520,7 +520,7 @@ class ApiClient {
     search?: string;
     level?: string;
   }) {
-    return this.request<{ logs: any[]; pagination: any }>({
+    return this.request<{ logs: unknown[]; pagination: any }>({
       method: 'get',
       url: '/admin/system/logs',
       params,
@@ -551,7 +551,7 @@ class ApiClient {
     page?: number;
     limit?: number;
   }) {
-    return this.request<{ categoryRequests: CategoryRequest[]; meta?: any }>({
+    return this.request<{ categoryRequests: CategoryRequest[]; meta?: unknown }>({
       method: 'get',
       url: '/category-requests',
       params,
@@ -598,7 +598,7 @@ class ApiClient {
     limit?: number;
   }) {
     return this.request<{
-      errors: any[];
+      errors: unknown[];
       totalCount: number;
       page: number;
       limit: number;
@@ -611,7 +611,7 @@ class ApiClient {
   }
 
   async getSearchSuggestions(query: string, limit?: number) {
-    return this.request<{ suggestions: any[] }>({
+    return this.request<{ suggestions: unknown[] }>({
       method: 'get',
       url: '/search/suggestions',
       params: { query, limit },
@@ -619,7 +619,7 @@ class ApiClient {
   }
 
   async getSearchHistory(limit?: number) {
-    return this.request<{ history: any[] }>({
+    return this.request<{ history: unknown[] }>({
       method: 'get',
       url: '/search/history',
       params: { limit },
@@ -641,7 +641,7 @@ class ApiClient {
   }
 
   async getSearchTrends(days?: number) {
-    return this.request<{ trends: any[] }>({
+    return this.request<{ trends: unknown[] }>({
       method: 'get',
       url: '/search/trends',
       params: { days },
@@ -651,7 +651,7 @@ class ApiClient {
   // Bookmarks endpoints
   async getBookmarks(page?: number, limit?: number) {
     return this.request<{
-      bookmarks: any[];
+      bookmarks: unknown[];
       totalCount: number;
       page: number;
       limit: number;
@@ -696,7 +696,7 @@ class ApiClient {
   // Notifications endpoints
   async getNotifications(unreadOnly?: boolean, page?: number, limit?: number) {
     return this.request<{
-      notifications: any[];
+      notifications: unknown[];
       totalCount: number;
       unreadCount: number;
       page: number;
@@ -740,8 +740,8 @@ class ApiClient {
   // User Stats and Achievements
   async getUserStats(userId: string) {
     return this.request<{
-      user: any;
-      achievements: any[];
+      user: unknown;
+      achievements: unknown[];
       totalPoints: number;
       badgeCount: number;
     }>({
@@ -752,7 +752,7 @@ class ApiClient {
 
   // Webhooks endpoints
   async getWebhooks() {
-    return this.request<{ webhooks: any[] }>({
+    return this.request<{ webhooks: unknown[] }>({
       method: 'get',
       url: '/webhooks',
     });
@@ -792,7 +792,7 @@ class ApiClient {
   }
 
   async getWebhookDeliveries(webhookId: string, limit?: number) {
-    return this.request<{ deliveries: any[] }>({
+    return this.request<{ deliveries: unknown[] }>({
       method: 'get',
       url: `/webhooks/${webhookId}/deliveries`,
       params: { limit },
@@ -800,7 +800,7 @@ class ApiClient {
   }
 
   async getWebhookEventTypes() {
-    return this.request<{ eventTypes: any[] }>({
+    return this.request<{ eventTypes: unknown[] }>({
       method: 'get',
       url: '/webhooks/events/types',
     });

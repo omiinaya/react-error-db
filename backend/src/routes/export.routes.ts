@@ -35,7 +35,7 @@ router.get('/errors', authenticateToken, async (req, res, next) => {
       ? new Date(req.query.endDate as string)
       : undefined;
 
-    const options: any = { format };
+    const options: Record<string, unknown> = { format };
     if (startDate) options.startDate = startDate;
     if (endDate) options.endDate = endDate;
 
@@ -70,7 +70,7 @@ router.get('/solutions', authenticateToken, async (req, res, next) => {
       ? new Date(req.query.endDate as string)
       : undefined;
 
-    const options: any = { format };
+    const options: Record<string, unknown> = { format };
     if (startDate) options.startDate = startDate;
     if (endDate) options.endDate = endDate;
 
@@ -122,7 +122,7 @@ router.get('/analytics', authenticateToken, async (req, res, next) => {
       ? new Date(req.query.endDate as string)
       : undefined;
 
-    const options: any = { format };
+    const options: Record<string, unknown> = { format };
     if (startDate) options.startDate = startDate;
     if (endDate) options.endDate = endDate;
 

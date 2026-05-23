@@ -53,7 +53,7 @@ const ApplicationManagement: React.FC = () => {
       });
 
       setApplications(response.applications);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(
         err.response?.data?.error?.message || 'Failed to fetch applications'
       );
@@ -79,7 +79,7 @@ const ApplicationManagement: React.FC = () => {
 
       // Refresh the applications list
       fetchApplications();
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(
         err.response?.data?.error?.message || 'Failed to delete application'
       );

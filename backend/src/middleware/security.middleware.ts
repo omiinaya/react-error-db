@@ -6,7 +6,7 @@ import { config } from '../config';
 declare global {
   namespace Express {
     interface Request {
-      user?: any;
+      user?: { id: string; email: string; role: string };
       rateLimit?: {
         windowMs: number;
         max: number;
@@ -207,9 +207,9 @@ export const securityLoggingMiddleware = (
         }
         return acc;
       },
-      {} as Record<string, any>
+      {} as Record<string, unknown>
     ),
-    user: req.user ? { id: (req.user as any).id } : undefined,
+    user: req.user ? { id: (req.user as unknown).id } : undefined,
   };
 
   // Log security-relevant requests

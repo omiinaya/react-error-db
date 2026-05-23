@@ -3,7 +3,7 @@ info:
   title: Error Database API
   description: |
     A comprehensive API for the Error Database application. This API provides endpoints for managing error codes, solutions, user authentication, and advanced features like bookmarks, notifications, achievements, webhooks, and data export.
-    
+
     ## Features
     - **Error Management**: Create, read, update, and search error codes
     - **Solution Management**: Submit, vote on, and verify solutions
@@ -13,7 +13,7 @@ info:
     - **Webhooks**: External integrations with event subscriptions
     - **Analytics**: Search analytics and usage statistics
     - **Export**: Data export in JSON and CSV formats
-    
+
     ## Authentication
     All protected endpoints require a Bearer token in the Authorization header:
     ```

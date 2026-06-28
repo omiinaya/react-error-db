@@ -31,6 +31,13 @@ module.exports = {
         '@typescript-eslint/no-var-requires': 'off',
       },
     },
+    {
+      files: ['browser-test.js', 'diagnostic-script.js'],
+      env: {
+        browser: true,
+        node: true,
+      },
+    },
   ],
   ignorePatterns: [
     'node_modules/',
